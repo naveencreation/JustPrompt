@@ -1,0 +1,48 @@
+---
+description: Conventions for API route handlers
+globs: app/api/**/*.ts
+alwaysApply: false
+---
+
+# API Route Rules
+
+## Required for every route
+
+1. **Validate input with zod** before calling any service.
+2. **Public reads** set `Cache-Control: public, s-maxage=60, stale-while-revalidate=300`.
+3. **Mutations** check session via Supabase server client AND pass through `lib/ratelimit`.
+4. **Never call repos or Supabase directly** — only services.
+5. **Errors go through the adapter:** `errors.capture(err, ctx)`, never raw `console.error`.
+
+## Pagination — cursor only
+
+```ts
+// BAD
+const offset = Number(searchParams.get("page") ?? 0) * 24;
+const { data } = await supabase.from("images").select("*").range(offset, offset + 23);
+
+// GOOD
+import { decodeCursor, encodeCursor } from "@/lib/utils/cursor";
+
+const cursor = searchParams.get("cursor");
+const c = cursor ? decodeCursor(cursor) : null;
+const items = await imageService.listPublished({ before: c, limit: 24 });
+const nextCursor = items.length === 24
+  ? encodeCursor({ createdAt: items.at(-1)!.createdAt, id: items.at(-1)!.id })
+  : null;
+```
+
+## Auth pattern for admin routes
+
+```ts
+export async function POST(req: Request) {
+  const session = await requireAdminSession();   // throws 401 if missing
+  await rateLimit.requireOk(`admin:${session.userId}`, 60, 60);
+  const body = ParseSchema.parse(await req.json());
+  return Response.json(await imageService.create(body, session));
+}
+```
+
+## Response shape
+
+Always JSON. On error: `{ error: { code: string, message: string } }`. On success: the resource or `{ data, nextCursor }` for lists.

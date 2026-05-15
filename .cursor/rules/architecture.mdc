@@ -1,0 +1,37 @@
+---
+description: Core architectural conventions for AI Prompt Gallery
+alwaysApply: true
+---
+
+# Architecture Rules
+
+This is a Next.js 15 (App Router) + Supabase project. Every external service is **pluggable behind an interface**. See `ProjectSpec.md` for the full spec.
+
+## Non-negotiables
+
+- **`process.env` is read in exactly one file: `lib/config.ts`.** Never anywhere else. Other code reads from the exported `config` object.
+- **Pages and API routes never call Supabase directly.** They call services in `lib/services/*`. Services call repos in `lib/repos/*`. Only repos talk to the DB.
+- **Every external capability has an adapter.** Cache, storage, rate-limiting, errors, logging, search. Each lives in `lib/<capability>/` with: `index.ts` (interface), `<default>.ts` (free impl), `<upgrade>.ts` (paid impl), `factory.ts`.
+- **Required env vars at boot: only Supabase + `REVALIDATE_SECRET`.** Everything else is optional and gated on env presence.
+
+## Layering
+
+```
+app/* (pages, API routes)
+  └─> lib/services/*   ← business logic, caching, validation
+        └─> lib/repos/*   ← raw DB queries only
+              └─> lib/db/client.ts
+        └─> lib/<adapter>/factory.ts   ← cache, storage, etc.
+```
+
+Skipping a layer (e.g. calling a repo from a page) is a review-blocking issue.
+
+## Validation
+
+All external input — request bodies, query params, env — passes through a `zod` schema before use. Schemas live in `lib/db/schema.ts` (DB shapes) or alongside the route (request shapes).
+
+## Don't
+
+- Don't introduce a new external service without adding it as an adapter with a free fallback.
+- Don't use `OFFSET` for pagination — cursor pagination only (see `lib/utils/cursor.ts`).
+- Don't store mutable hot counters on the `images` row — use `like_counts` + cache.

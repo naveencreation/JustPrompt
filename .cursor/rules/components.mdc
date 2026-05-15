@@ -1,0 +1,48 @@
+---
+description: React component conventions
+globs: components/**/*.tsx, app/**/*.tsx
+alwaysApply: false
+---
+
+# Component Rules
+
+## Images
+
+- Always use Next.js `<Image>` from `next/image`.
+- Always pass explicit `width` and `height` from the DB row — eliminates CLS.
+- Never use `<img>` for content images. (`<img>` is OK for tiny icons.)
+
+```tsx
+// GOOD
+<Image
+  src={img.imageUrl}
+  alt={img.prompt.slice(0, 80)}
+  width={img.width}
+  height={img.height}
+  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+/>
+```
+
+## Touch + hover
+
+- Hover-driven UX must have a tap-driven equivalent. Touch devices have no hover.
+- Cosmetic effects like tilt/parallax are gated to `@media (pointer: fine)` to avoid mobile jank.
+
+```tsx
+// ImageCard: hover OR tap flips. Both code paths must work.
+<div
+  className="card"
+  onMouseEnter={handleHoverFlip}
+  onClick={handleTapFlip}
+/>
+```
+
+## Server vs client
+
+- Default to Server Components. Add `"use client"` only when you need state, effects, or browser APIs.
+- Never fetch from Supabase in a client component. Pass data down from a Server Component, or call a service from a server action.
+
+## Loading & error states
+
+- Every list view ships with a `Skeleton*.tsx` placeholder.
+- Errors surface through an error boundary — never silent.

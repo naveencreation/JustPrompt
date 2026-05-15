@@ -1,0 +1,51 @@
+---
+description: Adapter pattern for pluggable external services
+globs: lib/cache/**, lib/storage/**, lib/ratelimit/**, lib/observability/**, lib/search/**
+alwaysApply: false
+---
+
+# Adapter Rules
+
+Every external capability follows the same shape. Files in this folder must conform.
+
+## Required files per adapter
+
+```
+lib/<capability>/
+  index.ts       # interface + re-exports the result of factory()
+  <default>.ts   # free, in-process implementation (memory, console, postgres, supabase)
+  <upgrade>.ts   # paid SaaS implementation (redis, sentry, axiom, cloudinary, meili)
+  factory.ts     # picks impl based on `config.<capability>` from lib/config.ts
+```
+
+## Pattern
+
+```ts
+// lib/cache/index.ts
+export interface Cache {
+  get<T>(key: string): Promise<T | null>;
+  set<T>(key: string, value: T, ttlSeconds?: number): Promise<void>;
+  incr(key: string): Promise<number>;
+  del(key: string): Promise<void>;
+}
+
+export { cache } from "./factory";
+```
+
+```ts
+// lib/cache/factory.ts
+import { config } from "@/lib/config";
+import { MemoryCache } from "./memory";
+import { RedisCache } from "./redis";
+
+export const cache: Cache =
+  config.cache === "redis" ? new RedisCache() : new MemoryCache();
+```
+
+## Hard rules
+
+- **The factory file is the only place that reads `config`** for that capability.
+- **The default impl must work with zero env vars** beyond Supabase. If your default needs Upstash/Sentry/etc, it's not a default.
+- **Both impls must implement the full interface.** No "throw not implemented" — pick a sensible no-op (e.g. `errors.capture` on the console reporter just logs).
+- **Adapters are stateless from the caller's perspective.** Initialization (e.g. Redis client) happens at module load; callers just call methods.
+- **Never expose the underlying SDK.** Callers see `cache.get()`, never the raw Upstash client.

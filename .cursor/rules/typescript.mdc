@@ -1,0 +1,58 @@
+---
+description: TypeScript conventions for AI Prompt Gallery
+globs: **/*.ts, **/*.tsx
+alwaysApply: false
+---
+
+# TypeScript Rules
+
+## Strictness
+
+- `tsconfig.json` runs in strict mode (`strict: true`, `noUncheckedIndexedAccess: true`).
+- No `any`. Use `unknown` and narrow.
+- No non-null assertions (`!`) on values that crossed an API or DB boundary — validate with zod first.
+
+## Validation at boundaries
+
+```ts
+// BAD
+export async function POST(req: Request) {
+  const body = await req.json();
+  await imageService.create(body);  // unchecked input
+}
+
+// GOOD
+const CreateImageSchema = z.object({
+  prompt: z.string().min(1).max(2000),
+  tags: z.array(z.string()).max(20).default([]),
+  storageKey: z.string().min(1),
+});
+
+export async function POST(req: Request) {
+  const parsed = CreateImageSchema.safeParse(await req.json());
+  if (!parsed.success) return Response.json({ error: parsed.error }, { status: 400 });
+  await imageService.create(parsed.data);
+}
+```
+
+## Error handling
+
+```ts
+// BAD
+try { await thing(); } catch {}
+
+// GOOD
+try {
+  await thing();
+} catch (err) {
+  errors.capture(err, { op: "thing", imageId });
+  throw new ServiceError("thing_failed", { cause: err });
+}
+```
+
+Use the `errors` adapter from `lib/observability/errors.ts` — never call Sentry directly.
+
+## Imports
+
+- Absolute imports rooted at `@/*` (configured in `tsconfig.json`).
+- No deep imports across layers — services import from repos, not the other way around.

@@ -1,0 +1,48 @@
+---
+description: Database conventions — schema, queries, migrations
+globs: lib/repos/**, lib/db/**, supabase/migrations/**
+alwaysApply: false
+---
+
+# Database Rules
+
+## Schema
+
+- Every table has `id` (uuid or serial), `created_at`, and `updated_at` where mutation-relevant.
+- **Row-Level Security is enabled on every table.** No exceptions.
+- Foreign keys always have `ON DELETE` defined explicitly (`cascade` or `set null`).
+- Indexes are added in the same migration as the column they support.
+- **Never use `text[]` for relational data.** Use a join table (`image_tags`, etc).
+
+## Pagination — cursor, never OFFSET
+
+```sql
+-- BAD
+select * from images where is_published order by created_at desc limit 24 offset $offset;
+
+-- GOOD
+select * from images
+where is_published
+  and (created_at, id) < ($cursorCreatedAt, $cursorId)
+order by created_at desc, id desc
+limit 24;
+```
+
+The matching index is required:
+```sql
+create index images_created_idx on images (created_at desc, id desc) where is_published;
+```
+
+## Hot counters
+
+`images.likes` does **not** exist. Counts live in `like_counts(image_id, count)`. Hot writes go through the cache adapter; a cron flushes deltas to `like_counts`. See `lib/services/likeService.ts`.
+
+## Search
+
+Use the generated `search_vector` tsvector column + the `images_fts_idx` GIN index. Never `LIKE '%...%'` on `prompt` — it doesn't use indexes.
+
+## Repos
+
+- Repo functions return plain objects matching the zod schema in `lib/db/schema.ts`.
+- No business logic in repos — just queries.
+- Repos never import services. Services import repos.
