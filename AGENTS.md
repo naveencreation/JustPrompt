@@ -81,6 +81,19 @@ These are also enforced by `.cursor/rules/`. The short version:
 
 Each upgrade is a Vercel env-var change, not a code change.
 
+## Project philosophy
+
+Principles, not rules. The rules live in `.cursor/rules/`; these are the *spirit* behind them.
+
+- **Readability beats cleverness.** If a teammate (or future you) needs three minutes to parse a line, rewrite it.
+- **Boring, explicit code wins.** Hidden behavior, magic, and excessive abstraction are bugs in waiting.
+- **Each block has one responsibility.** When a function is doing two things, it's two functions.
+- **Long-term maintainability over short-term speed.** Copy-paste is a debt, not a shortcut.
+- **Fail loudly during dev, fail gracefully in production.** Silent catches are forbidden — log, capture, and either recover or rethrow.
+- **Add complexity only when measurements demand it.** Caching, indexes, microservices, queues — all earned, never preemptive.
+- **Naming is a feature.** A well-named function makes its docstring redundant.
+- **Tests are documentation that doesn't lie.** If the behavior matters, there's a test for it.
+
 ## When in doubt
 
 1. Check `.cursor/rules/` for the relevant `.mdc` file.

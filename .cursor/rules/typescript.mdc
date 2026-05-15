@@ -56,3 +56,24 @@ Use the `errors` adapter from `lib/observability/errors.ts` — never call Sentr
 
 - Absolute imports rooted at `@/*` (configured in `tsconfig.json`).
 - No deep imports across layers — services import from repos, not the other way around.
+
+## Magic numbers and strings
+
+No literal numbers or status codes scattered through code. Pull them into named constants in `lib/constants/*.ts`. Loop indices and the literals `0`, `1`, `-1`, `""` are exempt.
+
+```ts
+// BAD
+if (image.likes > 1000) { ... }
+setTimeout(retry, 60000);
+return Response.json({ error }, { status: 429 });
+
+// GOOD
+import { TRENDING_LIKE_THRESHOLD, RETRY_DELAY_MS } from "@/lib/constants/limits";
+import { HTTP } from "@/lib/constants/http";
+
+if (image.likes > TRENDING_LIKE_THRESHOLD) { ... }
+setTimeout(retry, RETRY_DELAY_MS);
+return Response.json({ error }, { status: HTTP.TOO_MANY_REQUESTS });
+```
+
+Group constants by domain (`limits.ts`, `http.ts`, `cache.ts`), not by data type.

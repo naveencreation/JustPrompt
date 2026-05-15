@@ -1,0 +1,62 @@
+---
+description: Naming conventions for files, functions, variables, classes, constants
+globs: **/*.ts, **/*.tsx
+alwaysApply: false
+---
+
+# Naming Rules
+
+## Files
+
+| Kind                              | Convention            | Example                   |
+|-----------------------------------|-----------------------|---------------------------|
+| React components                  | `PascalCase.tsx`      | `ImageCard.tsx`           |
+| Route segments (Next.js folders)  | `kebab-case`          | `app/admin/upload/`       |
+| Hooks                             | `use*.ts`             | `useDebouncedSearch.ts`   |
+| Services / repos / utils          | `camelCase.ts`        | `imageService.ts`         |
+| Test files                        | `*.test.ts(x)`        | `imageService.test.ts`    |
+| Type-only files                   | `*.types.ts`          | `image.types.ts`          |
+
+Names must describe responsibility. Banned: `utils.ts`, `helpers.ts`, `common.ts`, `temp.ts`, `index.ts` *as the only file in a folder* (use a named file).
+
+## Functions and methods
+
+- `camelCase`, start with an action verb.
+- Boolean accessors start with `is`/`has`/`can`/`should`.
+
+```ts
+// GOOD
+fetchPublishedImages(); validateUploadPayload(); isFeatured(image);
+
+// BAD
+process(); handle(); doTask(); run(); execute();
+```
+
+## Variables
+
+- `camelCase`, descriptive, full words.
+- Single letters only as loop counters (`i`, `j`) or canonical math (`x`, `y`).
+- Banned: `data`, `temp`, `obj`, `val`, `info`, `result` (too vague).
+
+```ts
+const meetingStartTime = ...;       // GOOD
+const retryAttemptCount = ...;      // GOOD
+const data = ...;                   // BAD
+```
+
+## Classes, types, interfaces, enums
+
+- `PascalCase`. No `I` prefix on interfaces.
+- Names express the responsibility, not the layer.
+
+```ts
+class ImageService {}             // GOOD
+interface UploadPayload {}        // GOOD
+class Manager {}                  // BAD
+class IImageService {}            // BAD — no `I` prefix
+```
+
+## Constants
+
+- `UPPER_SNAKE_CASE` for module-level immutable values.
+- Group related constants in `lib/constants/*.ts`, never inline magic values.

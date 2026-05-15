@@ -1,0 +1,60 @@
+---
+description: Logging conventions — what to log, levels, PII bans
+globs: lib/**/*.ts, app/**/*.ts
+alwaysApply: false
+---
+
+# Logging Rules
+
+All logs go through the adapter `lib/observability/logger.ts`. **Never** call `console.*` directly in `lib/` or `app/` (except inside the logger's own implementation).
+
+```ts
+import { logger } from "@/lib/observability/logger";
+
+logger.info("image.published", { imageId, slug });
+logger.warn("rate_limit.hit", { route, ip: hashedIp });
+logger.error("storage.delete_failed", { storageKey, err });
+```
+
+## What to log
+
+- **Info:** business events that matter — image published, image deleted, like flushed, settings changed.
+- **Warn:** recoverable problems — rate-limit hits, retries, deprecated path used.
+- **Error:** unrecoverable failures — DB errors, external API failures, unhandled exceptions in a route.
+- **Debug:** off in production. Use sparingly during development.
+
+## Structured, not stringly
+
+```ts
+// BAD — string interpolation, ungreppable
+logger.info(`image ${id} published by ${userId}`);
+
+// GOOD — event name + meta
+logger.info("image.published", { imageId: id, userId });
+```
+
+The first argument is a **stable event name** (snake-cased, dotted namespace). The second is a flat object of context.
+
+## Never log
+
+- Passwords, tokens, API keys, signed URLs (full).
+- Raw IP addresses (hash them first).
+- Email addresses outside admin-only flows.
+- Full request bodies (may contain user data).
+- Cookie or session values.
+
+## Errors always include context
+
+```ts
+// BAD
+logger.error("failed");
+
+// GOOD
+logger.error("storage.upload_failed", {
+  storageKey,
+  provider: config.storage,
+  err: err instanceof Error ? { name: err.name, message: err.message } : err,
+});
+```
+
+Error objects with stack traces should also flow through `errors.capture()` — that's a separate adapter (Sentry/console). Logger captures the *event*, error reporter captures the *exception*.

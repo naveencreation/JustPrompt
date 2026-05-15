@@ -1,0 +1,60 @@
+---
+description: Testing conventions — testable code, mocks, determinism
+globs: **/*.test.ts, **/*.test.tsx, **/*.spec.ts
+alwaysApply: false
+---
+
+# Testing Rules
+
+## Stack
+
+- **Vitest** for unit + integration tests.
+- **Playwright** for e2e (admin upload flow + public gallery render).
+- Test files colocate with source: `imageService.ts` ↔ `imageService.test.ts`.
+
+## What must be tested
+
+- Every function in `lib/services/*` (business logic).
+- Every API route's auth + validation paths (zod failures, missing session).
+- Every adapter's interface contract (e.g. memory cache and redis cache must pass the *same* test suite).
+- Cursor pagination edge cases (empty, single page, exactly `limit` rows).
+
+## What can skip tests
+
+- Pure render-only React components (snapshot tests are noise).
+- Generated types, zod schemas (zod tests itself).
+- Trivial getters / one-line wrappers.
+
+## Mock the adapters, not the SDKs
+
+The whole point of the adapter pattern is testability. Tests inject in-memory implementations.
+
+```ts
+// GOOD
+import { createImageService } from "@/lib/services/imageService";
+
+const service = createImageService({
+  imageRepo: new InMemoryImageRepo(),
+  cache: new MemoryCache(),
+  storage: new InMemoryStorage(),
+});
+
+// BAD — mocking the Supabase SDK directly
+vi.mock("@supabase/supabase-js");
+```
+
+Services must accept their dependencies via parameter (constructor injection or factory), not import them as singletons. This is the testability tax — and the architectural payoff.
+
+## Determinism
+
+- Pin `Date.now()` and `Math.random()` in tests with `vi.useFakeTimers()` / seeded RNG.
+- No live network calls. Ever. Use the in-memory adapter.
+- Tests must pass in any order. No shared mutable state across tests.
+
+## What a flaky test means
+
+A flaky test is a bug, not a nuisance. Either:
+1. The code under test has a real race condition → fix it.
+2. The test relies on time/network/order → fix the test.
+
+Never `retry: 3` your way out.
