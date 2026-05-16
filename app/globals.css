@@ -56,13 +56,18 @@ body {
 }
 
 .card-face {
-  position: absolute;
-  inset: 0;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
 }
 
+.card-face-front {
+  position: relative;
+  width: 100%;
+}
+
 .card-face-back {
+  position: absolute;
+  inset: 0;
   transform: rotateY(180deg);
 }
 

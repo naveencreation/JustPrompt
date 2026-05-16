@@ -72,7 +72,7 @@ export const imageService = {
     logger.info("image.created", { imageId: image.id, slug: image.slug });
 
     if (image.isPublished) {
-      revalidateTag(CACHE_TAG.GALLERY, {});
+      revalidateTag(CACHE_TAG.GALLERY);
       // Also bust the in-process gallery cache (Tier 0). `revalidateTag` only
       // invalidates Next's page/data cache; the cache adapter is independent.
       await invalidateGalleryCache();
@@ -93,8 +93,8 @@ export const imageService = {
     }
 
     await cache.del(`image:slug:${image.slug}`);
-    revalidateTag(CACHE_TAG.GALLERY, {});
-    revalidateTag(CACHE_TAG.IMAGE(image.slug), {});
+    revalidateTag(CACHE_TAG.GALLERY);
+    revalidateTag(CACHE_TAG.IMAGE(image.slug));
 
     logger.info("image.updated", { imageId: id });
     return image;
@@ -113,8 +113,8 @@ export const imageService = {
 
     await imageRepo.delete(id);
     await cache.del(`image:slug:${image.slug}`);
-    revalidateTag(CACHE_TAG.GALLERY, {});
-    revalidateTag(CACHE_TAG.IMAGE(image.slug), {});
+    revalidateTag(CACHE_TAG.GALLERY);
+    revalidateTag(CACHE_TAG.IMAGE(image.slug));
     await invalidateGalleryCache();
 
     logger.info("image.deleted", { imageId: id, slug: image.slug });

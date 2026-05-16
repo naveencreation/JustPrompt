@@ -127,7 +127,7 @@ export function ImageCard({
             )}
           >
             {/* ── Front ── */}
-            <div className="card-face">
+            <div className="card-face card-face-front">
               <div
                 className="relative w-full bg-neutral-100"
                 style={{ paddingBottom: `${(image.height / image.width) * 100}%` }}
