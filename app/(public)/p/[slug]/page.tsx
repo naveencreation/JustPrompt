@@ -7,9 +7,9 @@ import { likeService } from "@/lib/services/likeService";
 import { tagService } from "@/lib/services/tagService";
 import { Navbar } from "@/components/shared/Navbar";
 import { CopyButton } from "@/components/shared/CopyButton";
-import { REVALIDATE } from "@/lib/constants/cache";
 
-export const revalidate = REVALIDATE.IMAGE_PAGE;
+// Keep in sync with REVALIDATE.IMAGE_PAGE in lib/constants/cache.ts.
+export const revalidate = 3600;
 export const dynamicParams = true;
 
 type PageProps = { params: Promise<{ slug: string }> };

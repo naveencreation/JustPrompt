@@ -4,9 +4,9 @@ import { imageService } from "@/lib/services/imageService";
 import { tagService } from "@/lib/services/tagService";
 import { Navbar } from "@/components/shared/Navbar";
 import { GalleryGrid } from "@/components/gallery/GalleryGrid";
-import { REVALIDATE } from "@/lib/constants/cache";
 
-export const revalidate = REVALIDATE.TAG_PAGE;
+// Keep in sync with REVALIDATE.TAG_PAGE in lib/constants/cache.ts.
+export const revalidate = 300;
 
 type PageProps = { params: Promise<{ slug: string }> };
 

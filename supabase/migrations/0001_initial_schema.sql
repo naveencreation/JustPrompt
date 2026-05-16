@@ -73,6 +73,23 @@ create table public.settings (
 );
 insert into public.settings (id) values (1);
 
+-- ─── Atomic like-count increment RPC ──────────────────────
+-- Used by likeRepo.incrementBy() to avoid read-then-write races
+-- when multiple instances flush their delta at the same time.
+create or replace function public.increment_like_count(
+  p_image_id uuid,
+  p_delta    bigint
+) returns void
+language plpgsql security definer as $$
+begin
+  insert into public.like_counts (image_id, count)
+  values (p_image_id, greatest(p_delta, 0))
+  on conflict (image_id)
+  do update set count = public.like_counts.count + p_delta,
+                updated_at = now();
+end;
+$$;
+
 -- ─── updated_at trigger ────────────────────────────────────
 create or replace function public.set_updated_at()
 returns trigger language plpgsql as $$

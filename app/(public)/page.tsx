@@ -9,10 +9,11 @@ import { GalleryGrid } from "@/components/gallery/GalleryGrid";
 import { SkeletonGrid } from "@/components/gallery/SkeletonCard";
 import { FeaturedCard } from "@/components/gallery/FeaturedCard";
 import { GalleryControls } from "@/components/gallery/GalleryControls";
-import { REVALIDATE } from "@/lib/constants/cache";
 import type { Sort } from "@/lib/db/schema";
 
-export const revalidate = REVALIDATE.GALLERY;
+// Next.js requires segment config exports to be statically analyzable literals.
+// Keep this in sync with REVALIDATE.GALLERY in lib/constants/cache.ts.
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "AI Prompt Gallery — Browse AI-generated images and prompts",

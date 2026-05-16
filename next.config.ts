@@ -1,15 +1,15 @@
 import type { NextConfig } from "next";
 
-const supabaseHostname = process.env["NEXT_PUBLIC_SUPABASE_URL"]
-  ? new URL(process.env["NEXT_PUBLIC_SUPABASE_URL"]).hostname
-  : "*.supabase.co";
-
+// next.config.ts is loaded outside the app runtime (by the Next.js CLI), so it
+// cannot import `lib/config.ts` — that module validates env vars and would
+// throw during `next build` in CI without a full env. We use a wildcard for
+// Supabase Storage instead, which covers any project ref under supabase.co.
 const nextConfig: NextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
     remotePatterns: [
-      // Supabase Storage
-      { protocol: "https", hostname: supabaseHostname },
+      // Supabase Storage — any project ref
+      { protocol: "https", hostname: "*.supabase.co" },
       // Cloudinary (Tier 2 upgrade path)
       { protocol: "https", hostname: "res.cloudinary.com" },
     ],

@@ -75,12 +75,11 @@ export async function middleware(request: NextRequest) {
   return response;
 }
 
-// Next.js requires this export to be named `config`. We import the app-level
-// config under a different alias above to avoid the name collision.
-export const middlewareConfig = {
+// Next.js requires this export to be named `config` and statically analyzable.
+// The app-level config is imported above under the `appConfig` alias to avoid the collision.
+export const config = {
   matcher: [
     "/admin/:path*",
     "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
-export { middlewareConfig as config };
