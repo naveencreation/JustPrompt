@@ -19,7 +19,12 @@ export class SupabaseStorage implements Storage {
       throw new Error(`Failed to create signed upload URL: ${error?.message}`);
     }
 
-    return { uploadUrl: data.signedUrl, storageKey, publicUrl: this.publicUrl(storageKey) };
+    return {
+      uploadUrl: data.signedUrl,
+      method: "PUT",
+      storageKey,
+      publicUrl: this.publicUrl(storageKey),
+    };
   }
 
   async delete(storageKey: string): Promise<void> {

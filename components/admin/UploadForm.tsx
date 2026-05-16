@@ -62,25 +62,38 @@ export function UploadForm() {
           body: JSON.stringify({ filename: file.name }),
         });
         if (!sigRes.ok) throw new Error("Failed to get upload signature");
-        const { uploadUrl, storageKey, publicUrl: imageUrl } = (await sigRes.json()) as {
+        const sig = (await sigRes.json()) as {
           uploadUrl: string;
+          method: "PUT" | "POST";
           storageKey: string;
           publicUrl: string;
+          fields?: Record<string, string>;
         };
 
-        await fetch(uploadUrl, {
-          method: "PUT",
-          body: file,
-          headers: { "Content-Type": file.type },
-        });
+        // PUT (Supabase): send raw file bytes.
+        // POST (Cloudinary): send multipart form-data with signed fields.
+        let uploadRes: Response;
+        if (sig.method === "POST") {
+          const form = new FormData();
+          for (const [k, v] of Object.entries(sig.fields ?? {})) form.append(k, v);
+          form.append("file", file);
+          uploadRes = await fetch(sig.uploadUrl, { method: "POST", body: form });
+        } else {
+          uploadRes = await fetch(sig.uploadUrl, {
+            method: "PUT",
+            body: file,
+            headers: { "Content-Type": file.type },
+          });
+        }
+        if (!uploadRes.ok) throw new Error(`Upload to storage failed (${uploadRes.status})`);
 
         const createRes = await fetch("/api/images", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            storageKey,
-            storageProvider: "supabase",
-            imageUrl,
+            storageKey: sig.storageKey,
+            storageProvider: sig.method === "POST" ? "cloudinary" : "supabase",
+            imageUrl: sig.publicUrl,
             width: dimensions.width,
             height: dimensions.height,
             prompt: prompt.trim(),
