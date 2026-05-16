@@ -69,7 +69,8 @@ export const SortSchema = z.enum(["new", "likes", "random"]);
 export type Sort = z.infer<typeof SortSchema>;
 
 export const CreateImageInputSchema = z.object({
-  slug: z.string().min(1).max(200),
+  // Optional: imageService.create() auto-generates from `prompt` when omitted.
+  slug: z.string().min(1).max(200).optional(),
   storageKey: z.string().min(1),
   storageProvider: StorageProviderSchema,
   imageUrl: z.string().url(),

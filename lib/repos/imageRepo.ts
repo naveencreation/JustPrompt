@@ -18,6 +18,51 @@ function toSnakeCase(input: CreateImageInput) {
   };
 }
 
+// PostgREST returns rows with snake_case column names. Map them to the
+// camelCase shape declared in `lib/db/schema.ts` so consumers can use
+// `image.imageUrl` etc. without runtime surprises.
+type ImageRow = {
+  id: string;
+  slug: string;
+  storage_key: string;
+  storage_provider: "supabase" | "cloudinary";
+  image_url: string;
+  width: number;
+  height: number;
+  prompt: string;
+  description: string | null;
+  model: Image["model"];
+  is_published: boolean;
+  is_featured: boolean;
+  display_order: number;
+  created_at: string;
+  updated_at: string;
+};
+
+function fromRow(row: ImageRow): Image {
+  return {
+    id: row.id as Image["id"],
+    slug: row.slug,
+    storageKey: row.storage_key,
+    storageProvider: row.storage_provider,
+    imageUrl: row.image_url,
+    width: row.width,
+    height: row.height,
+    prompt: row.prompt,
+    description: row.description,
+    model: row.model,
+    isPublished: row.is_published,
+    isFeatured: row.is_featured,
+    displayOrder: row.display_order,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+function fromRowOrNull(row: ImageRow | null): Image | null {
+  return row ? fromRow(row) : null;
+}
+
 export interface ListPublishedOptions {
   before?: Cursor | null;
   limit?: number;
@@ -34,13 +79,13 @@ export const imageRepo = {
   async findById(id: ImageId): Promise<Image | null> {
     const supabase = createAdminClient();
     const { data } = await supabase.from("images").select("*").eq("id", id).single();
-    return data as Image | null;
+    return fromRowOrNull(data as ImageRow | null);
   },
 
   async findBySlug(slug: string): Promise<Image | null> {
     const supabase = createAdminClient();
     const { data } = await supabase.from("images").select("*").eq("slug", slug).maybeSingle();
-    return data as Image | null;
+    return fromRowOrNull(data as ImageRow | null);
   },
 
   async listPublished(opts: ListPublishedOptions = {}): Promise<ListResult> {
@@ -89,7 +134,7 @@ export const imageRepo = {
     const { data, error } = await q;
     if (error) throw new Error(`imageRepo.listPublished failed: ${error.message}`);
 
-    const items = (data ?? []) as unknown as Image[];
+    const items = ((data ?? []) as ImageRow[]).map(fromRow);
     const last = items[items.length - 1];
     const nextCursor =
       items.length === limit && last
@@ -108,7 +153,7 @@ export const imageRepo = {
       .order("created_at", { ascending: false })
       .range(offset, offset + limit - 1);
     if (error) throw new Error(`imageRepo.listAll failed: ${error.message}`);
-    return (data ?? []) as unknown as Image[];
+    return ((data ?? []) as ImageRow[]).map(fromRow);
   },
 
   async create(input: CreateImageInput): Promise<Image> {
@@ -119,7 +164,7 @@ export const imageRepo = {
       .select()
       .single();
     if (error || !data) throw new Error(`imageRepo.create failed: ${error?.message}`);
-    return data as unknown as Image;
+    return fromRow(data as ImageRow);
   },
 
   async update(id: ImageId, input: Partial<CreateImageInput>): Promise<Image> {
@@ -139,7 +184,7 @@ export const imageRepo = {
       .select()
       .single();
     if (error || !data) throw new Error(`imageRepo.update failed: ${error?.message}`);
-    return data as unknown as Image;
+    return fromRow(data as ImageRow);
   },
 
   async delete(id: ImageId): Promise<void> {

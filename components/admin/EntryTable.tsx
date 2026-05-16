@@ -107,7 +107,7 @@ export function EntryTable({ images: initialImages }: EntryTableProps) {
                 </span>
               </td>
               <td className="px-4 py-3 text-[11px] text-neutral-400">
-                {new Date(image.createdAt).toLocaleDateString()}
+                {new Date(image.createdAt).toLocaleDateString("en-US")}
               </td>
               <td className="px-4 py-3">
                 <div className="flex items-center justify-end gap-1">
