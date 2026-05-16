@@ -1,15 +1,26 @@
 import type { NextConfig } from "next";
 
+// In dev, networks that use NAT64 / DNS64 cause Next.js's image optimizer to
+// reject Cloudflare-fronted hosts (Supabase Storage) because the
+// IPv6-translated address is misclassified as "private". Production hosts
+// (Vercel) don't have this problem, so we only disable optimization in dev.
+const isDev = process.env.NODE_ENV === "development";
+
 // next.config.ts is loaded outside the app runtime (by the Next.js CLI), so it
 // cannot import `lib/config.ts` — that module validates env vars and would
 // throw during `next build` in CI without a full env. We use a wildcard for
 // Supabase Storage instead, which covers any project ref under supabase.co.
 const nextConfig: NextConfig = {
   images: {
+    unoptimized: isDev,
     formats: ["image/avif", "image/webp"],
     remotePatterns: [
-      // Supabase Storage — any project ref
-      { protocol: "https", hostname: "*.supabase.co" },
+      // Supabase Storage — any project ref, scoped to the storage path
+      {
+        protocol: "https",
+        hostname: "*.supabase.co",
+        pathname: "/storage/v1/object/public/**",
+      },
       // Cloudinary (Tier 2 upgrade path)
       { protocol: "https", hostname: "res.cloudinary.com" },
     ],
