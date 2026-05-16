@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { requireAdminSession, AuthError } from "@/lib/auth";
+import { requireAdminMutation, AuthError } from "@/lib/auth";
 import { adminService } from "@/lib/services/adminService";
 import { HTTP } from "@/lib/constants/http";
 
@@ -8,7 +8,7 @@ const BodySchema = z.object({ enabled: z.boolean() });
 
 export async function POST(request: Request) {
   try {
-    await requireAdminSession();
+    await requireAdminMutation();
   } catch (err) {
     if (err instanceof AuthError) {
       return NextResponse.json({ error: { message: err.message } }, { status: err.status });

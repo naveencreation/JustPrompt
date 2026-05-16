@@ -1,14 +1,13 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { imageService } from "@/lib/services/imageService";
-import { requireAdminSession, AuthError } from "@/lib/auth";
+import { requireAdminMutation, AuthError } from "@/lib/auth";
 import { storage } from "@/lib/storage/factory";
 import { errors } from "@/lib/observability/errors";
 import { HTTP } from "@/lib/constants/http";
+import { HTTP_CACHE } from "@/lib/constants/cache";
 import { SortSchema, CreateImageInputSchema } from "@/lib/db/schema";
 import { config } from "@/lib/config";
-
-const PUBLIC_CACHE = "public, s-maxage=60, stale-while-revalidate=300";
 
 const ListQuerySchema = z.object({
   cursor: z.string().optional(),
@@ -33,7 +32,7 @@ export async function GET(request: NextRequest) {
     });
 
     return NextResponse.json(result, {
-      headers: { "Cache-Control": PUBLIC_CACHE },
+      headers: { "Cache-Control": HTTP_CACHE.PUBLIC_READ },
     });
   } catch (err) {
     errors.capture(err, { route: "GET /api/images" });
@@ -43,7 +42,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    await requireAdminSession();
+    await requireAdminMutation();
 
     const body = CreateImageInputSchema.safeParse(await request.json());
     if (!body.success) {

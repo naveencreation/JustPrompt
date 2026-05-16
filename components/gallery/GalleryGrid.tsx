@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { ImageCard } from "./ImageCard";
 import { SkeletonCard } from "./SkeletonCard";
 import { Lightbox } from "./Lightbox";
+import { TIMING } from "@/lib/constants/timing";
 import type { Image as ImageType, Sort } from "@/lib/db/schema";
 
 interface GalleryGridProps {
@@ -14,8 +15,8 @@ interface GalleryGridProps {
   searchQuery?: string;
 }
 
-const STAGGER_MS = 50;
-const MAX_STAGGER_DELAY = 400;
+const PRIORITY_IMAGE_COUNT = 8;
+const SKELETON_RATIOS = [1.1, 0.85, 1.3, 0.95];
 
 export function GalleryGrid({
   initialItems,
@@ -31,7 +32,6 @@ export function GalleryGrid({
   const observerRef = useRef<IntersectionObserver | null>(null);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
-  // Reset when filters change
   useEffect(() => {
     setItems(initialItems);
     setNextCursor(initialNextCursor);
@@ -54,9 +54,9 @@ export function GalleryGrid({
       const res = await fetch(endpoint);
       if (!res.ok) return;
 
-      const data = (await res.json()) as { items: ImageType[]; nextCursor: string | null };
-      setItems((prev) => [...prev, ...data.items]);
-      setNextCursor(data.nextCursor);
+      const json = (await res.json()) as { items: ImageType[]; nextCursor: string | null };
+      setItems((prev) => [...prev, ...json.items]);
+      setNextCursor(json.nextCursor);
     } catch {
       // Silently fail — user can scroll back up and retry
     } finally {
@@ -64,7 +64,6 @@ export function GalleryGrid({
     }
   }, [isLoading, nextCursor, sort, tagSlug, searchQuery]);
 
-  // Infinite scroll via IntersectionObserver
   useEffect(() => {
     observerRef.current?.disconnect();
     observerRef.current = new IntersectionObserver(
@@ -77,9 +76,11 @@ export function GalleryGrid({
 
   if (items.length === 0 && !isLoading) {
     return (
-      <div className="flex flex-col items-center gap-2 py-24 text-center text-neutral-400">
-        <p className="text-lg font-medium text-neutral-600">No prompts found</p>
-        <p className="text-sm">Try a different search or filter</p>
+      <div className="flex flex-col items-center gap-2 py-32 text-center">
+        <p className="font-serif text-2xl tracking-tight text-neutral-700">
+          No prompts found
+        </p>
+        <p className="text-sm text-neutral-400">Try a different search or filter</p>
       </div>
     );
   }
@@ -91,25 +92,25 @@ export function GalleryGrid({
           <ImageCard
             key={image.id}
             image={image}
-            priority={index < 8}
+            priority={index < PRIORITY_IMAGE_COUNT}
             onOpen={setActiveLightbox}
-            animationDelay={Math.min(index * STAGGER_MS, MAX_STAGGER_DELAY)}
+            animationDelay={Math.min(
+              index * TIMING.GALLERY_STAGGER_MS,
+              TIMING.GALLERY_MAX_STAGGER_MS,
+            )}
           />
         ))}
 
-        {/* Loading skeletons */}
         {isLoading &&
-          Array.from({ length: 4 }).map((_, i) => (
+          SKELETON_RATIOS.map((ratio, i) => (
             <div key={`sk-${i}`} className="mb-4 break-inside-avoid">
-              <SkeletonCard aspectRatio={[1.1, 0.85, 1.3, 0.95][i] ?? 1.1} />
+              <SkeletonCard aspectRatio={ratio} />
             </div>
           ))}
       </div>
 
-      {/* Infinite scroll sentinel */}
       <div ref={sentinelRef} className="h-1" aria-hidden="true" />
 
-      {/* Lightbox */}
       {activeLightbox && (
         <Lightbox
           image={activeLightbox}

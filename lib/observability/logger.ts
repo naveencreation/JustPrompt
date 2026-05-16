@@ -1,3 +1,7 @@
+import { config } from "@/lib/config";
+
+const isProd = config.isProd;
+
 export interface Logger {
   info(event: string, meta?: Record<string, unknown>): void;
   warn(event: string, meta?: Record<string, unknown>): void;
@@ -21,9 +25,7 @@ class ConsoleLogger implements Logger {
   warn(event: string, meta?: Record<string, unknown>) { this.log("warn", event, meta); }
   error(event: string, meta?: Record<string, unknown>) { this.log("error", event, meta); }
   debug(event: string, meta?: Record<string, unknown>) {
-    if (process.env["NODE_ENV"] !== "production") {
-      this.log("debug", event, meta);
-    }
+    if (!isProd) this.log("debug", event, meta);
   }
 }
 

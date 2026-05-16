@@ -1,28 +1,31 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
-
-const MAINTENANCE_CACHE_DURATION_MS = 60_000;
+import { config as appConfig } from "@/lib/config";
+import { TIMING } from "@/lib/constants/timing";
 
 let maintenanceCacheValue: boolean | null = null;
 let maintenanceCacheExpiry = 0;
 
-async function isMaintenanceMode(supabaseUrl: string, serviceKey: string): Promise<boolean> {
+async function isMaintenanceMode(): Promise<boolean> {
   const now = Date.now();
   if (maintenanceCacheValue !== null && now < maintenanceCacheExpiry) {
     return maintenanceCacheValue;
   }
 
   try {
-    const res = await fetch(`${supabaseUrl}/rest/v1/settings?id=eq.1&select=maintenance_mode`, {
-      headers: {
-        apikey: serviceKey,
-        Authorization: `Bearer ${serviceKey}`,
+    const res = await fetch(
+      `${appConfig.supabase.url}/rest/v1/settings?id=eq.1&select=maintenance_mode`,
+      {
+        headers: {
+          apikey: appConfig.supabase.serviceRoleKey,
+          Authorization: `Bearer ${appConfig.supabase.serviceRoleKey}`,
+        },
+        next: { revalidate: 0 },
       },
-      next: { revalidate: 0 },
-    });
-    const data = (await res.json()) as Array<{ maintenance_mode: boolean }>;
-    maintenanceCacheValue = data[0]?.maintenance_mode ?? false;
-    maintenanceCacheExpiry = now + MAINTENANCE_CACHE_DURATION_MS;
+    );
+    const json = (await res.json()) as Array<{ maintenance_mode: boolean }>;
+    maintenanceCacheValue = json[0]?.maintenance_mode ?? false;
+    maintenanceCacheExpiry = now + TIMING.MAINTENANCE_CACHE_MS;
     return maintenanceCacheValue;
   } catch {
     return false;
@@ -33,12 +36,7 @@ export async function middleware(request: NextRequest) {
   const response = NextResponse.next({ request });
   const { pathname } = request.nextUrl;
 
-  const supabaseUrl = process.env["NEXT_PUBLIC_SUPABASE_URL"] ?? "";
-  const anonKey = process.env["NEXT_PUBLIC_SUPABASE_ANON_KEY"] ?? "";
-  const serviceKey = process.env["SUPABASE_SERVICE_ROLE_KEY"] ?? "";
-
-  // Create Supabase session client
-  const supabase = createServerClient(supabaseUrl, anonKey, {
+  const supabase = createServerClient(appConfig.supabase.url, appConfig.supabase.anonKey, {
     cookies: {
       getAll() { return request.cookies.getAll(); },
       setAll(pairs) {
@@ -54,8 +52,8 @@ export async function middleware(request: NextRequest) {
 
   // ── Maintenance mode ────────────────────────────────────────────────────────
   const isPublicRoute = !pathname.startsWith("/admin") && !pathname.startsWith("/api");
-  if (isPublicRoute && serviceKey) {
-    const maintenance = await isMaintenanceMode(supabaseUrl, serviceKey);
+  if (isPublicRoute && pathname !== "/maintenance" && appConfig.supabase.serviceRoleKey) {
+    const maintenance = await isMaintenanceMode();
     if (maintenance) {
       return NextResponse.rewrite(new URL("/maintenance", request.url));
     }
@@ -77,9 +75,12 @@ export async function middleware(request: NextRequest) {
   return response;
 }
 
-export const config = {
+// Next.js requires this export to be named `config`. We import the app-level
+// config under a different alias above to avoid the name collision.
+export const middlewareConfig = {
   matcher: [
     "/admin/:path*",
     "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
+export { middlewareConfig as config };

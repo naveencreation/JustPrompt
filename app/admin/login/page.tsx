@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { LoaderIcon } from "@/components/icons";
 import { cn } from "@/lib/utils/cn";
 
 export default function AdminLoginPage() {
@@ -26,8 +26,8 @@ export default function AdminLoginPage() {
         });
 
         if (!res.ok) {
-          const data = (await res.json()) as { error?: { message?: string } };
-          setError(data.error?.message ?? "Invalid credentials");
+          const json = (await res.json()) as { error?: { message?: string } };
+          setError(json.error?.message ?? "Invalid credentials");
           return;
         }
 
@@ -45,17 +45,21 @@ export default function AdminLoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-neutral-50 px-4">
       <div className="w-full max-w-sm">
-        <div className="mb-8 text-center">
-          <h1 className="text-2xl font-semibold text-neutral-900">Admin Login</h1>
-          <p className="mt-1 text-sm text-neutral-500">Prompt Gallery management</p>
+        <div className="mb-10 text-center">
+          <h1 className="font-serif text-3xl tracking-tight text-neutral-900">
+            Admin
+          </h1>
+          <p className="mt-1 text-[10px] uppercase tracking-[0.15em] text-neutral-400">
+            Prompt Gallery
+          </p>
         </div>
 
         <form
           onSubmit={handleSubmit}
-          className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm flex flex-col gap-4"
+          className="flex flex-col gap-5 rounded-md border border-neutral-200 bg-white p-7"
         >
           <div>
-            <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-neutral-700">
+            <label htmlFor="email" className="mb-1.5 block text-[12px] font-medium text-neutral-700">
               Email
             </label>
             <input
@@ -65,12 +69,12 @@ export default function AdminLoginPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:border-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-100"
+              className="w-full rounded-md border border-neutral-200 px-3 py-2 text-sm transition-[border-color,box-shadow] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] focus:border-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-100"
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-neutral-700">
+            <label htmlFor="password" className="mb-1.5 block text-[12px] font-medium text-neutral-700">
               Password
             </label>
             <input
@@ -80,12 +84,12 @@ export default function AdminLoginPage() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:border-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-100"
+              className="w-full rounded-md border border-neutral-200 px-3 py-2 text-sm transition-[border-color,box-shadow] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] focus:border-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-100"
             />
           </div>
 
           {error && (
-            <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600" role="alert">
+            <p className="rounded-md bg-[#FDEBEC] px-3 py-2 text-[12px] text-[#9F2F2D]" role="alert">
               {error}
             </p>
           )}
@@ -94,12 +98,14 @@ export default function AdminLoginPage() {
             type="submit"
             disabled={isLoading}
             className={cn(
-              "flex w-full items-center justify-center gap-2 rounded-lg bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white transition-colors",
-              isLoading ? "opacity-60 cursor-not-allowed" : "hover:bg-neutral-700",
+              "flex w-full items-center justify-center gap-2 rounded-md bg-neutral-900 px-4 py-2.5",
+              "text-sm font-medium text-neutral-50",
+              "transition-[background-color,transform] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]",
+              isLoading ? "cursor-not-allowed opacity-60" : "hover:bg-neutral-700 active:scale-[0.98]",
             )}
           >
-            {isLoading && <Loader2 className="size-4 animate-spin" />}
-            {isLoading ? "Signing in…" : "Sign in"}
+            {isLoading && <LoaderIcon size={14} />}
+            {isLoading ? "Signing in" : "Sign in"}
           </button>
         </form>
       </div>

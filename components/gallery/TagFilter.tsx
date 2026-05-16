@@ -12,15 +12,18 @@ interface TagFilterProps {
 export function TagFilter({ tags, activeSlug, onSelect }: TagFilterProps) {
   if (tags.length === 0) return null;
 
+  const baseClasses =
+    "rounded-full px-3 py-1 text-[11px] font-medium uppercase tracking-[0.05em] transition-[background-color,color] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]";
+
   return (
-    <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by tag">
+    <div className="flex flex-wrap gap-1.5" role="group" aria-label="Filter by tag">
       <button
         onClick={() => onSelect(null)}
         className={cn(
-          "rounded-full px-3 py-1 text-sm font-medium transition-colors",
+          baseClasses,
           activeSlug === null
-            ? "bg-neutral-900 text-white"
-            : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200",
+            ? "bg-neutral-900 text-neutral-50"
+            : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200 hover:text-neutral-900",
         )}
       >
         All
@@ -30,13 +33,13 @@ export function TagFilter({ tags, activeSlug, onSelect }: TagFilterProps) {
           key={tag.id}
           onClick={() => onSelect(tag.slug)}
           className={cn(
-            "rounded-full px-3 py-1 text-sm font-medium transition-colors",
+            baseClasses,
             activeSlug === tag.slug
-              ? "bg-neutral-900 text-white"
-              : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200",
+              ? "bg-neutral-900 text-neutral-50"
+              : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200 hover:text-neutral-900",
           )}
         >
-          #{tag.name}
+          {tag.name}
         </button>
       ))}
     </div>

@@ -4,7 +4,7 @@ import { useState, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Trash2, Eye, EyeOff, ExternalLink, Loader2 } from "lucide-react";
+import { TrashIcon, EyeIcon, EyeOffIcon, ExternalLinkIcon, LoaderIcon } from "@/components/icons";
 import { cn } from "@/lib/utils/cn";
 import type { Image as ImageType } from "@/lib/db/schema";
 
@@ -54,85 +54,88 @@ export function EntryTable({ images: initialImages }: EntryTableProps) {
 
   if (images.length === 0) {
     return (
-      <div className="rounded-xl border border-neutral-200 bg-white py-16 text-center">
-        <p className="text-sm text-neutral-400">No entries yet. Upload your first image!</p>
+      <div className="rounded-md border border-neutral-200 bg-white py-20 text-center">
+        <p className="font-serif text-lg tracking-tight text-neutral-700">
+          No entries yet
+        </p>
+        <p className="mt-1 text-sm text-neutral-400">Upload your first image to get started.</p>
       </div>
     );
   }
 
   return (
-    <div className="overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm">
+    <div className="overflow-hidden rounded-md border border-neutral-200 bg-white">
       <table className="w-full text-sm">
-        <thead className="border-b border-neutral-100 bg-neutral-50">
+        <thead className="border-b border-neutral-200 bg-neutral-50">
           <tr>
-            <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-neutral-500">Image</th>
-            <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-neutral-500">Prompt</th>
-            <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-neutral-500">Model</th>
-            <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-neutral-500">Status</th>
-            <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-neutral-500">Date</th>
-            <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-neutral-500">Actions</th>
+            {["Image", "Prompt", "Model", "Status", "Date", ""].map((h) => (
+              <th
+                key={h}
+                className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-[0.15em] text-neutral-500 last:text-right"
+              >
+                {h}
+              </th>
+            ))}
           </tr>
         </thead>
         <tbody className="divide-y divide-neutral-100">
           {images.map((image) => (
-            <tr key={image.id} className="hover:bg-neutral-50 transition-colors">
+            <tr key={image.id} className="transition-colors hover:bg-neutral-50">
               <td className="px-4 py-3">
-                <div className="relative size-12 overflow-hidden rounded-lg bg-neutral-100">
-                  <Image
-                    src={image.imageUrl}
-                    alt=""
-                    fill
-                    sizes="48px"
-                    className="object-cover"
-                  />
+                <div className="relative size-12 overflow-hidden rounded-md bg-neutral-100">
+                  <Image src={image.imageUrl} alt="" fill sizes="48px" className="object-cover" />
                 </div>
               </td>
               <td className="max-w-xs px-4 py-3">
-                <p className="line-clamp-2 font-mono text-xs text-neutral-700">{image.prompt}</p>
+                <p className="line-clamp-2 font-mono text-[12px] leading-[1.5] text-neutral-700">
+                  {image.prompt}
+                </p>
               </td>
-              <td className="px-4 py-3 text-xs text-neutral-500">{image.model ?? "—"}</td>
+              <td className="px-4 py-3 text-[11px] uppercase tracking-[0.05em] text-neutral-500">
+                {image.model ?? "—"}
+              </td>
               <td className="px-4 py-3">
                 <span
                   className={cn(
-                    "rounded-full px-2 py-0.5 text-xs font-medium",
+                    "rounded-full px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-[0.05em]",
                     image.isPublished
-                      ? "bg-green-50 text-green-700"
+                      ? "bg-[#EDF3EC] text-[#346538]"
                       : "bg-neutral-100 text-neutral-500",
                   )}
                 >
                   {image.isPublished ? "Published" : "Draft"}
                 </span>
               </td>
-              <td className="px-4 py-3 text-xs text-neutral-400">
+              <td className="px-4 py-3 text-[11px] text-neutral-400">
                 {new Date(image.createdAt).toLocaleDateString()}
               </td>
               <td className="px-4 py-3">
                 <div className="flex items-center justify-end gap-1">
                   {loadingId === image.id ? (
-                    <Loader2 className="size-4 animate-spin text-neutral-400" />
+                    <LoaderIcon size={14} className="text-neutral-400" />
                   ) : (
                     <>
                       <Link
                         href={`/p/${image.slug}`}
                         target="_blank"
-                        className="rounded p-1.5 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-700 transition-colors"
+                        className="rounded p-1.5 text-neutral-400 transition-[background-color,color] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-neutral-100 hover:text-neutral-700"
                         aria-label="View on site"
                       >
-                        <ExternalLink className="size-4" />
+                        <ExternalLinkIcon size={14} />
                       </Link>
                       <button
                         onClick={() => handleTogglePublish(image)}
-                        className="rounded p-1.5 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-700 transition-colors"
+                        className="rounded p-1.5 text-neutral-400 transition-[background-color,color] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-neutral-100 hover:text-neutral-700"
                         aria-label={image.isPublished ? "Unpublish" : "Publish"}
                       >
-                        {image.isPublished ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                        {image.isPublished ? <EyeOffIcon size={14} /> : <EyeIcon size={14} />}
                       </button>
                       <button
                         onClick={() => handleDelete(image.id)}
-                        className="rounded p-1.5 text-neutral-400 hover:bg-red-50 hover:text-red-600 transition-colors"
+                        className="rounded p-1.5 text-neutral-400 transition-[background-color,color] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-[#FDEBEC] hover:text-[#9F2F2D]"
                         aria-label="Delete"
                       >
-                        <Trash2 className="size-4" />
+                        <TrashIcon size={14} />
                       </button>
                     </>
                   )}

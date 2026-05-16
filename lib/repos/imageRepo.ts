@@ -90,9 +90,10 @@ export const imageRepo = {
     if (error) throw new Error(`imageRepo.listPublished failed: ${error.message}`);
 
     const items = (data ?? []) as unknown as Image[];
+    const last = items[items.length - 1];
     const nextCursor =
-      items.length === limit
-        ? encodeCursor({ createdAt: items.at(-1)!.createdAt, id: items.at(-1)!.id })
+      items.length === limit && last
+        ? encodeCursor({ createdAt: last.createdAt, id: last.id })
         : null;
 
     return { items, nextCursor };

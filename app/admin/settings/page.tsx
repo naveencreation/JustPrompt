@@ -1,7 +1,7 @@
 import { adminService } from "@/lib/services/adminService";
 import { config } from "@/lib/config";
 import { SettingsForm } from "@/components/admin/SettingsForm";
-import { Settings } from "lucide-react";
+import { SettingsIcon } from "@/components/icons";
 
 export const dynamic = "force-dynamic";
 
@@ -17,11 +17,11 @@ export default async function SettingsPage() {
   };
 
   return (
-    <div className="p-6 max-w-2xl mx-auto w-full">
-      <div className="mb-8 flex items-center gap-2">
-        <Settings className="size-5 text-neutral-500" />
-        <h1 className="text-xl font-semibold text-neutral-900">Settings</h1>
-      </div>
+    <div className="mx-auto w-full max-w-2xl p-8">
+      <header className="mb-10 flex items-center gap-2">
+        <SettingsIcon size={20} className="text-neutral-500" />
+        <h1 className="font-serif text-2xl tracking-tight text-neutral-900">Settings</h1>
+      </header>
       <SettingsForm settings={settings} adapterStatus={adapterStatus} />
     </div>
   );

@@ -14,8 +14,8 @@ interface GalleryControlsProps {
 }
 
 const SORT_OPTIONS = [
-  { value: "new", label: "Newest" },
-  { value: "likes", label: "Most Liked" },
+  { value: "new",    label: "Newest" },
+  { value: "likes",  label: "Most liked" },
   { value: "random", label: "Random" },
 ] as const;
 
@@ -33,7 +33,7 @@ export function GalleryControls({ tags, activeTag, activeSort }: GalleryControls
     [router, pathname, searchParams],
   );
 
-  const [searchQuery, setSearchQuery] = useState("");
+  const [, setSearchQuery] = useState("");
 
   const handleSearch = useCallback(
     (query: string) => {
@@ -44,21 +44,24 @@ export function GalleryControls({ tags, activeTag, activeSort }: GalleryControls
   );
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-5">
       <div className="flex flex-wrap items-center gap-3">
         <SearchBar onSearch={handleSearch} className="flex-1" />
 
-        {/* Sort buttons */}
-        <div className="flex rounded-xl border border-neutral-200 bg-white overflow-hidden">
+        {/* Sort segmented control — accordion-style underlines, not boxes */}
+        <div role="tablist" aria-label="Sort gallery" className="flex items-center gap-1 rounded-md border border-neutral-200 bg-white p-1">
           {SORT_OPTIONS.map(({ value, label }) => (
             <button
               key={value}
+              role="tab"
+              aria-selected={activeSort === value}
               onClick={() => pushParam("sort", value === "new" ? null : value)}
               className={cn(
-                "px-3 py-2 text-sm font-medium transition-colors",
+                "rounded-[5px] px-3 py-1.5 text-[13px] font-medium",
+                "transition-[background-color,color] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]",
                 activeSort === value
-                  ? "bg-neutral-900 text-white"
-                  : "text-neutral-600 hover:bg-neutral-50",
+                  ? "bg-neutral-900 text-neutral-50"
+                  : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900",
               )}
             >
               {label}

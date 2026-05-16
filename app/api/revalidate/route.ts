@@ -4,6 +4,7 @@ import { z } from "zod";
 import { HTTP } from "@/lib/constants/http";
 import { CACHE_TAG } from "@/lib/constants/cache";
 import { logger } from "@/lib/observability/logger";
+import { config } from "@/lib/config";
 
 const BodySchema = z.object({
   tag: z.enum(["gallery", "tags", "settings"]).optional(),
@@ -12,7 +13,7 @@ const BodySchema = z.object({
 
 export async function POST(request: NextRequest) {
   const secret = request.headers.get("x-revalidate-secret");
-  if (secret !== process.env["REVALIDATE_SECRET"]) {
+  if (secret !== config.revalidateSecret) {
     return NextResponse.json({ error: { code: "forbidden" } }, { status: HTTP.FORBIDDEN });
   }
 

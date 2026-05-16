@@ -1,15 +1,15 @@
 import { UploadForm } from "@/components/admin/UploadForm";
-import { Upload } from "lucide-react";
+import { UploadIcon } from "@/components/icons";
 
 export const dynamic = "force-dynamic";
 
 export default function UploadPage() {
   return (
-    <div className="p-6 max-w-3xl mx-auto w-full">
-      <div className="mb-8 flex items-center gap-2">
-        <Upload className="size-5 text-neutral-500" />
-        <h1 className="text-xl font-semibold text-neutral-900">Upload New Entry</h1>
-      </div>
+    <div className="mx-auto w-full max-w-3xl p-8">
+      <header className="mb-10 flex items-center gap-2">
+        <UploadIcon size={20} className="text-neutral-500" />
+        <h1 className="font-serif text-2xl tracking-tight text-neutral-900">Upload new entry</h1>
+      </header>
       <UploadForm />
     </div>
   );

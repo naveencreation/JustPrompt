@@ -1,33 +1,44 @@
 @import "tailwindcss";
 
+/* ─── Theme tokens (minimalist-ui spec) ─────────────────────────────── */
 @theme {
-  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-mono), ui-monospace, monospace;
+  --font-sans:  var(--font-sans),  ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-serif), ui-serif, "Times New Roman", serif;
+  --font-mono:  var(--font-mono),  ui-monospace, "Geist Mono", monospace;
 
-  /* Neutral palette — warm, not pure-gray */
-  --color-neutral-50:  #fafaf9;
-  --color-neutral-100: #f5f5f4;
-  --color-neutral-200: #e7e5e4;
-  --color-neutral-300: #d6d3d1;
-  --color-neutral-400: #a8a29e;
-  --color-neutral-500: #78716c;
-  --color-neutral-600: #57534e;
-  --color-neutral-700: #44403c;
+  /* Warm bone canvas — never #fff, never #000 */
+  --color-neutral-50:  #FBFBFA;
+  --color-neutral-100: #F5F4F1;
+  --color-neutral-200: #EAEAEA;
+  --color-neutral-300: #D6D3D1;
+  --color-neutral-400: #A8A29E;
+  --color-neutral-500: #78716C;
+  --color-neutral-600: #57534E;
+  --color-neutral-700: #44403C;
   --color-neutral-800: #292524;
-  --color-neutral-900: #1c1917;
-
-  /* Accent — subtle amber */
-  --color-accent-400: #fbbf24;
-  --color-accent-500: #f59e0b;
-  --color-accent-600: #d97706;
+  --color-neutral-900: #2F3437;
 }
 
-/* ─── Base ──────────────────────────────────────────────── */
+/* ─── Base reset ─────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; }
 
 html { scroll-behavior: smooth; }
 
-/* ─── Card flip ─────────────────────────────────────────── */
+body {
+  font-feature-settings: "ss01", "cv11";
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Editorial serif for headings — tight tracking, tight leading per minimalist-ui */
+.font-serif {
+  font-family: var(--font-serif);
+  letter-spacing: -0.022em;
+  line-height: 1.1;
+}
+
+/* ─── Card flip ──────────────────────────────────────────────────────── */
 .card-scene {
   perspective: 1000px;
 }
@@ -36,8 +47,8 @@ html { scroll-behavior: smooth; }
   position: relative;
   width: 100%;
   height: 100%;
-  transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
   transform-style: preserve-3d;
+  transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .card-inner.flipped {
@@ -55,25 +66,25 @@ html { scroll-behavior: smooth; }
   transform: rotateY(180deg);
 }
 
-/* Tilt effect — only on pointer:fine (desktop) to prevent mobile jank */
+/* Tilt — desktop only, gated to pointer:fine to avoid mobile jank */
 @media (pointer: fine) {
   .card-tilt {
-    transition: transform 0.15s ease-out;
+    transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1);
     will-change: transform;
   }
 }
 
-/* ─── Stagger animation ─────────────────────────────────── */
+/* ─── Stagger fade ──────────────────────────────────────────────────── */
 @keyframes fade-slide-up {
-  from { opacity: 0; transform: translateY(16px); }
+  from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
 .animate-in {
-  animation: fade-slide-up 0.4s ease-out both;
+  animation: fade-slide-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-/* ─── Skeleton pulse ────────────────────────────────────── */
+/* ─── Skeleton pulse ────────────────────────────────────────────────── */
 @keyframes skeleton-pulse {
   0%, 100% { opacity: 1; }
   50%       { opacity: 0.4; }
@@ -82,5 +93,5 @@ html { scroll-behavior: smooth; }
 .skeleton {
   animation: skeleton-pulse 1.6s ease-in-out infinite;
   background: var(--color-neutral-200);
-  border-radius: 0.5rem;
+  border-radius: 0.375rem;
 }

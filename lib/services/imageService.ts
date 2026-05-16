@@ -47,6 +47,10 @@ export const imageService = {
     return imageRepo.findById(id);
   },
 
+  async listAll(opts: { limit?: number; offset?: number } = {}): Promise<Image[]> {
+    return imageRepo.listAll(opts);
+  },
+
   async create(input: Omit<CreateImageInput, "slug"> & { slug?: string }): Promise<Image> {
     const slug = input.slug ?? generateSlug(input.prompt);
     const fullInput: CreateImageInput = { ...input, slug };

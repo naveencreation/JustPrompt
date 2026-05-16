@@ -39,6 +39,12 @@ export const tagRepo = {
     if (error) throw new Error(`tagRepo.detachAllFromImage failed: ${error.message}`);
   },
 
+  async findBySlug(slug: string): Promise<Tag | null> {
+    const supabase = createAdminClient();
+    const { data } = await supabase.from("tags").select("*").eq("slug", slug).maybeSingle();
+    return (data ?? null) as Tag | null;
+  },
+
   async listByImage(imageId: ImageId): Promise<Tag[]> {
     const supabase = createAdminClient();
     const { data, error } = await supabase

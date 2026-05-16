@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { storage } from "@/lib/storage/factory";
-import { requireAdminSession, AuthError } from "@/lib/auth";
+import { requireAdminMutation, AuthError } from "@/lib/auth";
 import { errors } from "@/lib/observability/errors";
 import { HTTP } from "@/lib/constants/http";
 
@@ -11,7 +11,7 @@ const BodySchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    await requireAdminSession();
+    await requireAdminMutation();
 
     const body = BodySchema.safeParse(await request.json());
     if (!body.success) {
