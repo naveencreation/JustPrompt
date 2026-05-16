@@ -3,7 +3,10 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { errors } from "@/lib/observability/errors";
-import { config } from "@/lib/config";
+
+// Note: do NOT import `lib/config` here — this is a client component and
+// `config` validates server-only env vars that are undefined in the browser.
+const isDev = process.env.NODE_ENV === "development";
 
 export default function AdminError({
   error,
@@ -25,7 +28,7 @@ export default function AdminError({
         Something broke in the admin panel
       </h1>
       <p className="max-w-sm text-sm leading-relaxed text-neutral-500">
-        {config.isDev ? error.message : "An unexpected error occurred."}
+        {isDev ? error.message : "An unexpected error occurred."}
       </p>
       <div className="mt-2 flex gap-3">
         <button

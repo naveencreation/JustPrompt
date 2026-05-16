@@ -4,12 +4,14 @@
 -- ============================================================
 
 -- ─── Extensions ────────────────────────────────────────────
-create extension if not exists "uuid-ossp";
+-- Supabase installs extensions into the `extensions` schema. We use
+-- `gen_random_uuid()` (built-in to Postgres ≥13) instead of uuid-ossp's
+-- `uuid_generate_v4()` to avoid schema-qualification issues.
 create extension if not exists "pg_trgm";   -- needed for fast ILIKE fallback
 
 -- ─── Images ────────────────────────────────────────────────
 create table public.images (
-  id                   uuid primary key default uuid_generate_v4(),
+  id                   uuid primary key default gen_random_uuid(),
   slug                 text unique not null,
   storage_key          text not null,
   storage_provider     text not null default 'supabase' check (storage_provider in ('supabase', 'cloudinary')),
