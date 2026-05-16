@@ -120,14 +120,13 @@ export function ImageCard({
         >
           <div
             className={cn(
-              "card-inner overflow-hidden border border-neutral-200 bg-white",
-              "rounded-md transition-[box-shadow] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
+              "card-inner rounded-md transition-[box-shadow] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
               "hover:shadow-[0_2px_8px_rgba(0,0,0,0.04)]",
               isFlipped && "flipped",
             )}
           >
             {/* ── Front ── */}
-            <div className="card-face card-face-front">
+            <div className="card-face card-face-front overflow-hidden rounded-md border border-neutral-200 bg-white">
               <div
                 className="relative w-full bg-neutral-100"
                 style={{ paddingBottom: `${(image.height / image.width) * 100}%` }}
@@ -162,7 +161,7 @@ export function ImageCard({
 
             {/* ── Back ── editorial document-style prompt card */}
             <div
-              className="card-face card-face-back bg-neutral-900 text-neutral-50"
+              className="card-face card-face-back overflow-hidden rounded-md border border-neutral-200 bg-neutral-900 text-neutral-50"
               style={{ minHeight: `${(image.height / image.width) * 100}%` }}
             >
               <div className="relative h-full min-h-[200px]">
