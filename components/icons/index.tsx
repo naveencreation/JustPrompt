@@ -263,3 +263,32 @@ export function ChevronDownIcon(props: IconProps) {
     </Icon>
   );
 }
+
+export function PercentIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <circle cx="8" cy="8" r="3" />
+      <circle cx="16" cy="16" r="3" />
+      <path d="M4.5 19.5l15-15" />
+    </Icon>
+  );
+}
+
+export function TrendingUpIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M2 17l7-7 4 4 8-10" />
+      <path d="M16 4h6v6" />
+    </Icon>
+  );
+}
+
+export function AlertCircleIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 8v5" />
+      <circle cx="12" cy="16.5" r="0.5" fill="currentColor" />
+    </Icon>
+  );
+}

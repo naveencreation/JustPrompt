@@ -49,6 +49,31 @@ export const LikeCountSchema = z.object({
 });
 export type LikeCount = z.infer<typeof LikeCountSchema>;
 
+// ─── Copy Count ────────────────────────────────────────────────────────────
+export const CopyCountSchema = z.object({
+  imageId: ImageId,
+  count: z.number().int().nonnegative(),
+  updatedAt: z.string().datetime(),
+});
+export type CopyCount = z.infer<typeof CopyCountSchema>;
+
+// ─── View Count ─────────────────────────────────────────────────────────────
+export const ViewCountSchema = z.object({
+  imageId: ImageId,
+  count: z.number().int().nonnegative(),
+  updatedAt: z.string().datetime(),
+});
+export type ViewCount = z.infer<typeof ViewCountSchema>;
+
+// ─── Search Log ─────────────────────────────────────────────────────────────
+export const SearchLogSchema = z.object({
+  id: z.number().int().positive(),
+  query: z.string().min(1),
+  resultsCount: z.number().int().nonnegative(),
+  createdAt: z.string().datetime(),
+});
+export type SearchLog = z.infer<typeof SearchLogSchema>;
+
 // ─── Settings ──────────────────────────────────────────────────────────────
 export const SettingsSchema = z.object({
   id: z.literal(1),

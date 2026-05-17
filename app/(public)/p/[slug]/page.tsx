@@ -7,6 +7,7 @@ import { likeService } from "@/lib/services/likeService";
 import { tagService } from "@/lib/services/tagService";
 import { Navbar } from "@/components/shared/Navbar";
 import { CopyButton } from "@/components/shared/CopyButton";
+import { ViewTracker } from "@/components/shared/ViewTracker";
 
 // Keep in sync with REVALIDATE.IMAGE_PAGE in lib/constants/cache.ts.
 export const revalidate = 3600;
@@ -67,6 +68,8 @@ export default async function ImagePage({ params }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      {/* ViewTracker is client-only — prevents SSR/crawler false counts */}
+      <ViewTracker imageId={image.id} />
 
       <div className="flex min-h-full flex-col">
         <Navbar />
@@ -134,7 +137,7 @@ export default async function ImagePage({ params }: PageProps) {
                 <p className="mb-4 font-mono text-[12px] leading-[1.6] text-neutral-700">
                   {image.prompt}
                 </p>
-                <CopyButton text={image.prompt} />
+                <CopyButton text={image.prompt} imageId={image.id} />
               </div>
             </aside>
           </div>

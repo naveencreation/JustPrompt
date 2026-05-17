@@ -37,8 +37,8 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
     >
       <div
         className={cn(
-          "relative flex items-center h-[72px] border-b border-neutral-100",
-          isCollapsed ? "justify-center" : "px-5 justify-between"
+          "relative flex shrink-0 items-center border-b border-neutral-100 pt-6 pb-5",
+          isCollapsed ? "justify-center px-3" : "px-6 justify-between"
         )}
       >
         <div 
