@@ -54,7 +54,7 @@ export const imageService = {
     return imageRepo.findById(id);
   },
 
-  async listAll(opts: { limit?: number; offset?: number } = {}): Promise<Image[]> {
+  async listAll(opts: { limit?: number; offset?: number; status?: "published" | "draft"; tagSlug?: string } = {}): Promise<Image[]> {
     return imageRepo.listAll(opts);
   },
 
@@ -98,6 +98,13 @@ export const imageService = {
 
     logger.info("image.updated", { imageId: id });
     return image;
+  },
+
+  async updateOrder(updates: { id: ImageId; displayOrder: number }[]): Promise<void> {
+    await imageRepo.updateOrder(updates);
+    revalidateTag(CACHE_TAG.GALLERY);
+    await invalidateGalleryCache();
+    logger.info("image.order_updated", { count: updates.length });
   },
 
   async delete(id: ImageId): Promise<void> {

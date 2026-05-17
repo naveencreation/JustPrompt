@@ -144,14 +144,35 @@ export const imageRepo = {
     return { items, nextCursor };
   },
 
-  async listAll(opts: { limit?: number; offset?: number } = {}): Promise<Image[]> {
-    const { limit = 50, offset = 0 } = opts;
+  async listAll(opts: { limit?: number; offset?: number; status?: "published" | "draft"; tagSlug?: string } = {}): Promise<Image[]> {
+    const { limit = 50, offset = 0, status, tagSlug } = opts;
     const supabase = createAdminClient();
-    const { data, error } = await supabase
+    
+    let q = supabase
       .from("images")
       .select("*")
-      .order("created_at", { ascending: false })
-      .range(offset, offset + limit - 1);
+      .order("display_order", { ascending: true })
+      .order("created_at", { ascending: false });
+
+    if (status === "published") q = q.eq("is_published", true);
+    if (status === "draft") q = q.eq("is_published", false);
+
+    if (tagSlug) {
+      const { data: tagData } = await supabase.from("tags").select("id").eq("slug", tagSlug).single();
+      if (tagData) {
+        const { data: imageTagData } = await supabase
+          .from("image_tags")
+          .select("image_id")
+          .eq("tag_id", (tagData as { id: number }).id);
+        const ids = (imageTagData ?? []).map((r: { image_id: string }) => r.image_id);
+        if (ids.length === 0) return [];
+        q = q.in("id", ids);
+      } else {
+        return [];
+      }
+    }
+
+    const { data, error } = await q.range(offset, offset + limit - 1);
     if (error) throw new Error(`imageRepo.listAll failed: ${error.message}`);
     return ((data ?? []) as ImageRow[]).map(fromRow);
   },
@@ -185,6 +206,15 @@ export const imageRepo = {
       .single();
     if (error || !data) throw new Error(`imageRepo.update failed: ${error?.message}`);
     return fromRow(data as ImageRow);
+  },
+
+  async updateOrder(updates: { id: ImageId; displayOrder: number }[]): Promise<void> {
+    const supabase = createAdminClient();
+    await Promise.all(
+      updates.map((u) =>
+        supabase.from("images").update({ display_order: u.displayOrder }).eq("id", u.id)
+      )
+    );
   },
 
   async delete(id: ImageId): Promise<void> {

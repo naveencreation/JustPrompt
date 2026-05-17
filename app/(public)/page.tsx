@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { imageService } from "@/lib/services/imageService";
+import { searchService } from "@/lib/services/searchService";
 import { adminService } from "@/lib/services/adminService";
 import { tagService } from "@/lib/services/tagService";
 import { likeService } from "@/lib/services/likeService";
@@ -22,16 +23,16 @@ export const metadata: Metadata = {
 };
 
 interface PageProps {
-  searchParams: Promise<{ sort?: string; tag?: string }>;
+  searchParams: Promise<{ sort?: string; tag?: string; q?: string }>;
 }
 
 export default async function GalleryPage({ searchParams }: PageProps) {
-  const { sort: sortParam, tag } = await searchParams;
+  const { sort: sortParam, tag, q } = await searchParams;
   const sort: Sort =
     sortParam === "likes" || sortParam === "random" ? sortParam : "new";
 
   const [galleryResult, settings, popularTags] = await Promise.all([
-    imageService.listGallery({ sort, tagSlug: tag }),
+    q ? searchService.query(q) : imageService.listGallery({ sort, tagSlug: tag }),
     adminService.getSettings(),
     tagService.listPopular(),
   ]);
@@ -85,6 +86,7 @@ export default async function GalleryPage({ searchParams }: PageProps) {
             initialNextCursor={galleryResult.nextCursor}
             sort={sort}
             tagSlug={tag}
+            searchQuery={q}
           />
         </Suspense>
       </main>
