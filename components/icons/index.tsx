@@ -239,3 +239,11 @@ export function ArrowDownIcon(props: IconProps) {
     </Icon>
   );
 }
+
+export function ChevronDownIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M6 9l6 6 6-6" />
+    </Icon>
+  );
+}

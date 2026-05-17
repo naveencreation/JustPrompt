@@ -3,11 +3,21 @@
 import { useState, useCallback, useRef } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { UploadIcon, CloseIcon, LoaderIcon, EyeIcon } from "@/components/icons";
+import { toast } from "sonner";
+import { z } from "zod";
+import { UploadIcon, CloseIcon, LoaderIcon, EyeIcon, ChevronDownIcon } from "@/components/icons";
 import { cn } from "@/lib/utils/cn";
 import { CardPreview } from "./CardPreview";
 
 const MODEL_OPTIONS = ["sdxl", "dalle3", "midjourney", "flux", "other"] as const;
+
+const SignatureSchema = z.object({
+  uploadUrl: z.string(),
+  method: z.union([z.literal("PUT"), z.literal("POST")]),
+  storageKey: z.string(),
+  publicUrl: z.string(),
+  fields: z.record(z.string(), z.string()).optional(),
+});
 
 export function UploadForm() {
   const router = useRouter();
@@ -24,7 +34,6 @@ export function UploadForm() {
   const [showPreview, setShowPreview] = useState(false);
 
   const [isUploading, setIsUploading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const handleFileSelect = useCallback((selected: File) => {
     setFile(selected);
@@ -49,10 +58,9 @@ export function UploadForm() {
     async (e: React.FormEvent) => {
       e.preventDefault();
       if (!file || !dimensions || !prompt.trim()) {
-        setError("Please provide an image and prompt.");
+        toast.error("Please provide an image and prompt.");
         return;
       }
-      setError(null);
       setIsUploading(true);
 
       try {
@@ -62,20 +70,20 @@ export function UploadForm() {
           body: JSON.stringify({ filename: file.name }),
         });
         if (!sigRes.ok) throw new Error("Failed to get upload signature");
-        const sig = (await sigRes.json()) as {
-          uploadUrl: string;
-          method: "PUT" | "POST";
-          storageKey: string;
-          publicUrl: string;
-          fields?: Record<string, string>;
-        };
+        
+        const rawSig = await sigRes.json();
+        const parsedSig = SignatureSchema.safeParse(rawSig);
+        if (!parsedSig.success) throw new Error("Invalid signature response from server");
+        const sig = parsedSig.data;
 
         // PUT (Supabase): send raw file bytes.
         // POST (Cloudinary): send multipart form-data with signed fields.
         let uploadRes: Response;
         if (sig.method === "POST") {
           const form = new FormData();
-          for (const [k, v] of Object.entries(sig.fields ?? {})) form.append(k, v);
+          for (const [k, v] of Object.entries(sig.fields ?? {})) {
+            form.append(k, v as string);
+          }
           form.append("file", file);
           uploadRes = await fetch(sig.uploadUrl, { method: "POST", body: form });
         } else {
@@ -106,10 +114,11 @@ export function UploadForm() {
 
         if (!createRes.ok) throw new Error("Failed to save image metadata");
 
+        toast.success("Image uploaded successfully");
         router.push("/admin/manage");
         router.refresh();
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Upload failed");
+        toast.error(err instanceof Error ? err.message : "Upload failed");
       } finally {
         setIsUploading(false);
       }
@@ -203,16 +212,19 @@ export function UploadForm() {
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="mb-1.5 block text-[12px] font-medium text-neutral-700">Model</label>
-          <select
-            value={model}
-            onChange={(e) => setModel(e.target.value)}
-            className="w-full rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm focus:border-neutral-400 focus:outline-none"
-          >
-            <option value="">Unknown</option>
-            {MODEL_OPTIONS.map((m) => (
-              <option key={m} value={m}>{m}</option>
-            ))}
-          </select>
+          <div className="relative">
+            <select
+              value={model}
+              onChange={(e) => setModel(e.target.value)}
+              className="appearance-none w-full rounded-md border border-neutral-200 bg-white pl-3 pr-8 py-2 text-sm focus:border-neutral-400 focus:outline-none transition-[border-color,box-shadow]"
+            >
+              <option value="">Unknown</option>
+              {MODEL_OPTIONS.map((m) => (
+                <option key={m} value={m}>{m}</option>
+              ))}
+            </select>
+            <ChevronDownIcon size={16} className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-neutral-400" />
+          </div>
         </div>
 
         <div>
@@ -257,15 +269,6 @@ export function UploadForm() {
           {isPublished ? "Publish immediately" : "Save as draft"}
         </span>
       </label>
-
-      {error && (
-        <p
-          className="rounded-md bg-[#FDEBEC] px-3 py-2 text-[12px] text-[#9F2F2D]"
-          role="alert"
-        >
-          {error}
-        </p>
-      )}
 
       <div className="flex gap-3">
         <button

@@ -4,6 +4,9 @@ import { useState, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import type { DropResult } from "@hello-pangea/dnd";
 import {
   TrashIcon,
   EyeIcon,
@@ -15,6 +18,7 @@ import {
   ArrowUpIcon
 } from "@/components/icons";
 import { EditImageModal } from "./EditImageModal";
+import { ConfirmModal } from "./ConfirmModal";
 import { cn } from "@/lib/utils/cn";
 import type { Image as ImageType } from "@/lib/db/schema";
 
@@ -33,8 +37,10 @@ export function EntryTable({ images: initialImages }: EntryTableProps) {
   // Edit modal state
   const [editingImage, setEditingImage] = useState<ImageType | null>(null);
   
+  // Confirm modal state
+  const [confirmModal, setConfirmModal] = useState<{ isOpen: boolean; type: "single" | "bulk"; id?: string } | null>(null);
+
   // Drag and drop state
-  const [draggedId, setDraggedId] = useState<string | null>(null);
   const [isSavingOrder, setIsSavingOrder] = useState(false);
 
   // --- Actions ---
@@ -47,35 +53,41 @@ export function EntryTable({ images: initialImages }: EntryTableProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ isPublished: !image.isPublished }),
       });
-      if (res.ok) {
-        setImages((prev) =>
-          prev.map((img) =>
-            img.id === image.id ? { ...img, isPublished: !img.isPublished } : img,
-          ),
-        );
-        router.refresh();
-      }
+      if (!res.ok) throw new Error("Failed to update status");
+      
+      setImages((prev) =>
+        prev.map((img) =>
+          img.id === image.id ? { ...img, isPublished: !img.isPublished } : img,
+        ),
+      );
+      toast.success(image.isPublished ? "Unpublished successfully" : "Published successfully");
+      router.refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Action failed");
     } finally {
       setLoadingId(null);
     }
   }, [router]);
 
-  const handleDelete = useCallback(async (id: string) => {
-    if (!confirm("Delete this entry permanently? This cannot be undone.")) return;
+  const executeDelete = useCallback(async (id: string) => {
     setLoadingId(id);
     try {
       const res = await fetch(`/api/images/${id}`, { method: "DELETE" });
-      if (res.ok) {
-        setImages((prev) => prev.filter((img) => img.id !== id));
-        setSelectedIds((prev) => {
-          const next = new Set(prev);
-          next.delete(id);
-          return next;
-        });
-        router.refresh();
-      }
+      if (!res.ok) throw new Error("Failed to delete entry");
+      
+      setImages((prev) => prev.filter((img) => img.id !== id));
+      setSelectedIds((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+      toast.success("Entry deleted");
+      router.refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Delete failed");
     } finally {
       setLoadingId(null);
+      setConfirmModal(null);
     }
   }, [router]);
 
@@ -85,37 +97,45 @@ export function EntryTable({ images: initialImages }: EntryTableProps) {
     if (selectedIds.size === 0) return;
     setIsSavingOrder(true);
     try {
-      await Promise.all(
-        Array.from(selectedIds).map((id) =>
-          fetch(`/api/images/${id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ isPublished: publish }),
-          })
-        )
+      const promises = Array.from(selectedIds).map((id) =>
+        fetch(`/api/images/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ isPublished: publish }),
+        })
       );
+      const results = await Promise.all(promises);
+      if (results.some((res) => !res.ok)) throw new Error("Some updates failed");
+      
       setImages((prev) =>
         prev.map((img) => (selectedIds.has(img.id) ? { ...img, isPublished: publish } : img))
       );
+      toast.success(`Bulk ${publish ? "publish" : "unpublish"} successful`);
       router.refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Bulk action failed");
     } finally {
       setIsSavingOrder(false);
     }
   }, [selectedIds, router]);
 
-  const handleBulkDelete = useCallback(async () => {
+  const executeBulkDelete = useCallback(async () => {
     if (selectedIds.size === 0) return;
-    if (!confirm(`Delete ${selectedIds.size} entries permanently?`)) return;
     setIsSavingOrder(true);
     try {
-      await Promise.all(
-        Array.from(selectedIds).map((id) => fetch(`/api/images/${id}`, { method: "DELETE" }))
-      );
+      const promises = Array.from(selectedIds).map((id) => fetch(`/api/images/${id}`, { method: "DELETE" }));
+      const results = await Promise.all(promises);
+      if (results.some((res) => !res.ok)) throw new Error("Some deletions failed");
+
       setImages((prev) => prev.filter((img) => !selectedIds.has(img.id)));
       setSelectedIds(new Set());
+      toast.success("Bulk delete successful");
       router.refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Bulk delete failed");
     } finally {
       setIsSavingOrder(false);
+      setConfirmModal(null);
     }
   }, [selectedIds, router]);
 
@@ -145,46 +165,34 @@ export function EntryTable({ images: initialImages }: EntryTableProps) {
         id: img.id,
         displayOrder: images.length - index, // highest order at top
       }));
-      await fetch("/api/images/reorder", {
+      const res = await fetch("/api/images/reorder", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ updates }),
       });
+      if (!res.ok) throw new Error("Failed to save new order");
       router.refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Reorder failed");
     } finally {
       setIsSavingOrder(false);
     }
   }, [images.length, router]);
 
-  const handleDragStart = (e: React.DragEvent<HTMLTableRowElement>, id: string) => {
-    setDraggedId(id);
-    e.dataTransfer.effectAllowed = "move";
-    // transparent drag image so we just rely on visual row dragging
-    const dragIcon = document.createElement('div');
-    e.dataTransfer.setDragImage(dragIcon, 0, 0);
-  };
-
-  const handleDragOver = (e: React.DragEvent<HTMLTableRowElement>, targetId: string) => {
-    e.preventDefault();
-    if (!draggedId || draggedId === targetId) return;
-
-    const draggedIdx = images.findIndex((img) => img.id === draggedId);
-    const targetIdx = images.findIndex((img) => img.id === targetId);
-    
-    if (draggedIdx === -1 || targetIdx === -1) return;
+  const onDragEnd = useCallback((result: DropResult) => {
+    if (!result.destination) return;
+    const sourceIndex = result.source.index;
+    const destinationIndex = result.destination.index;
+    if (sourceIndex === destinationIndex) return;
 
     const nextImages = [...images];
-    const draggedItem = nextImages.splice(draggedIdx, 1)[0]!;
-    nextImages.splice(targetIdx, 0, draggedItem);
+    const [draggedItem] = nextImages.splice(sourceIndex, 1);
+    if (!draggedItem) return;
+    nextImages.splice(destinationIndex, 0, draggedItem);
     
     setImages(nextImages);
-  };
-
-  const handleDrop = (e: React.DragEvent<HTMLTableRowElement>) => {
-    e.preventDefault();
-    setDraggedId(null);
-    saveOrder(images);
-  };
+    saveOrder(nextImages);
+  }, [images, saveOrder]);
 
   const moveToTop = useCallback((id: string) => {
     const idx = images.findIndex((img) => img.id === id);
@@ -226,7 +234,7 @@ export function EntryTable({ images: initialImages }: EntryTableProps) {
               Unpublish
             </button>
             <button
-              onClick={handleBulkDelete}
+              onClick={() => setConfirmModal({ isOpen: true, type: "bulk" })}
               disabled={isSavingOrder}
               className="rounded-md bg-[#FDEBEC] px-3 py-1.5 text-xs font-medium text-[#9F2F2D] hover:bg-[#F8D0D1] disabled:opacity-50"
             >
@@ -239,7 +247,7 @@ export function EntryTable({ images: initialImages }: EntryTableProps) {
       <div className="overflow-hidden rounded-md border border-neutral-200 bg-white relative">
         {isSavingOrder && (
           <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/50 backdrop-blur-[1px]">
-            <LoaderIcon size={24} className="text-neutral-500" />
+            <LoaderIcon size={24} className="text-neutral-500 animate-spin" />
           </div>
         )}
         <table className="w-full text-sm">
@@ -264,113 +272,126 @@ export function EntryTable({ images: initialImages }: EntryTableProps) {
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-neutral-100">
-            {images.map((image) => (
-              <tr
-                key={image.id}
-                draggable
-                onDragStart={(e) => handleDragStart(e, image.id)}
-                onDragOver={(e) => handleDragOver(e, image.id)}
-                onDrop={handleDrop}
-                onDragEnd={() => setDraggedId(null)}
-                className={cn(
-                  "transition-colors hover:bg-neutral-50",
-                  draggedId === image.id && "bg-neutral-50 opacity-50",
-                  selectedIds.has(image.id) && "bg-neutral-50"
-                )}
-              >
-                <td className="w-10 px-4 py-3">
-                  <input
-                    type="checkbox"
-                    checked={selectedIds.has(image.id)}
-                    onChange={() => toggleSelect(image.id)}
-                    className="rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900"
-                  />
-                </td>
-                <td className="w-8 px-2 py-3">
-                  <div className="flex flex-col gap-1 text-neutral-300">
-                    <button className="cursor-grab active:cursor-grabbing hover:text-neutral-500">
-                      <GripVerticalIcon size={16} />
-                    </button>
-                  </div>
-                </td>
-                <td className="px-4 py-3">
-                  <div className="relative size-12 overflow-hidden rounded-md bg-neutral-100">
-                    <Image src={image.imageUrl} alt="" fill sizes="48px" className="object-cover" />
-                  </div>
-                </td>
-                <td className="max-w-xs px-4 py-3">
-                  <p className="line-clamp-2 font-mono text-[12px] leading-[1.5] text-neutral-700">
-                    {image.prompt}
-                  </p>
-                </td>
-                <td className="px-4 py-3 text-[11px] uppercase tracking-[0.05em] text-neutral-500">
-                  {image.model ?? "—"}
-                </td>
-                <td className="px-4 py-3">
-                  <span
-                    className={cn(
-                      "rounded-full px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-[0.05em]",
-                      image.isPublished
-                        ? "bg-[#EDF3EC] text-[#346538]"
-                        : "bg-neutral-100 text-neutral-500",
-                    )}
-                  >
-                    {image.isPublished ? "Published" : "Draft"}
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-[11px] text-neutral-400">
-                  {new Date(image.createdAt).toLocaleDateString("en-US")}
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex items-center justify-end gap-1">
-                    {loadingId === image.id ? (
-                      <LoaderIcon size={14} className="text-neutral-400" />
-                    ) : (
-                      <>
-                        <button
-                          onClick={() => moveToTop(image.id)}
-                          className="rounded p-1.5 text-neutral-400 transition-[background-color,color] hover:bg-neutral-100 hover:text-neutral-700"
-                          title="Move to Top"
+          <DragDropContext onDragEnd={onDragEnd}>
+            <Droppable droppableId="images-table" direction="vertical">
+              {(provided) => (
+                <tbody
+                  className="divide-y divide-neutral-100"
+                  ref={provided.innerRef}
+                  {...provided.droppableProps}
+                >
+                  {images.map((image, index) => (
+                    <Draggable key={image.id} draggableId={image.id} index={index}>
+                      {(dragProvided, dragSnapshot) => (
+                        <tr
+                          ref={dragProvided.innerRef}
+                          {...dragProvided.draggableProps}
+                          className={cn(
+                            "transition-colors hover:bg-neutral-50 bg-white",
+                            dragSnapshot.isDragging && "shadow-lg ring-1 ring-neutral-200 z-10 table",
+                            selectedIds.has(image.id) && "bg-neutral-50"
+                          )}
+                          style={dragProvided.draggableProps.style}
                         >
-                          <ArrowUpIcon size={14} />
-                        </button>
-                        <button
-                          onClick={() => setEditingImage(image)}
-                          className="rounded p-1.5 text-neutral-400 transition-[background-color,color] hover:bg-neutral-100 hover:text-neutral-700"
-                          title="Edit"
-                        >
-                          <EditIcon size={14} />
-                        </button>
-                        <Link
-                          href={`/p/${image.slug}`}
-                          target="_blank"
-                          className="rounded p-1.5 text-neutral-400 transition-[background-color,color] hover:bg-neutral-100 hover:text-neutral-700"
-                          title="View on site"
-                        >
-                          <ExternalLinkIcon size={14} />
-                        </Link>
-                        <button
-                          onClick={() => handleTogglePublish(image)}
-                          className="rounded p-1.5 text-neutral-400 transition-[background-color,color] hover:bg-neutral-100 hover:text-neutral-700"
-                          title={image.isPublished ? "Unpublish" : "Publish"}
-                        >
-                          {image.isPublished ? <EyeOffIcon size={14} /> : <EyeIcon size={14} />}
-                        </button>
-                        <button
-                          onClick={() => handleDelete(image.id)}
-                          className="rounded p-1.5 text-neutral-400 transition-[background-color,color] hover:bg-[#FDEBEC] hover:text-[#9F2F2D]"
-                          title="Delete"
-                        >
-                          <TrashIcon size={14} />
-                        </button>
-                      </>
-                    )}
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
+                          <td className="w-10 px-4 py-3">
+                            <input
+                              type="checkbox"
+                              checked={selectedIds.has(image.id)}
+                              onChange={() => toggleSelect(image.id)}
+                              className="rounded border-neutral-300 text-neutral-900 focus:ring-neutral-900"
+                            />
+                          </td>
+                          <td className="w-8 px-2 py-3">
+                            <div
+                              {...dragProvided.dragHandleProps}
+                              className="flex flex-col gap-1 text-neutral-300 cursor-grab active:cursor-grabbing hover:text-neutral-500"
+                            >
+                              <GripVerticalIcon size={16} />
+                            </div>
+                          </td>
+                          <td className="px-4 py-3">
+                            <div className="relative size-12 overflow-hidden rounded-md bg-neutral-100">
+                              <Image src={image.imageUrl} alt="" fill sizes="48px" className="object-cover" />
+                            </div>
+                          </td>
+                          <td className="max-w-xs px-4 py-3">
+                            <p className="line-clamp-2 font-mono text-[12px] leading-[1.5] text-neutral-700">
+                              {image.prompt}
+                            </p>
+                          </td>
+                          <td className="px-4 py-3 text-[11px] uppercase tracking-[0.05em] text-neutral-500">
+                            {image.model ?? "—"}
+                          </td>
+                          <td className="px-4 py-3">
+                            <span
+                              className={cn(
+                                "rounded-full px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-[0.05em]",
+                                image.isPublished
+                                  ? "bg-[#EDF3EC] text-[#346538]"
+                                  : "bg-neutral-100 text-neutral-500",
+                              )}
+                            >
+                              {image.isPublished ? "Published" : "Draft"}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-[11px] text-neutral-400">
+                            {new Date(image.createdAt).toLocaleDateString("en-US")}
+                          </td>
+                          <td className="px-4 py-3">
+                            <div className="flex items-center justify-end gap-1">
+                              {loadingId === image.id ? (
+                                <LoaderIcon size={14} className="text-neutral-400 animate-spin" />
+                              ) : (
+                                <>
+                                  <button
+                                    onClick={() => moveToTop(image.id)}
+                                    className="rounded p-1.5 text-neutral-400 transition-[background-color,color] hover:bg-neutral-100 hover:text-neutral-700"
+                                    title="Move to Top"
+                                  >
+                                    <ArrowUpIcon size={14} />
+                                  </button>
+                                  <button
+                                    onClick={() => setEditingImage(image)}
+                                    className="rounded p-1.5 text-neutral-400 transition-[background-color,color] hover:bg-neutral-100 hover:text-neutral-700"
+                                    title="Edit"
+                                  >
+                                    <EditIcon size={14} />
+                                  </button>
+                                  <Link
+                                    href={`/p/${image.slug}`}
+                                    target="_blank"
+                                    className="rounded p-1.5 text-neutral-400 transition-[background-color,color] hover:bg-neutral-100 hover:text-neutral-700"
+                                    title="View on site"
+                                  >
+                                    <ExternalLinkIcon size={14} />
+                                  </Link>
+                                  <button
+                                    onClick={() => handleTogglePublish(image)}
+                                    className="rounded p-1.5 text-neutral-400 transition-[background-color,color] hover:bg-neutral-100 hover:text-neutral-700"
+                                    title={image.isPublished ? "Unpublish" : "Publish"}
+                                  >
+                                    {image.isPublished ? <EyeOffIcon size={14} /> : <EyeIcon size={14} />}
+                                  </button>
+                                  <button
+                                    onClick={() => setConfirmModal({ isOpen: true, type: "single", id: image.id })}
+                                    className="rounded p-1.5 text-neutral-400 transition-[background-color,color] hover:bg-[#FDEBEC] hover:text-[#9F2F2D]"
+                                    title="Delete"
+                                  >
+                                    <TrashIcon size={14} />
+                                  </button>
+                                </>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                </tbody>
+              )}
+            </Droppable>
+          </DragDropContext>
         </table>
       </div>
 
@@ -383,6 +404,29 @@ export function EntryTable({ images: initialImages }: EntryTableProps) {
             setEditingImage(null);
             router.refresh();
           }}
+        />
+      )}
+
+      {confirmModal?.isOpen && (
+        <ConfirmModal
+          isOpen={true}
+          onClose={() => setConfirmModal(null)}
+          onConfirm={() => {
+            if (confirmModal.type === "bulk") {
+              executeBulkDelete();
+            } else if (confirmModal.id) {
+              executeDelete(confirmModal.id);
+            }
+          }}
+          title={confirmModal.type === "bulk" ? "Delete multiple entries" : "Delete entry"}
+          description={
+            confirmModal.type === "bulk" 
+              ? `Are you sure you want to permanently delete ${selectedIds.size} selected entries? This cannot be undone.`
+              : "Are you sure you want to permanently delete this entry? This cannot be undone."
+          }
+          confirmText="Delete"
+          isDestructive={true}
+          isLoading={loadingId !== null || isSavingOrder}
         />
       )}
     </>

@@ -2,10 +2,10 @@
 
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { FeaturedImagePicker } from "./FeaturedImagePicker";
 import { LoaderIcon, CheckIcon } from "@/components/icons";
 import { cn } from "@/lib/utils/cn";
-import { TIMING } from "@/lib/constants/timing";
 import type { Settings } from "@/lib/db/schema";
 
 interface SettingsFormProps {
@@ -31,49 +31,61 @@ export function SettingsForm({ settings, adapterStatus }: SettingsFormProps) {
   const router = useRouter();
   const [maintenanceMode, setMaintenanceMode] = useState(settings?.maintenanceMode ?? false);
   const [isSaving, setIsSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
 
   const handleToggleMaintenance = useCallback(async () => {
     const next = !maintenanceMode;
     setMaintenanceMode(next);
     setIsSaving(true);
     try {
-      await fetch("/api/admin/settings/maintenance", {
+      const res = await fetch("/api/admin/settings/maintenance", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ enabled: next }),
       });
-      setSaved(true);
-      setTimeout(() => setSaved(false), TIMING.TOAST_RESET_MS);
+      if (!res.ok) throw new Error("Failed to update maintenance mode");
+      toast.success(`Maintenance mode ${next ? "enabled" : "disabled"}`);
       router.refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "An error occurred");
+      setMaintenanceMode(!next);
     } finally {
       setIsSaving(false);
     }
   }, [maintenanceMode, router]);
 
   const handleSetFeaturedImage = useCallback(async (imageId: string | null) => {
-    await fetch("/api/admin/settings/featured", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ imageId }),
-    });
-    router.refresh();
+    try {
+      const res = await fetch("/api/admin/settings/featured", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageId }),
+      });
+      if (!res.ok) throw new Error("Failed to set featured image");
+      toast.success("Featured image updated");
+      router.refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "An error occurred");
+    }
   }, [router]);
 
   const handleManualAction = useCallback(async (action: "sitemap" | "likes") => {
     setIsSaving(true);
     try {
       if (action === "sitemap") {
-        await fetch("/api/revalidate", {
+        const res = await fetch("/api/revalidate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ tag: "gallery", secret: process.env.NEXT_PUBLIC_SUPABASE_URL ? "no-op" : "no-op" }) // Using dummy secret here just to trigger it if not strictly checked
+          body: JSON.stringify({ tag: "gallery", secret: "no-op" })
         });
+        if (!res.ok) throw new Error("Failed to regenerate sitemap");
+        toast.success("Sitemap regenerated");
       } else {
-        await fetch("/api/cron/flush-likes", { method: "POST" });
+        const res = await fetch("/api/cron/flush-likes", { method: "POST" });
+        if (!res.ok) throw new Error("Failed to flush likes");
+        toast.success("Likes flushed to database");
       }
-      setSaved(true);
-      setTimeout(() => setSaved(false), TIMING.TOAST_RESET_MS);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setIsSaving(false);
     }
@@ -105,7 +117,6 @@ export function SettingsForm({ settings, adapterStatus }: SettingsFormProps) {
             )}
           >
             {isSaving && <LoaderIcon size={14} />}
-            {saved && <CheckIcon size={14} />}
             {maintenanceMode ? "Disable" : "Enable"} maintenance
           </button>
         </div>

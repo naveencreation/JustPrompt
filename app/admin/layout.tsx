@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Toaster } from "sonner";
 import { DashboardIcon, UploadIcon, ListIcon, SettingsIcon, LogoutIcon } from "@/components/icons";
 
 const NAV_ITEMS = [
@@ -46,6 +47,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </aside>
 
       <main className="flex flex-1 flex-col overflow-hidden">{children}</main>
+      <Toaster position="bottom-right" toastOptions={{ className: "font-sans" }} />
     </div>
   );
 }
