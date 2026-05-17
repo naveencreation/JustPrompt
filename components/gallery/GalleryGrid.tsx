@@ -32,10 +32,13 @@ export function GalleryGrid({
   const observerRef = useRef<IntersectionObserver | null>(null);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
+  const [prevInitialItems, setPrevInitialItems] = useState(initialItems);
+
+  if (initialItems !== prevInitialItems) {
     setItems(initialItems);
     setNextCursor(initialNextCursor);
-  }, [initialItems, initialNextCursor, sort, tagSlug, searchQuery]);
+    setPrevInitialItems(initialItems);
+  }
 
   const loadMore = useCallback(async () => {
     if (isLoading || !nextCursor) return;
