@@ -2,20 +2,70 @@ import { revalidateTag } from "next/cache";
 import { createAdminClient } from "@/lib/db/client";
 import { imageRepo } from "@/lib/repos/imageRepo";
 import { likeRepo } from "@/lib/repos/likeRepo";
+import { metricRepo } from "@/lib/repos/metricRepo";
+import { searchLogRepo } from "@/lib/repos/searchLogRepo";
 import { likeService } from "./likeService";
+import { metricService } from "./metricService";
 import { logger } from "@/lib/observability/logger";
 import { CACHE_TAG } from "@/lib/constants/cache";
 import type { Image, ImageId, Settings } from "@/lib/db/schema";
 
+// ─── Dashboard Stats Types ──────────────────────────────────────────────────
+
+export interface TopCopiedEntry {
+  image: Image;
+  copyCount: number;
+  likeCount: number;
+}
+
+export interface DashboardStats {
+  // Scorecard numbers
+  totalImages: number;
+  totalLikes: number;
+  totalCopies: number;
+  totalViews: number;
+  copyRate: number; // percentage: (copies / views) * 100
+
+  // Content performance
+  recentImages: Image[];
+  mostLiked: Image | null;
+  topCopied: TopCopiedEntry[];
+
+  // Search intelligence
+  topSearches: { query: string; count: number }[];
+  failedSearches: { query: string; count: number }[];
+}
+
+// ─── adminService ───────────────────────────────────────────────────────────
+
 export const adminService = {
-  async getDashboardStats() {
-    const [totalImages, totalLikes, recentImages] = await Promise.all([
+  async getDashboardStats(): Promise<DashboardStats> {
+    // All queries fire in parallel — dashboard loads in single round-trip latency.
+    const [
+      totalImages,
+      totalLikes,
+      totalCopies,
+      totalViews,
+      recentImages,
+      copiedRows,
+      topSearches,
+      failedSearches,
+    ] = await Promise.all([
       imageRepo.count(),
       likeRepo.totalLikes(),
+      metricService.totalCopies(),
+      metricService.totalViews(),
       imageRepo.listAll({ limit: 5 }),
+      metricRepo.topCopied(10),
+      searchLogRepo.getTopQueries(10),
+      searchLogRepo.getZeroResultQueries(10),
     ]);
 
-    // Most liked — simple: get the image with the highest like count
+    // Copy rate: what % of page views result in a copy?
+    const copyRate =
+      totalViews > 0 ? Math.round((totalCopies / totalViews) * 100) : 0;
+
+    // Most liked image
     const supabase = createAdminClient();
     const { data: likesData } = await supabase
       .from("like_counts")
@@ -30,7 +80,27 @@ export const adminService = {
       );
     }
 
-    return { totalImages, totalLikes, recentImages, mostLiked };
+    // Hydrate top-copied rows with full image data + their like counts
+    const topCopied: TopCopiedEntry[] = [];
+    for (const row of copiedRows) {
+      const image = await imageRepo.findById(row.imageId);
+      if (!image) continue;
+      const likeCount = await likeRepo.getCount(row.imageId);
+      topCopied.push({ image, copyCount: row.count, likeCount });
+    }
+
+    return {
+      totalImages,
+      totalLikes,
+      totalCopies,
+      totalViews,
+      copyRate,
+      recentImages,
+      mostLiked,
+      topCopied,
+      topSearches,
+      failedSearches,
+    };
   },
 
   async getSettings(): Promise<Settings | null> {

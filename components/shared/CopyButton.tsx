@@ -7,17 +7,23 @@ import { TIMING } from "@/lib/constants/timing";
 
 interface CopyButtonProps {
   text: string;
+  imageId?: string;
   className?: string;
 }
 
-export function CopyButton({ text, className }: CopyButtonProps) {
+export function CopyButton({ text, imageId, className }: CopyButtonProps) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = useCallback(async () => {
     await navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), TIMING.TOAST_RESET_MS);
-  }, [text]);
+
+    // Fire-and-forget: record the copy event for dashboard analytics.
+    if (imageId) {
+      fetch(`/api/metrics/copy/${imageId}`, { method: "POST" }).catch(() => {});
+    }
+  }, [text, imageId]);
 
   return (
     <button
@@ -35,3 +41,4 @@ export function CopyButton({ text, className }: CopyButtonProps) {
     </button>
   );
 }
+
