@@ -4,11 +4,12 @@ import { requireAdminMutation, AuthError } from "@/lib/auth";
 import { imageService } from "@/lib/services/imageService";
 import { errors } from "@/lib/observability/errors";
 import { HTTP } from "@/lib/constants/http";
+import { ImageId } from "@/lib/db/schema";
 
 const BodySchema = z.object({
   updates: z.array(
     z.object({
-      id: z.string().uuid(),
+      id: ImageId,
       displayOrder: z.number().int(),
     })
   ).min(1).max(100),

@@ -174,7 +174,7 @@ export function EntryTable({ images: initialImages }: EntryTableProps) {
     if (draggedIdx === -1 || targetIdx === -1) return;
 
     const nextImages = [...images];
-    const [draggedItem] = nextImages.splice(draggedIdx, 1);
+    const draggedItem = nextImages.splice(draggedIdx, 1)[0]!;
     nextImages.splice(targetIdx, 0, draggedItem);
     
     setImages(nextImages);
@@ -190,7 +190,7 @@ export function EntryTable({ images: initialImages }: EntryTableProps) {
     const idx = images.findIndex((img) => img.id === id);
     if (idx <= 0) return;
     const nextImages = [...images];
-    const [item] = nextImages.splice(idx, 1);
+    const item = nextImages.splice(idx, 1)[0]!;
     nextImages.unshift(item);
     setImages(nextImages);
     saveOrder(nextImages);

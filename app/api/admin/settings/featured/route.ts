@@ -3,9 +3,10 @@ import { z } from "zod";
 import { requireAdminMutation, AuthError } from "@/lib/auth";
 import { adminService } from "@/lib/services/adminService";
 import { HTTP } from "@/lib/constants/http";
+import { ImageId } from "@/lib/db/schema";
 
 const BodySchema = z.object({
-  imageId: z.string().uuid().nullable(),
+  imageId: ImageId.nullable(),
 });
 
 export async function POST(request: Request) {

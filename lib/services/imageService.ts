@@ -1,4 +1,4 @@
-import { revalidateTag } from "next/cache";
+import { revalidateTag as _revalidateTag } from "next/cache";
 import { imageRepo } from "@/lib/repos/imageRepo";
 import { tagRepo } from "@/lib/repos/tagRepo";
 import { cache } from "@/lib/cache/factory";
@@ -9,6 +9,10 @@ import { CACHE_TAG, CACHE_TTL } from "@/lib/constants/cache";
 import { generateSlug } from "@/lib/utils/slug";
 import { decodeCursor } from "@/lib/utils/cursor";
 import type { CreateImageInput, Image, ImageId, Sort } from "@/lib/db/schema";
+
+// Next.js 16.2.6 types require a second `profile` argument, but the
+// fetch-cache tag invalidation path works fine with just one arg.
+const revalidateTag = _revalidateTag as (tag: string) => void;
 
 export interface GalleryOptions {
   cursor?: string | null;
