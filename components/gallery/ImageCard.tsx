@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import Image from "next/image";
 import { CopyIcon, CheckIcon, HeartIcon } from "@/components/icons";
 import { cn } from "@/lib/utils/cn";
@@ -28,10 +28,15 @@ export function ImageCard({
   const [isFlipped, setIsFlipped] = useState(false);
   const [copied, setCopied] = useState(false);
   const [optimisticLikes, setOptimisticLikes] = useState(likeCount);
-  const [hasLiked, setHasLiked] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return localStorage.getItem(`liked:${image.id}`) === "1";
-  });
+  const [hasLiked, setHasLiked] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    if (typeof window !== "undefined" && localStorage.getItem(`liked:${image.id}`) === "1") {
+      setHasLiked(true);
+    }
+  }, [image.id]);
 
   const cardRef = useRef<HTMLDivElement>(null);
 
@@ -143,17 +148,17 @@ export function ImageCard({
                 <button
                   data-action="like"
                   onClick={handleLike}
-                  aria-label={hasLiked ? "Liked" : "Like this prompt"}
+                  aria-label={mounted && hasLiked ? "Liked" : "Like this prompt"}
                   className={cn(
                     "absolute bottom-3 right-3 flex items-center gap-1.5 rounded-full px-2.5 py-1",
                     "text-[11px] font-medium tracking-[0.02em] backdrop-blur-sm",
                     "transition-[background-color,color] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]",
-                    hasLiked
+                    mounted && hasLiked
                       ? "bg-[#FDEBEC] text-[#9F2F2D]"
                       : "bg-white/90 text-neutral-800 hover:bg-[#FDEBEC] hover:text-[#9F2F2D]",
                   )}
                 >
-                  <HeartIcon size={12} filled={hasLiked} />
+                  <HeartIcon size={12} filled={mounted && hasLiked} />
                   <span>{optimisticLikes}</span>
                 </button>
               </div>

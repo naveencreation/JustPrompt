@@ -12,7 +12,7 @@ const NAV_ITEMS = [
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen bg-neutral-50">
-      <aside className="flex w-56 flex-shrink-0 flex-col border-r border-neutral-200 bg-white">
+      <aside className="sticky top-0 flex h-screen w-56 flex-shrink-0 flex-col self-start overflow-hidden border-r border-neutral-200 bg-white">
         <div className="border-b border-neutral-100 p-5">
           <Link href="/" className="font-serif text-base tracking-tight text-neutral-900">
             Prompt Gallery
@@ -35,7 +35,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           ))}
         </nav>
 
-        <div className="border-t border-neutral-100 p-3">
+        <div className="mt-auto border-t border-neutral-100 p-3">
           <Link
             href="/admin/login"
             className="flex items-center gap-2.5 rounded-md px-3 py-2 text-[13px] text-neutral-500 transition-[background-color,color] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-neutral-100 hover:text-neutral-700"
@@ -46,7 +46,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
       </aside>
 
-      <main className="flex flex-1 flex-col overflow-hidden">{children}</main>
+      <main className="flex flex-1 flex-col">{children}</main>
       <Toaster position="bottom-right" toastOptions={{ className: "font-sans" }} />
     </div>
   );
