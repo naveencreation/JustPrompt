@@ -172,7 +172,7 @@ export function UploadForm() {
 
       <div>
         <label className="mb-1.5 block text-[12px] font-medium text-neutral-700">
-          Prompt <span className="text-[#9F2F2D]">*</span>
+          Prompt <span className="text-rose-700">*</span>
         </label>
         <textarea
           value={prompt}
@@ -260,7 +260,7 @@ export function UploadForm() {
 
       {error && (
         <p
-          className="rounded-md bg-[#FDEBEC] px-3 py-2 text-[12px] text-[#9F2F2D]"
+          className="rounded-md bg-rose-100 px-3 py-2 text-[12px] text-rose-700"
           role="alert"
         >
           {error}

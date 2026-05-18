@@ -1,25 +1,143 @@
 @import "tailwindcss";
 
-/* ─── Theme tokens (minimalist-ui spec) ─────────────────────────────── */
+/* ─── Design tokens ─────────────────────────────────────────────────────────
+   All tokens flow through Tailwind 4's `@theme` directive so they materialize
+   as utilities (`bg-ink-500`, `shadow-soft-3`, `ease-out-expo`, `rounded-lg`,
+   `text-display-1`). Anything not in `@theme` lives in the small base layer
+   below. No raw hex anywhere in the codebase — JSX should use the utilities.
+   ────────────────────────────────────────────────────────────────────────── */
 @theme {
+  /* ── Fonts ──────────────────────────────────────────────────────────────── */
   --font-sans:  var(--font-sans),  ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-serif), ui-serif, "Times New Roman", serif;
   --font-mono:  var(--font-mono),  ui-monospace, "Geist Mono", monospace;
 
-  /* Warm bone canvas — never #fff, never #000 */
-  --color-neutral-50:  #FBFBFA;
-  --color-neutral-100: #F5F4F1;
-  --color-neutral-200: #EAEAEA;
-  --color-neutral-300: #D6D3D1;
-  --color-neutral-400: #A8A29E;
-  --color-neutral-500: #78716C;
-  --color-neutral-600: #57534E;
-  --color-neutral-700: #44403C;
-  --color-neutral-800: #292524;
-  --color-neutral-900: #2F3437;
+  /* ── Neutrals: warm parchment, tinted toward 70° hue, low chroma ────────── */
+  /* Override Tailwind's cool grays — we want bone, not stone. Never #fff/#000. */
+  --color-neutral-50:  oklch(99%   0.005 80);
+  --color-neutral-100: oklch(97%   0.007 80);
+  --color-neutral-200: oklch(93%   0.008 80);
+  --color-neutral-300: oklch(88%   0.010 75);
+  --color-neutral-400: oklch(74%   0.011 70);
+  --color-neutral-500: oklch(58%   0.012 65);
+  --color-neutral-600: oklch(46%   0.013 60);
+  --color-neutral-700: oklch(36%   0.015 55);
+  --color-neutral-800: oklch(24%   0.014 50);
+  --color-neutral-900: oklch(18%   0.012 50);
+  --color-neutral-950: oklch(12%   0.010 50);
+
+  /* ── Ink: editorial accent (warm aubergine). Used at 5–8% of surface. ──── */
+  --color-ink-50:  oklch(96% 0.020 10);
+  --color-ink-100: oklch(92% 0.040 10);
+  --color-ink-200: oklch(84% 0.080 12);
+  --color-ink-300: oklch(72% 0.120 14);
+  --color-ink-400: oklch(58% 0.150 16);
+  --color-ink-500: oklch(46% 0.155 18);
+  --color-ink-600: oklch(38% 0.140 20);
+  --color-ink-700: oklch(30% 0.120 22);
+  --color-ink-800: oklch(22% 0.090 24);
+  --color-ink-900: oklch(15% 0.060 26);
+
+  /* ── Rose: likes / danger. Warm brick, not generic pink-rose. ───────────── */
+  --color-rose-50:  oklch(97% 0.015 25);
+  --color-rose-100: oklch(93% 0.030 22);
+  --color-rose-200: oklch(86% 0.060 22);
+  --color-rose-300: oklch(76% 0.100 22);
+  --color-rose-500: oklch(54% 0.150 25);
+  --color-rose-600: oklch(46% 0.150 25);
+  --color-rose-700: oklch(40% 0.140 25);
+  --color-rose-800: oklch(32% 0.120 25);
+
+  /* ── Sage: success / published. ─────────────────────────────────────────── */
+  --color-sage-50:  oklch(97% 0.015 145);
+  --color-sage-100: oklch(93% 0.025 145);
+  --color-sage-200: oklch(86% 0.045 145);
+  --color-sage-500: oklch(50% 0.090 145);
+  --color-sage-700: oklch(38% 0.080 145);
+  --color-sage-800: oklch(30% 0.070 145);
+
+  /* ── Honey: warning / featured. ─────────────────────────────────────────── */
+  --color-honey-50:  oklch(96% 0.025 85);
+  --color-honey-100: oklch(91% 0.045 85);
+  --color-honey-200: oklch(84% 0.080 85);
+  --color-honey-500: oklch(60% 0.130 70);
+  --color-honey-700: oklch(45% 0.115 65);
+  --color-honey-800: oklch(36% 0.095 65);
+
+  /* ── Sky: info. Calm editorial blue, not saturated. ─────────────────────── */
+  --color-sky-50:  oklch(97% 0.015 235);
+  --color-sky-100: oklch(93% 0.030 235);
+  --color-sky-200: oklch(86% 0.060 235);
+  --color-sky-500: oklch(56% 0.110 230);
+  --color-sky-700: oklch(42% 0.100 225);
+  --color-sky-800: oklch(33% 0.085 225);
+
+  /* ── Radius scale (designed for concentric nesting) ─────────────────────── */
+  --radius-xs:  6px;
+  --radius-sm:  10px;
+  --radius-md:  14px;
+  --radius-lg:  20px;
+  --radius-xl:  28px;
+  --radius-2xl: 36px;
+
+  /* ── Shadow ladder: all warm-tinted via OKLCH alpha. No black RGBA. ─────── */
+  --shadow-soft-1: 0 1px 2px 0 oklch(20% 0.01 70 / 0.05);
+  --shadow-soft-2: 0 2px 6px -1px oklch(20% 0.01 70 / 0.06),
+                   0 1px 3px -1px oklch(20% 0.01 70 / 0.04);
+  --shadow-soft-3: 0 8px 18px -6px oklch(20% 0.01 70 / 0.10),
+                   0 2px 6px -2px oklch(20% 0.01 70 / 0.05);
+  --shadow-soft-4: 0 18px 32px -12px oklch(20% 0.01 70 / 0.12),
+                   0 4px 10px -4px oklch(20% 0.01 70 / 0.06);
+  --shadow-soft-5: 0 32px 64px -16px oklch(15% 0.01 70 / 0.18),
+                   0 8px 16px -6px oklch(15% 0.01 70 / 0.08);
+
+  /* ── Easings. Tailwind 4 turns these into `ease-{name}` utilities. ──────── */
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out-expo:  cubic-bezier(0.16, 1, 0.30, 1);
+  --ease-apple:     cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-spring:    cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ── Type scale. Semantic, not pixel-named. ─────────────────────────────── */
+  --text-eyebrow: 10px;
+  --text-eyebrow--line-height: 1.2;
+  --text-eyebrow--letter-spacing: 0.2em;
+
+  --text-label: 11px;
+  --text-label--line-height: 1.3;
+  --text-label--letter-spacing: 0.05em;
+
+  --text-mono-sm: 12px;
+  --text-mono-sm--line-height: 1.55;
+
+  --text-mono: 13px;
+  --text-mono--line-height: 1.6;
+
+  --text-body: 14px;
+  --text-body--line-height: 1.6;
+
+  --text-lede: 16px;
+  --text-lede--line-height: 1.55;
+
+  --text-display-3: clamp(28px, 4vw, 36px);
+  --text-display-3--line-height: 1.05;
+  --text-display-3--letter-spacing: -0.022em;
+
+  --text-display-2: clamp(36px, 5vw, 56px);
+  --text-display-2--line-height: 1.02;
+  --text-display-2--letter-spacing: -0.024em;
+
+  --text-display-1: clamp(48px, 7vw, 88px);
+  --text-display-1--line-height: 0.98;
+  --text-display-1--letter-spacing: -0.028em;
 }
 
-/* ─── Base reset ─────────────────────────────────────────────────────── */
+/* ─── Custom variant: hocus (hover + focus-visible) ────────────────────────
+   Lets us write `hocus:bg-neutral-100` instead of `hover:... focus-visible:...`
+   ────────────────────────────────────────────────────────────────────────── */
+@custom-variant hocus (&:hover, &:focus-visible);
+
+/* ─── Base reset & typography defaults ────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; }
 
 html { scroll-behavior: smooth; }
@@ -31,72 +149,51 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Editorial serif for headings — tight tracking, tight leading per minimalist-ui */
 .font-serif {
   font-family: var(--font-serif);
   letter-spacing: -0.022em;
-  line-height: 1.1;
+  line-height: 1.05;
 }
 
-/* ─── Card flip ──────────────────────────────────────────────────────── */
-.card-scene {
-  perspective: 1000px;
-}
-
-.card-inner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  transform-style: preserve-3d;
-  transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.card-inner.flipped {
-  transform: rotateY(180deg);
-}
-
-.card-face {
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-}
-
-.card-face-front {
-  position: relative;
-  width: 100%;
-}
-
-.card-face-back {
-  position: absolute;
-  inset: 0;
-  transform: rotateY(180deg);
-}
-
-/* Tilt — desktop only, gated to pointer:fine to avoid mobile jank */
-@media (pointer: fine) {
-  .card-tilt {
-    transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1);
-    will-change: transform;
-  }
-}
-
-/* ─── Stagger fade ──────────────────────────────────────────────────── */
+/* ─── Stagger fade ────────────────────────────────────────────────────────── */
 @keyframes fade-slide-up {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(16px); filter: blur(6px); }
+  to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
 }
 
-.animate-in {
-  animation: fade-slide-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
+.animate-in { animation: fade-slide-up 0.7s var(--ease-out-expo) both; }
 
-/* ─── Skeleton pulse ────────────────────────────────────────────────── */
+/* ─── Skeleton pulse ──────────────────────────────────────────────────────── */
 @keyframes skeleton-pulse {
   0%, 100% { opacity: 1; }
-  50%       { opacity: 0.4; }
+  50%      { opacity: 0.45; }
 }
 
 .skeleton {
-  animation: skeleton-pulse 1.6s ease-in-out infinite;
-  background: var(--color-neutral-200);
-  border-radius: 0.375rem;
+  animation: skeleton-pulse 1.6s var(--ease-out-quart) infinite;
+  background: var(--color-neutral-100);
+  border-radius: var(--radius-sm);
+}
+
+/* ─── Editorial paper grain (used by hero / large surfaces) ───────────────── */
+.grain { position: relative; }
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(oklch(20% 0.01 70 / 0.045) 1px, transparent 1px);
+  background-size: 3px 3px;
+  opacity: 0.6;
+  mix-blend-mode: multiply;
+  z-index: 0;
+}
+
+/* ─── Reduced-motion gate ─────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

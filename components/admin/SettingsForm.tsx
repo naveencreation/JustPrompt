@@ -98,7 +98,7 @@ export function SettingsForm({ settings, adapterStatus }: SettingsFormProps) {
               "flex items-center gap-2 rounded-md px-4 py-2 text-[13px] font-medium",
               "transition-[background-color,color,transform] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]",
               maintenanceMode
-                ? "bg-[#FBF3DB] text-[#956400] hover:bg-[#F8EBC4]"
+                ? "bg-honey-100 text-honey-700 hover:bg-honey-200"
                 : "bg-neutral-900 text-neutral-50 hover:bg-neutral-700",
               !isSaving && "active:scale-[0.98]",
               isSaving && "cursor-not-allowed opacity-60",
@@ -165,7 +165,7 @@ export function SettingsForm({ settings, adapterStatus }: SettingsFormProps) {
                 className={cn(
                   "rounded-full px-2.5 py-0.5 text-[10px] uppercase tracking-[0.05em]",
                   UPGRADED_TIERS.has(impl)
-                    ? "bg-[#E1F3FE] text-[#1F6C9F]"
+                    ? "bg-sky-100 text-sky-700"
                     : "bg-neutral-100 text-neutral-500",
                 )}
               >

@@ -5,7 +5,7 @@ import { searchService } from "@/lib/services/searchService";
 import { adminService } from "@/lib/services/adminService";
 import { tagService } from "@/lib/services/tagService";
 import { likeService } from "@/lib/services/likeService";
-import { Navbar } from "@/components/shared/Navbar";
+import { statsService } from "@/lib/services/statsService";
 import { GalleryGrid } from "@/components/gallery/GalleryGrid";
 import { SkeletonGrid } from "@/components/gallery/SkeletonCard";
 import { FeaturedCard } from "@/components/gallery/FeaturedCard";
@@ -26,15 +26,18 @@ interface PageProps {
   searchParams: Promise<{ sort?: string; tag?: string; q?: string }>;
 }
 
+const KPI_LABELS = ["Prompts", "Tags", "Likes"] as const;
+
 export default async function GalleryPage({ searchParams }: PageProps) {
   const { sort: sortParam, tag, q } = await searchParams;
   const sort: Sort =
     sortParam === "likes" || sortParam === "random" ? sortParam : "new";
 
-  const [galleryResult, settings, popularTags] = await Promise.all([
+  const [galleryResult, settings, popularTags, stats] = await Promise.all([
     q ? searchService.query(q) : imageService.listGallery({ sort, tagSlug: tag }),
     adminService.getSettings(),
     tagService.listPopular(),
+    statsService.getPublicStats(),
   ]);
 
   const featuredImage = settings?.featuredImageId
@@ -45,51 +48,74 @@ export default async function GalleryPage({ searchParams }: PageProps) {
     ? await likeService.getCount(featuredImage.id)
     : 0;
 
+  const kpiValues = [stats.totalImages, stats.totalTags, stats.totalLikes];
+
   return (
-    <div className="flex min-h-full flex-col">
-      <Navbar />
-      <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-12 sm:px-6 sm:py-16">
-        {/* Editorial intro — once per session, sets tone */}
-        <header className="mb-12 sm:mb-16">
-          <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-400">
+    <main className="mx-auto w-full max-w-7xl px-4 pb-16 pt-32 sm:px-6 sm:pb-24 sm:pt-36">
+      {/* ── Editorial hero ───────────────────────────────────────────────────
+          Massive serif display, eyebrow tag, lede, then a KPI strip
+          delineated by a hairline. Wrapped in `.grain` for the paper texture
+          token defined in globals.css. */}
+      <section className="grain relative mb-16 sm:mb-24">
+        <div className="relative z-10 flex flex-col gap-7 sm:gap-9">
+          <span className="inline-flex h-7 w-fit items-center gap-2 rounded-full border border-neutral-200 bg-neutral-50 px-3 text-eyebrow font-semibold uppercase text-neutral-500">
+            <span className="h-1 w-1 rounded-full bg-ink-500" aria-hidden="true" />
             AI Prompt Gallery
-          </p>
-          <h1 className="font-serif text-4xl text-neutral-900 sm:text-5xl">
+          </span>
+
+          <h1 className="max-w-4xl font-serif text-display-1 text-neutral-900">
             Prompts, made&nbsp;visible.
           </h1>
-          <p className="mt-3 max-w-xl text-sm leading-relaxed text-neutral-500">
+
+          <p className="max-w-xl text-lede text-neutral-500">
             A curated archive of AI-generated images paired with the exact prompts that produced
             them. Browse, search, copy.
           </p>
-        </header>
 
-        {featuredImage && (
-          <section className="mb-12" aria-label="Prompt of the Day">
-            <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-400">
-              Prompt of the Day
-            </p>
-            <FeaturedCard image={featuredImage} likeCount={featuredLikeCount} />
-          </section>
-        )}
+          <dl
+            className="mt-2 flex flex-wrap items-baseline gap-x-10 gap-y-4 border-t border-neutral-200 pt-7 sm:gap-x-14"
+            aria-label="Gallery statistics"
+          >
+            {KPI_LABELS.map((label, index) => (
+              <div key={label} className="flex flex-col gap-1">
+                <dt className="text-eyebrow font-semibold uppercase text-neutral-400">
+                  {label}
+                </dt>
+                <dd className="font-serif text-3xl tracking-tight text-neutral-900 sm:text-4xl">
+                  {(kpiValues[index] ?? 0).toLocaleString()}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </section>
 
-        <section className="mb-8" aria-label="Gallery filters">
-          <GalleryControls
-            tags={popularTags}
-            activeTag={tag ?? null}
-            activeSort={sort}
-          />
+      {featuredImage && (
+        <section className="mb-16 sm:mb-20" aria-label="Prompt of the Day">
+          <p className="mb-3 text-eyebrow font-semibold uppercase text-neutral-400">
+            Prompt of the Day
+          </p>
+          <FeaturedCard image={featuredImage} likeCount={featuredLikeCount} />
         </section>
+      )}
 
-        <Suspense fallback={<SkeletonGrid />}>
-          <GalleryGrid
-            initialItems={galleryResult.items}
-            initialNextCursor={galleryResult.nextCursor}
-            sort={sort}
-            tagSlug={tag}
-            searchQuery={q}
-          />
-        </Suspense>
-      </main>
-    </div>
+      <section className="mb-8" aria-label="Gallery filters">
+        <GalleryControls
+          tags={popularTags}
+          activeTag={tag ?? null}
+          activeSort={sort}
+        />
+      </section>
+
+      <Suspense fallback={<SkeletonGrid />}>
+        <GalleryGrid
+          initialItems={galleryResult.items}
+          initialNextCursor={galleryResult.nextCursor}
+          sort={sort}
+          tagSlug={tag}
+          searchQuery={q}
+        />
+      </Suspense>
+    </main>
   );
 }

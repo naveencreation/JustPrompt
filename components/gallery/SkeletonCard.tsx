@@ -1,10 +1,22 @@
+/**
+ * Masonry-friendly placeholder that mirrors the double-bezel architecture of
+ * the real `ImageCard` so the layout feels stable as content streams in.
+ */
 export function SkeletonCard({ aspectRatio = 1.2 }: { aspectRatio?: number }) {
   return (
-    <div
-      className="skeleton w-full rounded-xl overflow-hidden"
-      style={{ paddingBottom: `${(1 / aspectRatio) * 100}%`, position: "relative" }}
-      aria-hidden="true"
-    />
+    <div className="mb-4 break-inside-avoid">
+      <div className="rounded-xl bg-neutral-100/60 p-1.5 ring-1 ring-neutral-200/60">
+        <div
+          className="skeleton w-full"
+          style={{
+            paddingBottom: `${(1 / aspectRatio) * 100}%`,
+            position: "relative",
+            borderRadius: "calc(var(--radius-xl) - 6px)",
+          }}
+          aria-hidden="true"
+        />
+      </div>
+    </div>
   );
 }
 
@@ -13,9 +25,7 @@ export function SkeletonGrid() {
   return (
     <div className="columns-1 gap-4 sm:columns-2 lg:columns-3 xl:columns-4">
       {ratios.map((ratio, index) => (
-        <div key={index} className="mb-4 break-inside-avoid">
-          <SkeletonCard aspectRatio={ratio} />
-        </div>
+        <SkeletonCard key={index} aspectRatio={ratio} />
       ))}
     </div>
   );

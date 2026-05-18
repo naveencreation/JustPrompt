@@ -89,7 +89,7 @@ export default function AdminLoginPage() {
           </div>
 
           {error && (
-            <p className="rounded-md bg-[#FDEBEC] px-3 py-2 text-[12px] text-[#9F2F2D]" role="alert">
+            <p className="rounded-md bg-rose-100 px-3 py-2 text-[12px] text-rose-700" role="alert">
               {error}
             </p>
           )}

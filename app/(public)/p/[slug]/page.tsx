@@ -5,7 +5,6 @@ import Link from "next/link";
 import { imageService } from "@/lib/services/imageService";
 import { likeService } from "@/lib/services/likeService";
 import { tagService } from "@/lib/services/tagService";
-import { Navbar } from "@/components/shared/Navbar";
 import { CopyButton } from "@/components/shared/CopyButton";
 
 // Keep in sync with REVALIDATE.IMAGE_PAGE in lib/constants/cache.ts.
@@ -68,12 +67,10 @@ export default async function ImagePage({ params }: PageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <div className="flex min-h-full flex-col">
-        <Navbar />
-        <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-12 sm:px-6 sm:py-16">
-          <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-400">
-            Prompt
-          </p>
+      <main className="mx-auto w-full max-w-6xl px-4 pb-16 pt-32 sm:px-6 sm:pb-24 sm:pt-36">
+        <p className="mb-3 text-eyebrow font-semibold uppercase text-neutral-400">
+          Prompt
+        </p>
 
           <div className="grid gap-10 lg:grid-cols-[1fr_380px]">
             <div
@@ -119,7 +116,7 @@ export default async function ImagePage({ params }: PageProps) {
                     {image.model}
                   </span>
                 )}
-                <span className="rounded-full bg-[#FDEBEC] px-2.5 py-1 uppercase tracking-[0.05em] text-[#9F2F2D]">
+                <span className="rounded-full bg-rose-100 px-2.5 py-1 uppercase tracking-[0.05em] text-rose-700">
                   {likeCount} likes
                 </span>
                 <span className="rounded-full bg-neutral-100 px-2.5 py-1 uppercase tracking-[0.05em] text-neutral-500">
@@ -168,9 +165,8 @@ export default async function ImagePage({ params }: PageProps) {
                 ))}
               </div>
             </section>
-          )}
-        </main>
-      </div>
+        )}
+      </main>
     </>
   );
 }

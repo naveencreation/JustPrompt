@@ -106,9 +106,7 @@ export function GalleryGrid({
 
         {isLoading &&
           SKELETON_RATIOS.map((ratio, i) => (
-            <div key={`sk-${i}`} className="mb-4 break-inside-avoid">
-              <SkeletonCard aspectRatio={ratio} />
-            </div>
+            <SkeletonCard key={`sk-${i}`} aspectRatio={ratio} />
           ))}
       </div>
 

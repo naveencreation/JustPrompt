@@ -228,7 +228,7 @@ export function EntryTable({ images: initialImages }: EntryTableProps) {
             <button
               onClick={handleBulkDelete}
               disabled={isSavingOrder}
-              className="rounded-md bg-[#FDEBEC] px-3 py-1.5 text-xs font-medium text-[#9F2F2D] hover:bg-[#F8D0D1] disabled:opacity-50"
+              className="rounded-md bg-rose-100 px-3 py-1.5 text-xs font-medium text-rose-700 hover:bg-rose-200 disabled:opacity-50"
             >
               Delete
             </button>
@@ -312,7 +312,7 @@ export function EntryTable({ images: initialImages }: EntryTableProps) {
                     className={cn(
                       "rounded-full px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-[0.05em]",
                       image.isPublished
-                        ? "bg-[#EDF3EC] text-[#346538]"
+                        ? "bg-sage-100 text-sage-700"
                         : "bg-neutral-100 text-neutral-500",
                     )}
                   >
@@ -359,7 +359,7 @@ export function EntryTable({ images: initialImages }: EntryTableProps) {
                         </button>
                         <button
                           onClick={() => handleDelete(image.id)}
-                          className="rounded p-1.5 text-neutral-400 transition-[background-color,color] hover:bg-[#FDEBEC] hover:text-[#9F2F2D]"
+                          className="rounded p-1.5 text-neutral-400 transition-[background-color,color] hover:bg-rose-100 hover:text-rose-700"
                           title="Delete"
                         >
                           <TrashIcon size={14} />

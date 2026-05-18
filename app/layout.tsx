@@ -48,7 +48,7 @@ export default function RootLayout({
       lang="en"
       className={`${dmSans.variable} ${newsreader.variable} ${dmMono.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col bg-[#FBFBFA] text-neutral-900">
+      <body className="flex min-h-full flex-col bg-neutral-50 text-neutral-900">
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-neutral-900 focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-neutral-50"

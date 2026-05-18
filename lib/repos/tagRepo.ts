@@ -45,6 +45,15 @@ export const tagRepo = {
     return (data ?? null) as Tag | null;
   },
 
+  async count(): Promise<number> {
+    const supabase = createAdminClient();
+    const { count, error } = await supabase
+      .from("tags")
+      .select("*", { count: "exact", head: true });
+    if (error) throw new Error(`tagRepo.count failed: ${error.message}`);
+    return count ?? 0;
+  },
+
   async listByImage(imageId: ImageId): Promise<Tag[]> {
     const supabase = createAdminClient();
     const { data, error } = await supabase

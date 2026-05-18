@@ -6,6 +6,7 @@ export const CACHE_TTL = {
   SETTINGS: 60,
   TRENDING: 300,
   LIKE_DELTA: 120,
+  PUBLIC_STATS: 300,
 } as const;
 
 /** Next.js `revalidate` exports (in seconds) */
