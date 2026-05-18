@@ -17,10 +17,10 @@ export async function createRouteClient() {
   return _createServerClient(config.supabase.url, config.supabase.anonKey, {
     cookies: {
       getAll() { return cookieStore.getAll(); },
-      setAll(pairs) {
+      setAll(pairs: Array<{ name: string; value: string; options?: Record<string, unknown> }>) {
         try {
           pairs.forEach(({ name, value, options }) =>
-            cookieStore.set(name, value, options),
+            cookieStore.set(name, value, options as Record<string, unknown>),
           );
         } catch {
           // setAll is called from Server Components where cookies are read-only.

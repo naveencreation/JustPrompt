@@ -23,16 +23,16 @@ export async function POST(request: NextRequest) {
   }
 
   if (body.data.slug) {
-    revalidateTag(CACHE_TAG.IMAGE(body.data.slug), {});
+    revalidateTag(CACHE_TAG.IMAGE(body.data.slug), "");
   }
   if (body.data.tag) {
-    revalidateTag(body.data.tag, {});
+    revalidateTag(body.data.tag, "");
   }
   if (!body.data.tag && !body.data.slug) {
     // Revalidate everything
-    revalidateTag(CACHE_TAG.GALLERY, {});
-    revalidateTag(CACHE_TAG.TAGS, {});
-    revalidateTag(CACHE_TAG.SETTINGS, {});
+    revalidateTag(CACHE_TAG.GALLERY, "");
+    revalidateTag(CACHE_TAG.TAGS, "");
+    revalidateTag(CACHE_TAG.SETTINGS, "");
   }
 
   logger.info("cache.revalidated", { tag: body.data.tag, slug: body.data.slug });

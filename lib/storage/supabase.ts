@@ -3,7 +3,6 @@ import { logger } from "@/lib/observability/logger";
 import type { SignedUploadResult, Storage } from "./index";
 
 const BUCKET = "images";
-const SIGNED_URL_EXPIRY_SECONDS = 300; // 5 minutes
 
 export class SupabaseStorage implements Storage {
   async signedUploadUrl(filename: string): Promise<SignedUploadResult> {
@@ -33,6 +32,17 @@ export class SupabaseStorage implements Storage {
     if (error) {
       logger.error("storage.delete_failed", { storageKey, error: error.message });
       throw new Error(`Failed to delete storage object: ${error.message}`);
+    }
+  }
+
+  async deleteMultiple(storageKeys: string[]): Promise<void> {
+    if (storageKeys.length === 0) return;
+    
+    const supabase = createAdminClient();
+    const { error } = await supabase.storage.from(BUCKET).remove(storageKeys);
+    if (error) {
+      logger.error("storage.delete_multiple_failed", { count: storageKeys.length, error: error.message });
+      throw new Error(`Failed to delete storage objects: ${error.message}`);
     }
   }
 

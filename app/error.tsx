@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
-import { errors } from "@/lib/observability/errors";
+import { clientErrors } from "@/lib/observability/clientErrors";
 
 export default function GlobalError({
   error,
@@ -12,7 +12,7 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
-    errors.capture(error, { digest: error.digest });
+    clientErrors.capture(error, { digest: error.digest });
   }, [error]);
 
   // Per-route error boundary: do NOT render <html>/<body> here — those live

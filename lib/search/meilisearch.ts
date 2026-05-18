@@ -19,10 +19,9 @@ export class MeilisearchSearch implements Search {
     );
   }
 
-  async query(
-    _q: string,
-    _opts?: { cursor?: Cursor | null; limit?: number },
-  ): Promise<SearchResult> {
+  async query(q: string, opts?: { cursor?: Cursor | null; limit?: number }): Promise<SearchResult> {
+    void q;
+    void opts;
     throw new Error("MeilisearchSearch.query not implemented");
   }
 }

@@ -17,6 +17,7 @@ export interface SignedUploadResult {
 export interface Storage {
   signedUploadUrl(filename: string): Promise<SignedUploadResult>;
   delete(storageKey: string): Promise<void>;
+  deleteMultiple(storageKeys: string[]): Promise<void>;
   publicUrl(storageKey: string): string;
 }
 

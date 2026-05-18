@@ -17,9 +17,9 @@ async function isMaintenanceMode(): Promise<boolean> {
       `${appConfig.supabase.url}/rest/v1/settings?id=eq.1&select=maintenance_mode`,
       {
         headers: {
-          apikey: appConfig.supabase.serviceRoleKey,
-          Authorization: `Bearer ${appConfig.supabase.serviceRoleKey}`,
-        },
+          apikey: appConfig.supabase.anonKey ?? "",
+          Authorization: `Bearer ${appConfig.supabase.serviceRoleKey ?? ""}`,
+        } as Record<string, string>,
         next: { revalidate: 0 },
       },
     );
@@ -39,10 +39,10 @@ export async function middleware(request: NextRequest) {
   const supabase = createServerClient(appConfig.supabase.url, appConfig.supabase.anonKey, {
     cookies: {
       getAll() { return request.cookies.getAll(); },
-      setAll(pairs) {
+      setAll(pairs: Array<{ name: string; value: string; options?: Record<string, unknown> }>) {
         pairs.forEach(({ name, value }) => request.cookies.set(name, value));
         pairs.forEach(({ name, value, options }) =>
-          response.cookies.set(name, value, options),
+          response.cookies.set(name, value, options as Record<string, unknown>),
         );
       },
     },

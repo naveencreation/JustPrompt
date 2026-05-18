@@ -3,7 +3,6 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import Image from "next/image";
 import { LoaderIcon, SearchIcon, CheckIcon } from "@/components/icons";
-import { cn } from "@/lib/utils/cn";
 import type { Image as ImageType } from "@/lib/db/schema";
 
 interface FeaturedImagePickerProps {

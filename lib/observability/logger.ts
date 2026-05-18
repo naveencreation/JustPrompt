@@ -29,4 +29,14 @@ class ConsoleLogger implements Logger {
   }
 }
 
-export const logger: Logger = new ConsoleLogger();
+function createLogger(): Logger {
+  if (config.logs === "axiom") {
+    // Lazy import so Axiom code is never bundled unless env var is set
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { AxiomLogger } = require("./axiom") as { AxiomLogger: new () => Logger };
+    return new AxiomLogger();
+  }
+  return new ConsoleLogger();
+}
+
+export const logger: Logger = createLogger();

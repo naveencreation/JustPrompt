@@ -14,7 +14,6 @@ import {
   AlertCircleIcon,
 } from "@/components/icons";
 import { StatCard } from "@/components/admin/dashboard/StatCard";
-import { PureCssBar } from "@/components/admin/dashboard/PureCssBar";
 import { GradientBar } from "@/components/admin/dashboard/GradientBar";
 import { ProgressRing } from "@/components/admin/dashboard/ProgressRing";
 import { ChartCard } from "@/components/admin/dashboard/ChartCard";
@@ -312,7 +311,7 @@ export default async function DashboardPage() {
           >
             <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50/80 p-3">
               <p className="text-xs text-amber-700">
-                <span className="font-semibold">These searches returned 0 results.</span> They're
+                <span className="font-semibold">These searches returned 0 results.</span> They&apos;re
                 direct content requests from your audience.
               </p>
             </div>

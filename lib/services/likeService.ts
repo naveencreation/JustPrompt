@@ -6,10 +6,11 @@ import { config } from "@/lib/config";
 import { LIKE_RATE_LIMIT } from "@/lib/constants/limits";
 import { CACHE_TTL } from "@/lib/constants/cache";
 import { TIMING } from "@/lib/constants/timing";
-import type { ImageId } from "@/lib/db/schema";
+import { ImageId } from "@/lib/db/schema";
+import type { ImageId as ImageIdType } from "@/lib/db/schema";
 
 export const likeService = {
-  async like(imageId: ImageId, ip: string): Promise<{ ok: boolean; count: number }> {
+  async like(imageId: ImageIdType, ip: string): Promise<{ ok: boolean; count: number }> {
     const allowed = await rateLimit.check(
       `like:${ip}:${imageId}`,
       LIKE_RATE_LIMIT,
@@ -51,7 +52,8 @@ export const likeService = {
     if (dirtyKeys.length === 0) return;
 
     for (const dirtyKey of dirtyKeys) {
-      const imageId = dirtyKey.replace("like:dirty:", "") as ImageId;
+      const imageIdStr = dirtyKey.replace("like:dirty:", "");
+      const imageId = ImageId.parse(imageIdStr);
       const delta = (await cache.get<number>(`like:${imageId}`)) ?? 0;
       if (delta > 0) {
         await likeRepo.incrementBy(imageId, delta);

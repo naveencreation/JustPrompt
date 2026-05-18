@@ -4,7 +4,7 @@ import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { FeaturedImagePicker } from "./FeaturedImagePicker";
-import { LoaderIcon, CheckIcon } from "@/components/icons";
+import { LoaderIcon } from "@/components/icons";
 import { cn } from "@/lib/utils/cn";
 import type { Settings } from "@/lib/db/schema";
 

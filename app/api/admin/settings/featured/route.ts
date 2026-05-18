@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { requireAdminMutation, AuthError } from "@/lib/auth";
+import { requireAdminMutation, requireAdminSession, AuthError } from "@/lib/auth";
 import { adminService } from "@/lib/services/adminService";
 import { HTTP } from "@/lib/constants/http";
 import { ImageId } from "@/lib/db/schema";
@@ -8,6 +8,20 @@ import { ImageId } from "@/lib/db/schema";
 const BodySchema = z.object({
   imageId: ImageId.nullable(),
 });
+
+export async function GET() {
+  try {
+    await requireAdminSession();
+  } catch (err) {
+    if (err instanceof AuthError) {
+      return NextResponse.json({ error: { message: err.message } }, { status: err.status });
+    }
+    throw err;
+  }
+
+  const settings = await adminService.getSettings();
+  return NextResponse.json({ featuredImageId: settings?.featuredImageId ?? null });
+}
 
 export async function POST(request: Request) {
   try {

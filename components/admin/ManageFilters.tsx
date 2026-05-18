@@ -3,7 +3,6 @@
 import { useCallback } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { ChevronDownIcon } from "@/components/icons";
-import { cn } from "@/lib/utils/cn";
 import type { Tag } from "@/lib/db/schema";
 
 interface ManageFiltersProps {

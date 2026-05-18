@@ -16,8 +16,6 @@ import type { SignedUploadResult, Storage } from "./index";
  * plain multipart POST requests.
  */
 
-const SIGNATURE_TTL_SECONDS = 600;
-
 function signParams(params: Record<string, string>, apiSecret: string): string {
   // Cloudinary signature: sort params alphabetically, join as `k=v&k=v`,
   // append api_secret, SHA-1, hex-encoded.
@@ -102,6 +100,30 @@ export class CloudinaryStorage implements Storage {
     // Cloudinary returns `{ result: "ok" | "not found" }` with HTTP 200 even
     // when the asset doesn't exist. We treat both as success — the caller's
     // intent is "ensure this asset is gone", which is satisfied either way.
+  }
+
+  async deleteMultiple(storageKeys: string[]): Promise<void> {
+    if (storageKeys.length === 0) return;
+
+    const timestamp = Math.floor(Date.now() / 1000).toString();
+    const params: Record<string, string> = { public_ids: JSON.stringify(storageKeys), timestamp };
+    const signature = signParams(params, this.apiSecret);
+
+    const body = new URLSearchParams({
+      ...params,
+      api_key: this.apiKey,
+      signature,
+    });
+
+    const res = await fetch(
+      `https://api.cloudinary.com/v1_1/${this.cloudName}/image/delete_by_token`,
+      { method: "POST", body },
+    );
+    if (!res.ok) {
+      const detail = await res.text().catch(() => "");
+      logger.error("storage.delete_multiple_failed", { count: storageKeys.length, status: res.status, detail });
+      throw new Error(`Cloudinary batch delete failed (${res.status}): ${detail}`);
+    }
   }
 
   publicUrl(storageKey: string): string {

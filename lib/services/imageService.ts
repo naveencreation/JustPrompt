@@ -3,6 +3,7 @@ import { imageRepo } from "@/lib/repos/imageRepo";
 import { tagRepo } from "@/lib/repos/tagRepo";
 import { cache } from "@/lib/cache/factory";
 import { storage } from "@/lib/storage/factory";
+import { searchSync } from "@/lib/search/sync";
 import { logger } from "@/lib/observability/logger";
 import { errors } from "@/lib/observability/errors";
 import { CACHE_TAG, CACHE_TTL } from "@/lib/constants/cache";
@@ -73,6 +74,11 @@ export const imageService = {
       await tagRepo.attachToImage(image.id, tags.map((t) => Number(t.id)));
     }
 
+    // Sync to search index
+    await searchSync.index(image).catch((err) => {
+      errors.capture(err, { op: "image.create.search_index", imageId: image.id });
+    });
+
     logger.info("image.created", { imageId: image.id, slug: image.slug });
 
     if (image.isPublished) {
@@ -95,6 +101,11 @@ export const imageService = {
         await tagRepo.attachToImage(id, tags.map((t) => Number(t.id)));
       }
     }
+
+    // Sync updated image to search index
+    await searchSync.index(image).catch((err) => {
+      errors.capture(err, { op: "image.update.search_index", imageId: id });
+    });
 
     await cache.del(`image:slug:${image.slug}`);
     revalidateTag(CACHE_TAG.GALLERY);
@@ -123,6 +134,12 @@ export const imageService = {
     }
 
     await imageRepo.delete(id);
+    
+    // Remove from search index
+    await searchSync.remove(id).catch((err) => {
+      errors.capture(err, { op: "image.delete.search_index", imageId: id });
+    });
+
     await cache.del(`image:slug:${image.slug}`);
     revalidateTag(CACHE_TAG.GALLERY);
     revalidateTag(CACHE_TAG.IMAGE(image.slug));
@@ -132,10 +149,7 @@ export const imageService = {
   },
 
   async getAdminStats() {
-    const [totalImages, totalLikes] = await Promise.all([
-      imageRepo.count(),
-      imageRepo.listAll({ limit: 1 }),
-    ]);
+    const totalImages = await imageRepo.count();
     return { totalImages, totalLikes: 0 }; // totalLikes from likeService
   },
 };

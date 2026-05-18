@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
-import { errors } from "@/lib/observability/errors";
+import { clientErrors } from "@/lib/observability/clientErrors";
 
 // Note: do NOT import `lib/config` here — this is a client component and
 // `config` validates server-only env vars that are undefined in the browser.
@@ -16,7 +16,7 @@ export default function AdminError({
   reset: () => void;
 }) {
   useEffect(() => {
-    errors.capture(error, { segment: "admin", digest: error.digest });
+    clientErrors.capture(error, { segment: "admin", digest: error.digest });
   }, [error]);
 
   return (

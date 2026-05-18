@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
-import { errors } from "@/lib/observability/errors";
+import { clientErrors } from "@/lib/observability/clientErrors";
 
 export default function PublicError({
   error,
@@ -12,7 +12,7 @@ export default function PublicError({
   reset: () => void;
 }) {
   useEffect(() => {
-    errors.capture(error, { segment: "public", digest: error.digest });
+    clientErrors.capture(error, { segment: "public", digest: error.digest });
   }, [error]);
 
   return (
