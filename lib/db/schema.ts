@@ -11,7 +11,19 @@ export type TagId = z.infer<typeof TagId>;
 export const StorageProviderSchema = z.enum(["supabase", "cloudinary"]);
 export type StorageProvider = z.infer<typeof StorageProviderSchema>;
 
-export const ModelSchema = z.enum(["sdxl", "dalle3", "midjourney", "flux", "other"]).nullable();
+export const ModelSchema = z.enum([
+  "sdxl",
+  "dalle3",
+  "midjourney",
+  "flux",
+  "imagen3",
+  "ideogram",
+  "emu",
+  "firefly",
+  "sd3",
+  "leonardo",
+  "other",
+]).nullable();
 export type Model = z.infer<typeof ModelSchema>;
 
 export const ImageSchema = z.object({

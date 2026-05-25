@@ -21,6 +21,7 @@ import { EditImageModal } from "./EditImageModal";
 import { ConfirmModal } from "./ConfirmModal";
 import { cn } from "@/lib/utils/cn";
 import type { Image as ImageType } from "@/lib/db/schema";
+import { getModelLabel } from "@/lib/constants/models";
 
 interface EntryTableProps {
   images: ImageType[];
@@ -320,7 +321,7 @@ export function EntryTable({ images: initialImages }: EntryTableProps) {
                             </p>
                           </td>
                           <td className="px-4 py-3 text-[11px] uppercase tracking-[0.05em] text-neutral-500">
-                            {image.model ?? "—"}
+                            {image.model ? getModelLabel(image.model) : "—"}
                           </td>
                           <td className="px-4 py-3">
                             <span

@@ -9,7 +9,7 @@ import { UploadIcon, CloseIcon, LoaderIcon, EyeIcon, ChevronDownIcon } from "@/c
 import { cn } from "@/lib/utils/cn";
 import { CardPreview } from "./CardPreview";
 
-const MODEL_OPTIONS = ["sdxl", "dalle3", "midjourney", "flux", "other"] as const;
+import { MODEL_OPTIONS } from "@/lib/constants/models";
 
 const SignatureSchema = z.object({
   uploadUrl: z.string(),
@@ -220,7 +220,7 @@ export function UploadForm() {
             >
               <option value="">Unknown</option>
               {MODEL_OPTIONS.map((m) => (
-                <option key={m} value={m}>{m}</option>
+                <option key={m.value} value={m.value}>{m.label}</option>
               ))}
             </select>
             <ChevronDownIcon size={16} className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-neutral-400" />

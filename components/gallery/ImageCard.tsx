@@ -6,6 +6,7 @@ import { CopyIcon, CheckIcon, HeartIcon } from "@/components/icons";
 import { cn } from "@/lib/utils/cn";
 import { TIMING } from "@/lib/constants/timing";
 import type { Image as ImageType } from "@/lib/db/schema";
+import { getModelLabel } from "@/lib/constants/models";
 
 interface ImageCardProps {
   image: ImageType;
@@ -179,7 +180,7 @@ export function ImageCard({
                   <div className="flex items-center gap-2">
                     {image.model && (
                       <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] uppercase tracking-[0.1em] text-neutral-300">
-                        {image.model}
+                        {getModelLabel(image.model)}
                       </span>
                     )}
                     <button

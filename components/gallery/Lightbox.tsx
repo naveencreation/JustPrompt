@@ -6,6 +6,7 @@ import { CloseIcon, CopyIcon, HeartIcon, ExternalLinkIcon, CheckIcon } from "@/c
 import { cn } from "@/lib/utils/cn";
 import { TIMING } from "@/lib/constants/timing";
 import type { Image as ImageType } from "@/lib/db/schema";
+import { getModelLabel } from "@/lib/constants/models";
 
 interface LightboxProps {
   image: ImageType;
@@ -88,7 +89,7 @@ export function Lightbox({ image, likeCount = 0, onClose }: LightboxProps) {
           <div className="flex flex-wrap gap-2 text-[10px]">
             {image.model && (
               <span className="rounded-full bg-white/10 px-2.5 py-1 uppercase tracking-[0.1em] text-neutral-300">
-                {image.model}
+                {getModelLabel(image.model)}
               </span>
             )}
             <span className="flex items-center gap-1 rounded-full bg-white/10 px-2.5 py-1 text-neutral-300">
