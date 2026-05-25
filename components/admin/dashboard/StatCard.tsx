@@ -12,28 +12,28 @@ interface StatCardProps {
 const accentMap = {
   default: {
     icon: "text-neutral-400",
-    bg: "from-neutral-50 to-neutral-50/50",
+    bg: "bg-neutral-50",
     border: "border-neutral-200",
   },
   emerald: {
-    icon: "text-emerald-600",
-    bg: "from-emerald-50/80 to-emerald-50/30",
-    border: "border-emerald-200",
+    icon: "text-neutral-700",
+    bg: "bg-neutral-50",
+    border: "border-neutral-200",
   },
   blue: {
-    icon: "text-blue-600",
-    bg: "from-blue-50/80 to-blue-50/30",
-    border: "border-blue-200",
+    icon: "text-neutral-600",
+    bg: "bg-neutral-50",
+    border: "border-neutral-200",
   },
   amber: {
-    icon: "text-amber-600",
-    bg: "from-amber-50/80 to-amber-50/30",
-    border: "border-amber-200",
+    icon: "text-neutral-500",
+    bg: "bg-neutral-50",
+    border: "border-neutral-200",
   },
   rose: {
-    icon: "text-rose-600",
-    bg: "from-rose-50/80 to-rose-50/30",
-    border: "border-rose-200",
+    icon: "text-neutral-700",
+    bg: "bg-neutral-50",
+    border: "border-neutral-200",
   },
 };
 

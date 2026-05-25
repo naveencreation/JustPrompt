@@ -6,11 +6,11 @@ interface GradientBarProps {
 }
 
 const colorMap = {
-  neutral: "from-neutral-400 to-neutral-600",
-  emerald: "from-emerald-400 to-emerald-600",
-  blue: "from-blue-400 to-blue-600",
-  amber: "from-amber-400 to-amber-600",
-  rose: "from-rose-400 to-rose-600",
+  neutral: "from-neutral-300 to-neutral-400",
+  emerald: "from-neutral-400 to-neutral-500",
+  blue: "from-neutral-500 to-neutral-600",
+  amber: "from-neutral-600 to-neutral-700",
+  rose: "from-neutral-700 to-neutral-800",
 };
 
 export function GradientBar({

@@ -9,12 +9,10 @@ interface ChartCardProps {
 }
 
 const accentClasses = {
-  emerald:
-    "border-l-4 border-l-emerald-500 bg-gradient-to-br from-emerald-50/30 to-transparent",
-  blue: "border-l-4 border-l-blue-500 bg-gradient-to-br from-blue-50/30 to-transparent",
-  amber:
-    "border-l-4 border-l-amber-500 bg-gradient-to-br from-amber-50/30 to-transparent",
-  rose: "border-l-4 border-l-rose-500 bg-gradient-to-br from-rose-50/30 to-transparent",
+  emerald: "border border-neutral-200",
+  blue: "border border-neutral-200",
+  amber: "border border-neutral-200",
+  rose: "border border-neutral-200",
   default: "border border-neutral-200",
 };
 
@@ -27,7 +25,7 @@ export function ChartCard({
 }: ChartCardProps) {
   return (
     <div
-      className={`rounded-lg border border-neutral-200 bg-white p-6 shadow-sm transition-all duration-300 hover:shadow-md ${accentClasses[accent]} ${className}`}
+      className={`rounded-lg bg-neutral-50 p-6 shadow-sm transition-all duration-300 hover:shadow-md ${accentClasses[accent]} ${className}`}
     >
       <div className="mb-5 flex items-center gap-3">
         {icon && <div className="text-neutral-400">{icon}</div>}

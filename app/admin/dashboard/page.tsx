@@ -41,14 +41,14 @@ export default async function DashboardPage() {
   const maxFailedCount = failedSearches[0]?.count ?? 1;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-neutral-50 via-white to-neutral-50/50 p-8">
+    <div className="min-h-screen bg-neutral-50 p-8">
       <div className="mx-auto w-full max-w-7xl">
         {/* ── Header ─────────────────────────────────────────────────────── */}
         <header className="mb-12 flex items-end justify-between">
           <div>
             <div className="mb-2 flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg">
-                <DashboardIcon size={24} className="text-white" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-neutral-900 shadow-lg">
+                <DashboardIcon size={24} className="text-neutral-50" />
               </div>
               <h1 className="font-serif text-4xl font-bold tracking-tight text-neutral-900">
                 Dashboard
@@ -64,7 +64,7 @@ export default async function DashboardPage() {
         {/* ── Section A: Key Metrics Grid ─────────────────────────────────────────── */}
         <section className="mb-10">
           <div className="mb-6 flex items-center gap-2">
-            <div className="h-1 w-8 rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400" />
+            <div className="h-1 w-8 rounded-full bg-neutral-800" />
             <h2 className="text-xs font-semibold uppercase tracking-widest text-neutral-600">
               Key Metrics
             </h2>
@@ -108,9 +108,9 @@ export default async function DashboardPage() {
             className="lg:col-span-1"
           >
             <div className="space-y-5">
-              <div className="rounded-lg bg-gradient-to-br from-blue-50 to-blue-50/30 p-4">
-                <p className="text-xs uppercase tracking-widest text-blue-600">Detail Views</p>
-                <p className="mt-2 font-serif text-3xl font-bold text-blue-900">
+              <div className="rounded-lg bg-neutral-100 p-4">
+                <p className="text-xs uppercase tracking-widest text-neutral-600">Detail Views</p>
+                <p className="mt-2 font-serif text-3xl font-bold text-neutral-900">
                   {totalViews.toLocaleString()}
                 </p>
               </div>
@@ -132,7 +132,7 @@ export default async function DashboardPage() {
               className="lg:col-span-1"
             >
               <div className="space-y-4">
-                <div className="relative h-32 w-full overflow-hidden rounded-xl border border-rose-200 bg-rose-50">
+                <div className="relative h-32 w-full overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100">
                   <Image
                     src={mostLiked.imageUrl}
                     alt=""
@@ -146,7 +146,7 @@ export default async function DashboardPage() {
                   </p>
                   <Link
                     href={`/p/${mostLiked.slug}`}
-                    className="mt-3 inline-block text-xs font-semibold uppercase tracking-wider text-rose-600 transition-colors hover:text-rose-700"
+                    className="mt-3 inline-block text-xs font-semibold uppercase tracking-wider text-neutral-700 transition-colors hover:text-neutral-900"
                   >
                     View →
                   </Link>
@@ -184,7 +184,7 @@ export default async function DashboardPage() {
             ) : (
               <ul className="space-y-4">
                 {topCopied.slice(0, 6).map(({ image, copyCount, likeCount }) => (
-                  <li key={image.id} className="group rounded-lg bg-neutral-50/50 p-3 transition-all hover:bg-blue-50/50">
+                  <li key={image.id} className="group rounded-lg bg-neutral-50/50 p-3 transition-all hover:bg-neutral-100/50">
                     <div className="mb-2 flex items-start gap-3">
                       <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg border border-neutral-200 bg-neutral-100">
                         <Image
@@ -201,11 +201,11 @@ export default async function DashboardPage() {
                         </p>
                         <div className="mt-1 flex gap-2 text-[11px] text-neutral-500">
                           <span className="flex items-center gap-1">
-                            <CopyIcon size={10} className="text-blue-500" />
+                            <CopyIcon size={10} className="text-neutral-500" />
                             {copyCount}
                           </span>
                           <span className="flex items-center gap-1">
-                            <HeartIcon size={10} className="text-rose-500" />
+                            <HeartIcon size={10} className="text-neutral-500" />
                             {likeCount}
                           </span>
                         </div>
@@ -218,7 +218,7 @@ export default async function DashboardPage() {
                     />
                     <Link
                       href={`/p/${image.slug}`}
-                      className="mt-2 inline-block text-[10px] font-semibold uppercase tracking-wider text-blue-600 opacity-0 transition-opacity group-hover:opacity-100"
+                      className="mt-2 inline-block text-[10px] font-semibold uppercase tracking-wider text-neutral-700 opacity-0 transition-opacity group-hover:opacity-100"
                     >
                       View →
                     </Link>
@@ -238,7 +238,7 @@ export default async function DashboardPage() {
               {recentImages.map((img) => (
                 <li
                   key={img.id}
-                  className="group flex items-center gap-3 rounded-lg bg-neutral-50/50 p-3 transition-all hover:bg-emerald-50/50"
+                  className="group flex items-center gap-3 rounded-lg bg-neutral-50/50 p-3 transition-all hover:bg-neutral-100/50"
                 >
                   <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg border border-neutral-200 bg-neutral-100">
                     <Image
@@ -255,9 +255,9 @@ export default async function DashboardPage() {
                     </p>
                     <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
                       {img.isPublished ? (
-                        <span className="text-emerald-600">✓ Published</span>
+                        <span className="text-neutral-700">✓ Published</span>
                       ) : (
-                        <span className="text-amber-600">○ Draft</span>
+                        <span className="text-neutral-500">○ Draft</span>
                       )}
                     </p>
                   </div>
@@ -287,7 +287,7 @@ export default async function DashboardPage() {
                       <span className="truncate font-mono text-xs font-medium text-neutral-700">
                         {query}
                       </span>
-                      <span className="shrink-0 rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-700">
+                      <span className="shrink-0 rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-semibold text-neutral-700">
                         {count}
                       </span>
                     </div>
@@ -307,10 +307,10 @@ export default async function DashboardPage() {
             title="Content Gaps"
             icon={<AlertCircleIcon size={16} />}
             accent="amber"
-            className="border-l-4 border-l-amber-500 bg-gradient-to-br from-amber-50/60 to-transparent"
+            className="border-neutral-300 bg-neutral-50"
           >
-            <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50/80 p-3">
-              <p className="text-xs text-amber-700">
+            <div className="mb-4 rounded-lg border border-neutral-200 bg-neutral-100/80 p-3">
+              <p className="text-xs text-neutral-700">
                 <span className="font-semibold">These searches returned 0 results.</span> They&apos;re
                 direct content requests from your audience.
               </p>
@@ -323,12 +323,12 @@ export default async function DashboardPage() {
             ) : (
               <ul className="space-y-3">
                 {failedSearches.map(({ query, count }) => (
-                  <li key={query} className="rounded-lg bg-amber-50/40 p-3">
+                  <li key={query} className="rounded-lg bg-neutral-100/40 p-3">
                     <div className="mb-2 flex items-center justify-between gap-2">
                       <span className="truncate font-mono text-xs font-medium text-neutral-700">
                         {query}
                       </span>
-                      <span className="shrink-0 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-700">
+                      <span className="shrink-0 rounded-full bg-neutral-200 px-2.5 py-1 text-xs font-semibold text-neutral-700">
                         {count}×
                       </span>
                     </div>
@@ -348,7 +348,7 @@ export default async function DashboardPage() {
         <section className="flex gap-3 pt-6">
           <Link
             href="/admin/upload"
-            className="group flex items-center gap-2 rounded-lg bg-gradient-to-br from-emerald-600 to-emerald-700 px-6 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:shadow-xl hover:shadow-emerald-500/30 active:scale-95"
+            className="group flex items-center gap-2 rounded-lg bg-neutral-900 px-6 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:shadow-xl hover:bg-neutral-800 active:scale-95"
           >
             <UploadIcon size={16} />
             Upload new

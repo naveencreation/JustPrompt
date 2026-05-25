@@ -6,10 +6,10 @@ interface ProgressRingProps {
 }
 
 const colorMap = {
-  emerald: "stroke-emerald-500",
-  blue: "stroke-blue-500",
-  amber: "stroke-amber-500",
-  rose: "stroke-rose-500",
+  emerald: "stroke-neutral-800",
+  blue: "stroke-neutral-700",
+  amber: "stroke-neutral-600",
+  rose: "stroke-neutral-500",
 };
 
 export function ProgressRing({
