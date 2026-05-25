@@ -21,13 +21,14 @@ import { EditImageModal } from "./EditImageModal";
 import { ConfirmModal } from "./ConfirmModal";
 import { cn } from "@/lib/utils/cn";
 import type { Image as ImageType } from "@/lib/db/schema";
-import { getModelLabel } from "@/lib/constants/models";
+import { useModels } from "@/lib/hooks/useModels";
 
 interface EntryTableProps {
   images: ImageType[];
 }
 
 export function EntryTable({ images: initialImages }: EntryTableProps) {
+  const { models } = useModels();
   const router = useRouter();
   const [images, setImages] = useState(initialImages);
   const [loadingId, setLoadingId] = useState<string | null>(null);
@@ -58,7 +59,7 @@ export function EntryTable({ images: initialImages }: EntryTableProps) {
       
       setImages((prev) =>
         prev.map((img) =>
-          img.id === image.id ? { ...img, isPublished: !img.isPublished } : img,
+          img.id === image.id ? { ...img, isPublished: !image.isPublished } : img,
         ),
       );
       toast.success(image.isPublished ? "Unpublished successfully" : "Published successfully");
@@ -320,8 +321,8 @@ export function EntryTable({ images: initialImages }: EntryTableProps) {
                               {image.prompt}
                             </p>
                           </td>
-                          <td className="px-4 py-3 text-[11px] uppercase tracking-[0.05em] text-neutral-500">
-                            {image.model ? getModelLabel(image.model) : "—"}
+                          <td className="whitespace-nowrap px-4 py-3 text-[13px] text-neutral-600">
+                            {models.find(m => m.slug === image.model)?.shortName || image.model || "—"}
                           </td>
                           <td className="px-4 py-3">
                             <span

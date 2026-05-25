@@ -7,7 +7,7 @@ import { CopyIcon, HeartIcon, CheckIcon, ExternalLinkIcon } from "@/components/i
 import { cn } from "@/lib/utils/cn";
 import { TIMING } from "@/lib/constants/timing";
 import type { Image as ImageType } from "@/lib/db/schema";
-import { getModelLabel } from "@/lib/constants/models";
+import { useModelLabel } from "@/lib/hooks/useModels";
 
 interface FeaturedCardProps {
   image: ImageType;
@@ -15,6 +15,7 @@ interface FeaturedCardProps {
 }
 
 export function FeaturedCard({ image, likeCount = 0 }: FeaturedCardProps) {
+  const modelLabel = useModelLabel(image.model);
   const [copied, setCopied] = useState(false);
 
   const handleCopy = useCallback(async () => {
@@ -52,7 +53,7 @@ export function FeaturedCard({ image, likeCount = 0 }: FeaturedCardProps) {
           <div className="flex flex-wrap items-center gap-2">
             {image.model && (
               <span className="rounded-full bg-neutral-100 px-2.5 py-1 text-[10px] uppercase tracking-[0.1em] text-neutral-600">
-                {getModelLabel(image.model)}
+                {modelLabel}
               </span>
             )}
             <span className="flex items-center gap-1 rounded-full bg-[#FDEBEC] px-2.5 py-1 text-[10px] tracking-[0.05em] text-[#9F2F2D]">

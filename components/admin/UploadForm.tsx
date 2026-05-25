@@ -5,11 +5,12 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { z } from "zod";
-import { UploadIcon, CloseIcon, LoaderIcon, EyeIcon, ChevronDownIcon } from "@/components/icons";
+import { UploadIcon, CloseIcon, LoaderIcon, EyeIcon } from "@/components/icons";
 import { cn } from "@/lib/utils/cn";
 import { CardPreview } from "./CardPreview";
 
-import { MODEL_OPTIONS } from "@/lib/constants/models";
+import { ModelCombobox } from "./ModelCombobox";
+import { TagCombobox } from "./TagCombobox";
 
 const SignatureSchema = z.object({
   uploadUrl: z.string(),
@@ -29,7 +30,7 @@ export function UploadForm() {
   const [prompt, setPrompt] = useState("");
   const [description, setDescription] = useState("");
   const [model, setModel] = useState<string>("");
-  const [tags, setTags] = useState("");
+  const [tags, setTags] = useState<string[]>([]);
   const [isPublished, setIsPublished] = useState(true);
   const [showPreview, setShowPreview] = useState(false);
 
@@ -107,7 +108,7 @@ export function UploadForm() {
             prompt: prompt.trim(),
             description: description.trim() || null,
             model: model || null,
-            tags: tags.split(",").map((t) => t.trim()).filter(Boolean),
+            tags: tags,
             isPublished,
           }),
         });
@@ -212,35 +213,12 @@ export function UploadForm() {
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="mb-1.5 block text-[12px] font-medium text-neutral-700">Model</label>
-          <div className="relative">
-            <select
-              value={model}
-              onChange={(e) => setModel(e.target.value)}
-              className="appearance-none w-full rounded-md border border-neutral-200 bg-white pl-3 pr-8 py-2 text-sm focus:border-neutral-400 focus:outline-none transition-[border-color,box-shadow]"
-            >
-              <option value="">Unknown</option>
-              {MODEL_OPTIONS.map((m) => (
-                <option key={m.value} value={m.value}>{m.label}</option>
-              ))}
-            </select>
-            <ChevronDownIcon size={16} className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-neutral-400" />
-          </div>
+          <ModelCombobox value={model} onChange={setModel} />
         </div>
 
         <div>
-          <label className="mb-1.5 block text-[12px] font-medium text-neutral-700">
-            Tags{" "}
-            <span className="text-[10px] font-normal uppercase tracking-[0.1em] text-neutral-400">
-              comma-separated
-            </span>
-          </label>
-          <input
-            type="text"
-            value={tags}
-            onChange={(e) => setTags(e.target.value)}
-            placeholder="portrait, fantasy, landscape"
-            className="w-full rounded-md border border-neutral-200 bg-white px-3 py-2 text-sm focus:border-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-100"
-          />
+          <label className="mb-1.5 block text-[12px] font-medium text-neutral-700">Tags</label>
+          <TagCombobox value={tags} onChange={setTags} />
         </div>
       </div>
 

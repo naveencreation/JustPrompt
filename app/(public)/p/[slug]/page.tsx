@@ -8,7 +8,7 @@ import { tagService } from "@/lib/services/tagService";
 import { Navbar } from "@/components/shared/Navbar";
 import { CopyButton } from "@/components/shared/CopyButton";
 import { ViewTracker } from "@/components/shared/ViewTracker";
-import { getModelLabel } from "@/lib/constants/models";
+import { modelService } from "@/lib/services/modelService";
 
 // Keep in sync with REVALIDATE.IMAGE_PAGE in lib/constants/cache.ts.
 export const revalidate = 3600;
@@ -46,11 +46,14 @@ export default async function ImagePage({ params }: PageProps) {
   const image = await imageService.getBySlug(slug);
   if (!image || !image.isPublished) notFound();
 
-  const [tags, likeCount, related] = await Promise.all([
+  const [tags, likeCount, related, models] = await Promise.all([
     tagService.listByImage(image.id),
     likeService.getCount(image.id),
     imageService.listGallery({ limit: 6 }),
+    modelService.listAll(),
   ]);
+
+  const modelLabel = image.model ? (models.find(m => m.slug === image.model)?.shortName || image.model) : null;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -120,7 +123,7 @@ export default async function ImagePage({ params }: PageProps) {
               <div className="flex flex-wrap gap-2 text-[10px]">
                 {image.model && (
                   <span className="rounded-full bg-neutral-100 px-2.5 py-1 uppercase tracking-[0.1em] text-neutral-500">
-                    {getModelLabel(image.model)}
+                    {modelLabel}
                   </span>
                 )}
                 <span className="rounded-full bg-[#FDEBEC] px-2.5 py-1 uppercase tracking-[0.05em] text-[#9F2F2D]">
