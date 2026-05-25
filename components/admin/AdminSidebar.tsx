@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -27,6 +27,17 @@ type AdminSidebarProps = {
 
 export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    try {
+      await fetch("/api/admin/auth", { method: "DELETE" });
+      router.push("/admin/login");
+      router.refresh();
+    } catch (err) {
+      console.error("Failed to sign out", err);
+    }
+  };
 
   return (
     <aside
@@ -111,12 +122,13 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
       </nav>
 
       <div className={cn("mt-auto border-t border-neutral-100 p-3", isCollapsed && "flex justify-center")}>
-        <Link
-          href="/admin/login"
+        <button
+          type="button"
+          onClick={handleSignOut}
           title="Sign out"
           className={cn(
-            "flex items-center rounded-md py-2 text-[13px] text-neutral-500 transition-[background-color,color] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-neutral-100 hover:text-neutral-700",
-            isCollapsed ? "justify-center px-2" : "gap-2.5 px-3",
+            "flex w-full items-center rounded-md py-2 text-[13px] text-neutral-500 transition-[background-color,color] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-neutral-100 hover:text-neutral-700",
+            isCollapsed ? "justify-center px-2" : "gap-2.5 px-3 text-left",
           )}
         >
           <LogoutIcon size={16} />
@@ -130,7 +142,7 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
           >
             Sign out
           </span>
-        </Link>
+        </button>
       </div>
     </aside>
   );
