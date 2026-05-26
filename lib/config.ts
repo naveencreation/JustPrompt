@@ -47,6 +47,10 @@ function parseEnv() {
   if (process.env["NODE_ENV"] === "test") {
     return envSchema.partial().parse(process.env);
   }
+  if (typeof window !== "undefined") {
+    // In the browser, server-only secrets are omitted from process.env, so strict validation fails.
+    return envSchema.partial().parse(process.env);
+  }
   const result = envSchema.safeParse(process.env);
   if (!result.success) {
     const missing = result.error.issues.map((i) => `  • ${i.path.join(".")}: ${i.message}`);

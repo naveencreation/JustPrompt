@@ -292,3 +292,42 @@ export function AlertCircleIcon(props: IconProps) {
     </Icon>
   );
 }
+
+// ─── Social & Share icons ──────────────────────────────────────────────────
+
+export function TwitterIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M4 4h4.27l11.73 16h-4.27Z" />
+      <path d="M20 4L4 20" />
+    </Icon>
+  );
+}
+
+export function PinterestIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M9 19c.5-2 1.5-6.5 1.5-8.5C10.5 8 10 7.5 12 7.5s3.5 1.5 3.5 3.5c0 2.5-1.5 4.5-3.5 4.5H9.5" />
+    </Icon>
+  );
+}
+
+export function WhatsAppIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M12 21c-1.7 0-3.3-.47-4.7-1.28L3 21l1.1-4.3A8.93 8.93 0 0 1 3 12a9 9 0 0 1 9-9 9 9 0 0 1 9 9 9 9 0 0 1-9 9z" />
+      <path d="M17 15.5c-1.2 1.2-3.8.2-6-2s-3.2-4.8-2-6l1-1c.5-.5 1.2-.5 1.7 0l1.5 1.5c.5.5.5 1.2 0 1.7l-.5.5c.3.5.7.9 1.2 1.2l.5-.5c.5-.5 1.2-.5 1.7 0l1.5 1.5c.5.5.5 1.2 0 1.7z" />
+    </Icon>
+  );
+}
+
+export function ShareIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7" />
+      <path d="M12 3v12" />
+      <path d="M8 7l4-4 4 4" />
+    </Icon>
+  );
+}

@@ -10,6 +10,7 @@ import { CopyButton } from "@/components/shared/CopyButton";
 import { ViewTracker } from "@/components/shared/ViewTracker";
 import { LikeButton } from "@/components/shared/LikeButton";
 import { AdSlot } from "@/components/shared/AdSlot";
+import { ShareButtons } from "@/components/shared/ShareButtons";
 import { config } from "@/lib/config";
 import { modelService } from "@/lib/services/modelService";
 
@@ -139,6 +140,12 @@ export default async function ImagePage({ params }: PageProps) {
                   {new Date(image.createdAt).toLocaleDateString()}
                 </span>
               </div>
+
+              <ShareButtons
+                url={`${config.appUrl}/p/${image.slug}`}
+                title={image.prompt}
+                imageUrl={image.imageUrl}
+              />
 
               <div className="rounded-md border border-neutral-200 bg-white p-5">
                 <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.15em] text-neutral-400">

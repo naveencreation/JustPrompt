@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { config } from "@/lib/config";
 import { cn } from "@/lib/utils/cn";
 
 declare global {
@@ -24,7 +23,7 @@ export function AdSlot({
   className,
 }: AdSlotProps) {
   const initialized = useRef(false);
-  const client = config.adsenseClient;
+  const client = process.env.NEXT_PUBLIC_ADSENSE_CLIENT;
 
   useEffect(() => {
     if (!client || !slotId) return;
