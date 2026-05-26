@@ -39,6 +39,20 @@ export const likeRepo = {
     }
   },
 
+  async getBatch(imageIds: ImageId[]): Promise<Record<string, number>> {
+    if (imageIds.length === 0) return {};
+    const supabase = createAdminClient();
+    const { data } = await supabase
+      .from("like_counts")
+      .select("image_id, count")
+      .in("image_id", imageIds);
+    const result: Record<string, number> = {};
+    for (const row of (data ?? []) as { image_id: string; count: number }[]) {
+      result[row.image_id] = row.count;
+    }
+    return result;
+  },
+
   async totalLikes(): Promise<number> {
     const supabase = createAdminClient();
     const { data } = await supabase.from("like_counts").select("count");

@@ -10,6 +10,7 @@ import type { Image as ImageType, Sort } from "@/lib/db/schema";
 interface GalleryGridProps {
   initialItems: ImageType[];
   initialNextCursor: string | null;
+  initialLikeCounts?: Record<string, number>;
   sort?: Sort;
   tagSlug?: string;
   searchQuery?: string;
@@ -21,6 +22,7 @@ const SKELETON_RATIOS = [1.1, 0.85, 1.3, 0.95];
 export function GalleryGrid({
   initialItems,
   initialNextCursor,
+  initialLikeCounts = {},
   sort = "new",
   tagSlug,
   searchQuery,
@@ -29,6 +31,7 @@ export function GalleryGrid({
   const [nextCursor, setNextCursor] = useState<string | null>(initialNextCursor);
   const [isLoading, setIsLoading] = useState(false);
   const [activeLightbox, setActiveLightbox] = useState<ImageType | null>(null);
+  const [likeCounts, setLikeCounts] = useState<Record<string, number>>(initialLikeCounts);
   const observerRef = useRef<IntersectionObserver | null>(null);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
@@ -37,6 +40,7 @@ export function GalleryGrid({
   if (initialItems !== prevInitialItems) {
     setItems(initialItems);
     setNextCursor(initialNextCursor);
+    setLikeCounts(initialLikeCounts);
     setPrevInitialItems(initialItems);
   }
 
@@ -57,9 +61,16 @@ export function GalleryGrid({
       const res = await fetch(endpoint);
       if (!res.ok) return;
 
-      const json = (await res.json()) as { items: ImageType[]; nextCursor: string | null };
+      const json = (await res.json()) as {
+        items: ImageType[];
+        nextCursor: string | null;
+        likeCounts?: Record<string, number>;
+      };
       setItems((prev) => [...prev, ...json.items]);
       setNextCursor(json.nextCursor);
+      if (json.likeCounts) {
+        setLikeCounts((prev) => ({ ...prev, ...json.likeCounts }));
+      }
     } catch {
       // Silently fail — user can scroll back up and retry
     } finally {
@@ -95,6 +106,7 @@ export function GalleryGrid({
           <ImageCard
             key={image.id}
             image={image}
+            likeCount={likeCounts[image.id] ?? 0}
             priority={index < PRIORITY_IMAGE_COUNT}
             onOpen={setActiveLightbox}
             animationDelay={Math.min(

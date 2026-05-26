@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { imageService } from "@/lib/services/imageService";
 import { tagService } from "@/lib/services/tagService";
+import { likeService } from "@/lib/services/likeService";
 import { Navbar } from "@/components/shared/Navbar";
 import { GalleryGrid } from "@/components/gallery/GalleryGrid";
 
@@ -24,6 +25,7 @@ export default async function TagPage({ params }: PageProps) {
   if (!tag) notFound();
 
   const result = await imageService.listGallery({ tagSlug: slug });
+  const initialLikeCounts = await likeService.getBatch(result.items.map((img) => img.id));
 
   return (
     <div className="flex min-h-full flex-col">
@@ -44,6 +46,7 @@ export default async function TagPage({ params }: PageProps) {
         <GalleryGrid
           initialItems={result.items}
           initialNextCursor={result.nextCursor}
+          initialLikeCounts={initialLikeCounts}
           tagSlug={slug}
         />
       </main>

@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { imageService } from "@/lib/services/imageService";
+import { likeService } from "@/lib/services/likeService";
 import { requireAdminMutation, AuthError } from "@/lib/auth";
 import { storage } from "@/lib/storage/factory";
 import { errors } from "@/lib/observability/errors";
@@ -31,7 +32,9 @@ export async function GET(request: NextRequest) {
       limit: query.data.limit,
     });
 
-    return NextResponse.json(result, {
+    const likeCounts = await likeService.getBatch(result.items.map((img) => img.id));
+
+    return NextResponse.json({ ...result, likeCounts }, {
       headers: { "Cache-Control": HTTP_CACHE.PUBLIC_READ },
     });
   } catch (err) {

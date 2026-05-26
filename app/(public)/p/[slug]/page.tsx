@@ -8,6 +8,7 @@ import { tagService } from "@/lib/services/tagService";
 import { Navbar } from "@/components/shared/Navbar";
 import { CopyButton } from "@/components/shared/CopyButton";
 import { ViewTracker } from "@/components/shared/ViewTracker";
+import { LikeButton } from "@/components/shared/LikeButton";
 import { modelService } from "@/lib/services/modelService";
 
 // Keep in sync with REVALIDATE.IMAGE_PAGE in lib/constants/cache.ts.
@@ -131,9 +132,7 @@ export default async function ImagePage({ params }: PageProps) {
                     {modelLabel}
                   </span>
                 )}
-                <span className="rounded-full bg-[#FDEBEC] px-2.5 py-1 uppercase tracking-[0.05em] text-[#9F2F2D]">
-                  {likeCount} likes
-                </span>
+                <LikeButton key={image.id} imageId={image.id} initialCount={likeCount} />
                 <span className="rounded-full bg-neutral-100 px-2.5 py-1 uppercase tracking-[0.05em] text-neutral-500">
                   {new Date(image.createdAt).toLocaleDateString()}
                 </span>

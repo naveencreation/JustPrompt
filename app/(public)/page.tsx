@@ -37,6 +37,8 @@ export default async function GalleryPage({ searchParams }: PageProps) {
     tagService.listPopular(),
   ]);
 
+  const initialLikeCounts = await likeService.getBatch(galleryResult.items.map((img) => img.id));
+
   const featuredImage = settings?.featuredImageId
     ? await imageService.getById(settings.featuredImageId)
     : null;
@@ -84,6 +86,7 @@ export default async function GalleryPage({ searchParams }: PageProps) {
           <GalleryGrid
             initialItems={galleryResult.items}
             initialNextCursor={galleryResult.nextCursor}
+            initialLikeCounts={initialLikeCounts}
             sort={sort}
             tagSlug={tag}
             searchQuery={q}

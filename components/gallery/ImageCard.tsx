@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import Image from "next/image";
 import { CopyIcon, CheckIcon, HeartIcon } from "@/components/icons";
 import { cn } from "@/lib/utils/cn";
@@ -29,9 +29,14 @@ export function ImageCard({
   const [isFlipped, setIsFlipped] = useState(false);
   const [copied, setCopied] = useState(false);
   const [optimisticLikes, setOptimisticLikes] = useState(likeCount);
-  const [hasLiked, setHasLiked] = useState(
-    () => typeof window !== "undefined" && localStorage.getItem(`liked:${image.id}`) === "1",
-  );
+  const [hasLiked, setHasLiked] = useState(false);
+
+  useEffect(() => {
+    if (localStorage.getItem(`liked:${image.id}`) === "1") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setHasLiked(true);
+    }
+  }, [image.id]);
 
   const modelLabel = useModelLabel(image.model);
   const cardRef = useRef<HTMLDivElement>(null);

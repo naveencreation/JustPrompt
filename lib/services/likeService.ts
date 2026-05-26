@@ -64,6 +64,17 @@ export const likeService = {
     }
   },
 
+  async getBatch(imageIds: ImageIdType[]): Promise<Record<string, number>> {
+    const persisted = await likeRepo.getBatch(imageIds);
+    // Merge any in-flight cache deltas (Tier 1 Redis path)
+    const result: Record<string, number> = {};
+    for (const id of imageIds) {
+      const delta = (await cache.get<number>(`like:${id}`)) ?? 0;
+      result[id] = (persisted[id] ?? 0) + delta;
+    }
+    return result;
+  },
+
   async totalLikes(): Promise<number> {
     return likeRepo.totalLikes();
   },
