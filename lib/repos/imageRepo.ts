@@ -68,6 +68,7 @@ export interface ListPublishedOptions {
   limit?: number;
   sort?: Sort;
   tagSlug?: string;
+  excludeId?: ImageId;
 }
 
 export interface ListResult {
@@ -89,7 +90,7 @@ export const imageRepo = {
   },
 
   async listPublished(opts: ListPublishedOptions = {}): Promise<ListResult> {
-    const { before = null, limit = PAGE_SIZE, sort = "new", tagSlug } = opts;
+    const { before = null, limit = PAGE_SIZE, sort = "new", tagSlug, excludeId } = opts;
     const supabase = createAdminClient();
 
     let q = supabase
@@ -97,6 +98,10 @@ export const imageRepo = {
       .select("*")
       .eq("is_published", true)
       .limit(limit);
+
+    if (excludeId) {
+      q = q.neq("id", excludeId);
+    }
 
     if (before) {
       q = q.or(
@@ -221,6 +226,35 @@ export const imageRepo = {
     const supabase = createAdminClient();
     const { error } = await supabase.from("images").delete().eq("id", id);
     if (error) throw new Error(`imageRepo.delete failed: ${error.message}`);
+  },
+
+  async listRelated(opts: { currentImageId: ImageId; tagIds: number[]; limit?: number }): Promise<Image[]> {
+    const { currentImageId, tagIds, limit = 6 } = opts;
+    if (tagIds.length === 0) return [];
+
+    const supabase = createAdminClient();
+    const { data: imageTagData, error: joinError } = await supabase
+      .from("image_tags")
+      .select("image_id")
+      .in("tag_id", tagIds)
+      .neq("image_id", currentImageId);
+
+    if (joinError) throw new Error(`imageRepo.listRelated join query failed: ${joinError.message}`);
+
+    const ids = Array.from(new Set((imageTagData ?? []).map((r: { image_id: string }) => r.image_id)));
+    if (ids.length === 0) return [];
+
+    const { data, error } = await supabase
+      .from("images")
+      .select("*")
+      .in("id", ids)
+      .eq("is_published", true)
+      .order("created_at", { ascending: false })
+      .order("id", { ascending: false })
+      .limit(limit);
+
+    if (error) throw new Error(`imageRepo.listRelated failed: ${error.message}`);
+    return ((data ?? []) as ImageRow[]).map(fromRow);
   },
 
   async count(): Promise<number> {

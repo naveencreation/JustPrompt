@@ -46,12 +46,17 @@ export default async function ImagePage({ params }: PageProps) {
   const image = await imageService.getBySlug(slug);
   if (!image || !image.isPublished) notFound();
 
-  const [tags, likeCount, related, models] = await Promise.all([
+  const [tags, likeCount, models] = await Promise.all([
     tagService.listByImage(image.id),
     likeService.getCount(image.id),
-    imageService.listGallery({ limit: 6 }),
     modelService.listAll(),
   ]);
+
+  const related = await imageService.getRelated(
+    image.id,
+    tags.map((t) => Number(t.id)),
+    6
+  );
 
   const modelLabel = image.model ? (models.find(m => m.slug === image.model)?.shortName || image.model) : null;
 
@@ -146,16 +151,16 @@ export default async function ImagePage({ params }: PageProps) {
             </aside>
           </div>
 
-          {related.items.length > 0 && (
-            <section className="mt-24" aria-label="More prompts">
+          {related.length > 0 && (
+            <section className="mt-24" aria-label="Related prompts">
               <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-400">
                 Browse more
               </p>
               <h2 className="mb-8 font-serif text-2xl tracking-tight text-neutral-900">
-                More prompts
+                More like this
               </h2>
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
-                {related.items.slice(0, 6).map((rel) => (
+                {related.slice(0, 6).map((rel) => (
                   <Link
                     key={rel.id}
                     href={`/p/${rel.slug}`}

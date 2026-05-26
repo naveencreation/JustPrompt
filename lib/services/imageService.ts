@@ -148,6 +148,22 @@ export const imageService = {
     logger.info("image.deleted", { imageId: id, slug: image.slug });
   },
 
+  async getRelated(imageId: ImageId, tagIds: number[], limit = 6): Promise<Image[]> {
+    const cacheKey = `related:${imageId}`;
+    const cached = await cache.get<Image[]>(cacheKey);
+    if (cached) return cached;
+
+    let related = await imageRepo.listRelated({ currentImageId: imageId, tagIds, limit });
+
+    if (related.length === 0) {
+      const fallbackResult = await imageRepo.listPublished({ limit, excludeId: imageId });
+      related = fallbackResult.items;
+    }
+
+    await cache.set(cacheKey, related, CACHE_TTL.RELATED);
+    return related;
+  },
+
   async getAdminStats() {
     const totalImages = await imageRepo.count();
     return { totalImages, totalLikes: 0 }; // totalLikes from likeService
