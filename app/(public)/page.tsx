@@ -10,6 +10,8 @@ import { GalleryGrid } from "@/components/gallery/GalleryGrid";
 import { SkeletonGrid } from "@/components/gallery/SkeletonCard";
 import { FeaturedCard } from "@/components/gallery/FeaturedCard";
 import { GalleryControls } from "@/components/gallery/GalleryControls";
+import { AdSlot } from "@/components/shared/AdSlot";
+import { config } from "@/lib/config";
 import type { Sort } from "@/lib/db/schema";
 
 // Next.js requires segment config exports to be statically analyzable literals.
@@ -73,6 +75,8 @@ export default async function GalleryPage({ searchParams }: PageProps) {
             <FeaturedCard image={featuredImage} likeCount={featuredLikeCount} />
           </section>
         )}
+
+        <AdSlot slotId={config.adsenseSlots.galleryBanner} minHeight={90} className="mb-12" />
 
         <section className="mb-8" aria-label="Gallery filters">
           <GalleryControls

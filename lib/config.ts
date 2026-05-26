@@ -36,6 +36,9 @@ const envSchema = z.object({
 
   // AdSense
   NEXT_PUBLIC_ADSENSE_CLIENT: z.string().optional(),
+  NEXT_PUBLIC_ADSENSE_SLOT_GALLERY_BANNER: z.string().optional(),
+  NEXT_PUBLIC_ADSENSE_SLOT_DETAIL_SIDEBAR: z.string().optional(),
+  NEXT_PUBLIC_ADSENSE_SLOT_GALLERY_INFEED: z.string().optional(),
 
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
 });
@@ -86,6 +89,11 @@ export const config = {
 
   // ─── Optional integrations ─────────────────────────────────────────────
   adsenseClient: env.NEXT_PUBLIC_ADSENSE_CLIENT,
+  adsenseSlots: {
+    galleryBanner: env.NEXT_PUBLIC_ADSENSE_SLOT_GALLERY_BANNER,
+    detailSidebar: env.NEXT_PUBLIC_ADSENSE_SLOT_DETAIL_SIDEBAR,
+    galleryInfeed: env.NEXT_PUBLIC_ADSENSE_SLOT_GALLERY_INFEED,
+  },
   plausibleDomain: env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN,
 
   // ─── Adapter-specific raw values (only the adapter implementation reads these) ─

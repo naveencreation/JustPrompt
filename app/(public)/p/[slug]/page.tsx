@@ -9,6 +9,8 @@ import { Navbar } from "@/components/shared/Navbar";
 import { CopyButton } from "@/components/shared/CopyButton";
 import { ViewTracker } from "@/components/shared/ViewTracker";
 import { LikeButton } from "@/components/shared/LikeButton";
+import { AdSlot } from "@/components/shared/AdSlot";
+import { config } from "@/lib/config";
 import { modelService } from "@/lib/services/modelService";
 
 // Keep in sync with REVALIDATE.IMAGE_PAGE in lib/constants/cache.ts.
@@ -147,6 +149,8 @@ export default async function ImagePage({ params }: PageProps) {
                 </p>
                 <CopyButton text={image.prompt} imageId={image.id} />
               </div>
+
+              <AdSlot slotId={config.adsenseSlots.detailSidebar} minHeight={250} />
             </aside>
           </div>
 

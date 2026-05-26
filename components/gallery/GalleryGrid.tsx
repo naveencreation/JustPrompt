@@ -1,9 +1,11 @@
 "use client";
 
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect, useRef, Fragment } from "react";
 import { ImageCard } from "./ImageCard";
 import { SkeletonCard } from "./SkeletonCard";
 import { Lightbox } from "./Lightbox";
+import { AdSlot } from "@/components/shared/AdSlot";
+import { config } from "@/lib/config";
 import { TIMING } from "@/lib/constants/timing";
 import type { Image as ImageType, Sort } from "@/lib/db/schema";
 
@@ -103,17 +105,23 @@ export function GalleryGrid({
     <>
       <div className="columns-1 gap-4 sm:columns-2 lg:columns-3 xl:columns-4">
         {items.map((image, index) => (
-          <ImageCard
-            key={image.id}
-            image={image}
-            likeCount={likeCounts[image.id] ?? 0}
-            priority={index < PRIORITY_IMAGE_COUNT}
-            onOpen={setActiveLightbox}
-            animationDelay={Math.min(
-              index * TIMING.GALLERY_STAGGER_MS,
-              TIMING.GALLERY_MAX_STAGGER_MS,
+          <Fragment key={image.id}>
+            {index > 0 && index % 12 === 0 && (
+              <div className="mb-4 break-inside-avoid">
+                <AdSlot slotId={config.adsenseSlots.galleryInfeed} format="fluid" minHeight={280} />
+              </div>
             )}
-          />
+            <ImageCard
+              image={image}
+              likeCount={likeCounts[image.id] ?? 0}
+              priority={index < PRIORITY_IMAGE_COUNT}
+              onOpen={setActiveLightbox}
+              animationDelay={Math.min(
+                index * TIMING.GALLERY_STAGGER_MS,
+                TIMING.GALLERY_MAX_STAGGER_MS,
+              )}
+            />
+          </Fragment>
         ))}
 
         {isLoading &&
