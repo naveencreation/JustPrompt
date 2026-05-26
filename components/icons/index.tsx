@@ -16,6 +16,12 @@ type IconProps = Omit<SVGProps<SVGSVGElement>, "children"> & {
   className?: string;
 };
 
+export type BrandIconProps = Omit<SVGProps<SVGSVGElement>, "children"> & {
+  size?: number;
+  className?: string;
+  useBrandColor?: boolean;
+};
+
 function Icon({ size = 16, className, children, ...rest }: IconProps & { children: React.ReactNode }) {
   return (
     <svg
@@ -295,39 +301,57 @@ export function AlertCircleIcon(props: IconProps) {
 
 // ─── Social & Share icons ──────────────────────────────────────────────────
 
-export function TwitterIcon(props: IconProps) {
+export function TwitterIcon({ size = 16, className, useBrandColor = false, ...props }: BrandIconProps) {
   return (
-    <Icon {...props}>
-      <path d="M4 4h4.27l11.73 16h-4.27Z" />
-      <path d="M20 4L4 20" />
-    </Icon>
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      className={cn("shrink-0", className)}
+      aria-hidden="true"
+      {...props}
+    >
+      <path
+        fill={useBrandColor ? "#000000" : "currentColor"}
+        d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"
+      />
+    </svg>
   );
 }
 
-export function PinterestIcon(props: IconProps) {
+export function PinterestIcon({ size = 16, className, useBrandColor = false, ...props }: BrandIconProps) {
   return (
-    <Icon {...props}>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M9 19c.5-2 1.5-6.5 1.5-8.5C10.5 8 10 7.5 12 7.5s3.5 1.5 3.5 3.5c0 2.5-1.5 4.5-3.5 4.5H9.5" />
-    </Icon>
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 256 256"
+      className={cn("shrink-0", className)}
+      aria-hidden="true"
+      {...props}
+    >
+      <path
+        fill={useBrandColor ? "#CB1F27" : "currentColor"}
+        d="M0 128.002c0 52.414 31.518 97.442 76.619 117.239c-.36-8.938-.064-19.668 2.228-29.393c2.461-10.391 16.47-69.748 16.47-69.748s-4.089-8.173-4.089-20.252c0-18.969 10.994-33.136 24.686-33.136c11.643 0 17.268 8.745 17.268 19.217c0 11.704-7.465 29.211-11.304 45.426c-3.207 13.578 6.808 24.653 20.203 24.653c24.252 0 40.586-31.149 40.586-68.055c0-28.054-18.895-49.052-53.262-49.052c-38.828 0-63.017 28.956-63.017 61.3c0 11.152 3.288 19.016 8.438 25.106c2.368 2.797 2.697 3.922 1.84 7.134c-.614 2.355-2.024 8.025-2.608 10.272c-.852 3.242-3.479 4.401-6.409 3.204c-17.884-7.301-26.213-26.886-26.213-48.902c0-36.361 30.666-79.961 91.482-79.961c48.87 0 81.035 35.364 81.035 73.325c0 50.213-27.916 87.726-69.066 87.726c-13.819 0-26.818-7.47-31.271-15.955c0 0-7.431 29.492-9.005 35.187c-2.714 9.869-8.026 19.733-12.883 27.421a127.897 127.897 0 0 0 36.277 5.249c70.684 0 127.996-57.309 127.996-128.005C256.001 57.309 198.689 0 128.005 0C57.314 0 0 57.309 0 128.002"
+      />
+    </svg>
   );
 }
 
-export function WhatsAppIcon(props: IconProps) {
+export function WhatsAppIcon({ size = 16, className, useBrandColor = false, ...props }: BrandIconProps) {
   return (
-    <Icon {...props}>
-      <path d="M12 21c-1.7 0-3.3-.47-4.7-1.28L3 21l1.1-4.3A8.93 8.93 0 0 1 3 12a9 9 0 0 1 9-9 9 9 0 0 1 9 9 9 9 0 0 1-9 9z" />
-      <path d="M17 15.5c-1.2 1.2-3.8.2-6-2s-3.2-4.8-2-6l1-1c.5-.5 1.2-.5 1.7 0l1.5 1.5c.5.5.5 1.2 0 1.7l-.5.5c.3.5.7.9 1.2 1.2l.5-.5c.5-.5 1.2-.5 1.7 0l1.5 1.5c.5.5.5 1.2 0 1.7z" />
-    </Icon>
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      className={cn("shrink-0", className)}
+      aria-hidden="true"
+      {...props}
+    >
+      <path
+        fill={useBrandColor ? "#25D366" : "currentColor"}
+        d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.457 5.709 1.458h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"
+      />
+    </svg>
   );
 }
-
-export function ShareIcon(props: IconProps) {
-  return (
-    <Icon {...props}>
-      <path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7" />
-      <path d="M12 3v12" />
-      <path d="M8 7l4-4 4 4" />
-    </Icon>
-  );
-}
+export { default as ShareIcon } from "./animated/send";
