@@ -100,3 +100,30 @@ body {
   background: var(--color-neutral-200);
   border-radius: 0.375rem;
 }
+
+/* ─── Custom Scrollbar ───────────────────────────────────────────────── */
+html {
+  /* Standard CSS (Firefox fallback) */
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-neutral-300) var(--color-neutral-50);
+}
+
+/* Webkit engines (Chrome, Edge, Safari) */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-neutral-50);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-neutral-300);
+  border-radius: 9999px;
+  border: 3px solid var(--color-neutral-50);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-neutral-400);
+}
