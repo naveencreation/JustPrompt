@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef, Fragment } from "react";
+import Link from "next/link";
 import { ImageCard } from "./ImageCard";
 import { SkeletonCard } from "./SkeletonCard";
 import { Lightbox } from "./Lightbox";
 import { AdSlot } from "@/components/shared/AdSlot";
 import { TIMING } from "@/lib/constants/timing";
-import type { Image as ImageType, Sort } from "@/lib/db/schema";
+import type { Image as ImageType, Sort, Tag } from "@/lib/db/schema";
 
 interface GalleryGridProps {
   initialItems: ImageType[];
@@ -15,6 +16,7 @@ interface GalleryGridProps {
   sort?: Sort;
   tagSlug?: string;
   searchQuery?: string;
+  popularTags?: Tag[];
 }
 
 const PRIORITY_IMAGE_COUNT = 8;
@@ -27,6 +29,7 @@ export function GalleryGrid({
   sort = "new",
   tagSlug,
   searchQuery,
+  popularTags,
 }: GalleryGridProps) {
   const [items, setItems] = useState<ImageType[]>(initialItems);
   const [nextCursor, setNextCursor] = useState<string | null>(initialNextCursor);
@@ -91,11 +94,33 @@ export function GalleryGrid({
 
   if (items.length === 0 && !isLoading) {
     return (
-      <div className="flex flex-col items-center gap-2 py-32 text-center">
+      <div className="flex flex-col items-center gap-4 py-32 text-center">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="text-neutral-300">
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.3-4.3" />
+          <path d="M11 8v6M8 11h6" className="text-neutral-200" />
+        </svg>
         <p className="font-serif text-2xl tracking-tight text-neutral-700">
           No prompts found
         </p>
-        <p className="text-sm text-neutral-400">Try a different search or filter</p>
+        <p className="text-sm text-neutral-400 mb-2">Try a different search or filter</p>
+        
+        <Link href="/" className="rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-neutral-800">
+          Clear filters
+        </Link>
+
+        {popularTags && popularTags.length > 0 && (
+          <div className="mt-6 flex flex-col items-center gap-3">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-neutral-400">Popular tags</span>
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              {popularTags.slice(0, 3).map(t => (
+                <Link key={t.id} href={`/?tag=${t.slug}`} className="rounded-full bg-neutral-100 px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.05em] text-neutral-600 transition-colors hover:bg-neutral-200 hover:text-neutral-900">
+                  {t.name}
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     );
   }

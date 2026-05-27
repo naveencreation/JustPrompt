@@ -161,7 +161,7 @@ export default async function ImagePage({ params }: PageProps) {
               <h2 className="mb-8 font-serif text-2xl tracking-tight text-neutral-900">
                 More like this
               </h2>
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
                 {related.slice(0, 6).map((rel) => (
                   <Link
                     key={rel.id}

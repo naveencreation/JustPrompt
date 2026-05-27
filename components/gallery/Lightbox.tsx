@@ -83,7 +83,7 @@ export function Lightbox({ image, likeCount = 0, onClose }: LightboxProps) {
         </div>
 
         {/* Prompt panel */}
-        <div className="flex w-full flex-col gap-5 overflow-y-auto border-t border-neutral-800 p-7 text-neutral-50 lg:w-96 lg:border-l lg:border-t-0">
+        <div className="flex w-full flex-col gap-5 overflow-y-auto border-t border-neutral-800 p-7 text-neutral-50 lg:w-[420px] xl:w-[440px] lg:border-l lg:border-t-0 [scrollbar-width:thin] [scrollbar-color:theme(colors.neutral.700)_transparent]">
           <div className="flex items-start justify-between gap-2">
             <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-neutral-300">
               Prompt

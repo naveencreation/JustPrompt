@@ -94,6 +94,7 @@ export default async function GalleryPage({ searchParams }: PageProps) {
             sort={sort}
             tagSlug={tag}
             searchQuery={q}
+            popularTags={popularTags}
           />
         </Suspense>
       </main>

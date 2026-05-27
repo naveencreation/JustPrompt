@@ -62,7 +62,7 @@ export function GalleryControls({ tags, activeTag, activeSort }: GalleryControls
   return (
     <div className="flex flex-col gap-5">
       <div className="flex flex-wrap items-center gap-3">
-        <SearchBar onSearch={handleSearch} className="flex-1" />
+        <SearchBar onSearch={handleSearch} className="flex-1 sm:max-w-xs md:max-w-sm" />
 
         {/* Sort segmented control — accordion-style underlines, not boxes */}
         <div ref={tabsContainerRef} role="tablist" aria-label="Sort gallery" className="relative flex items-center gap-1 rounded-md border border-neutral-200 bg-white p-1">
