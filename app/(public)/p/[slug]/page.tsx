@@ -147,15 +147,7 @@ export default async function ImagePage({ params }: PageProps) {
                 imageUrl={image.imageUrl}
               />
 
-              <div className="rounded-md border border-neutral-200 bg-white p-5">
-                <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.15em] text-neutral-400">
-                  Full prompt
-                </p>
-                <p className="mb-4 font-mono text-[12px] leading-[1.6] text-neutral-700">
-                  {image.prompt}
-                </p>
-                <CopyButton text={image.prompt} imageId={image.id} />
-              </div>
+              <CopyButton text={image.prompt} imageId={image.id} />
 
               <AdSlot slotId={config.adsenseSlots.detailSidebar} minHeight={250} />
             </aside>
