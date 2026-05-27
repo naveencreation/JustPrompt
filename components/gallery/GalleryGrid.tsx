@@ -136,6 +136,7 @@ export function GalleryGrid({
       {activeLightbox && (
         <Lightbox
           image={activeLightbox}
+          likeCount={likeCounts[activeLightbox.id] ?? 0}
           onClose={() => setActiveLightbox(null)}
         />
       )}
