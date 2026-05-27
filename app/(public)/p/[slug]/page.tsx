@@ -87,7 +87,7 @@ export default async function ImagePage({ params }: PageProps) {
       <div className="flex min-h-full flex-col">
         <Navbar />
         <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-12 sm:px-6 sm:py-16">
-          <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-400">
+          <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-neutral-500">
             Prompt
           </p>
 
@@ -107,7 +107,7 @@ export default async function ImagePage({ params }: PageProps) {
             </div>
 
             <aside className="flex flex-col gap-7">
-              <h1 className="font-mono text-[13px] leading-[1.6] text-neutral-800">
+              <h1 className="font-mono text-[15px] leading-[1.65] text-neutral-900">
                 {image.prompt}
               </h1>
 
@@ -155,7 +155,7 @@ export default async function ImagePage({ params }: PageProps) {
 
           {related.length > 0 && (
             <section className="mt-24" aria-label="Related prompts">
-              <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-400">
+              <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-neutral-500">
                 Browse more
               </p>
               <h2 className="mb-8 font-serif text-2xl tracking-tight text-neutral-900">

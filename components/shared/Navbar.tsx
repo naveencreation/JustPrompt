@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { Suspense } from "react";
+import { NavLinks } from "./NavLinks";
 
 export function Navbar() {
   return (
@@ -11,20 +13,14 @@ export function Navbar() {
           Prompt Gallery
         </Link>
 
-        <nav className="flex items-center gap-1 text-sm" aria-label="Primary">
-          <Link
-            href="/"
-            className="rounded-md px-3 py-1.5 text-neutral-500 transition-[background-color,color] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-neutral-100 hover:text-neutral-900"
-          >
-            Gallery
-          </Link>
-          <Link
-            href="/?sort=likes"
-            className="rounded-md px-3 py-1.5 text-neutral-500 transition-[background-color,color] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-neutral-100 hover:text-neutral-900"
-          >
-            Top
-          </Link>
-        </nav>
+        <Suspense fallback={
+          <nav className="flex items-center gap-1 text-sm" aria-label="Primary">
+            <span className="px-3 py-1.5 text-neutral-500">Gallery</span>
+            <span className="px-3 py-1.5 text-neutral-500">Top</span>
+          </nav>
+        }>
+          <NavLinks />
+        </Suspense>
       </div>
     </header>
   );

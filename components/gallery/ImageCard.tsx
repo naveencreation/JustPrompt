@@ -137,7 +137,7 @@ export function ImageCard({
         {/* ── Layer 2: Gradient Overlay (z-20) — fades in on hover/focus-within ── */}
         <div className="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-black/90 via-black/55 to-transparent p-4 pt-16 opacity-0 transition-opacity duration-200 ease-out group-hover:opacity-100 group-focus-within:opacity-100">
           {/* Prompt text — 3 lines max, soft fade mask at bottom */}
-          <p className="mb-3 font-mono text-[12px] leading-[1.55] text-white line-clamp-3 [mask-image:linear-gradient(to_bottom,white_60%,transparent_100%)]">
+          <p className="mb-3 font-sans text-[12px] leading-[1.55] text-white line-clamp-3 [mask-image:linear-gradient(to_bottom,white_60%,transparent_100%)]">
             {image.prompt}
           </p>
           {/* Footer row: model pill + copy button */}

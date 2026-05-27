@@ -55,10 +55,10 @@ export default async function GalleryPage({ searchParams }: PageProps) {
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-12 sm:px-6 sm:py-16">
         {/* Editorial intro — once per session, sets tone */}
         <header className="mb-12 sm:mb-16">
-          <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-400">
+          <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-neutral-500">
             AI Prompt Gallery
           </p>
-          <h1 className="font-serif text-4xl text-neutral-900 sm:text-5xl">
+          <h1 className="font-serif text-4xl tracking-tight text-neutral-900 sm:text-5xl sm:tracking-[-0.01em]">
             Prompts, made&nbsp;visible.
           </h1>
           <p className="mt-3 max-w-xl text-sm leading-relaxed text-neutral-500">
@@ -69,7 +69,7 @@ export default async function GalleryPage({ searchParams }: PageProps) {
 
         {featuredImage && (
           <section className="mb-12" aria-label="Prompt of the Day">
-            <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-400">
+            <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-neutral-500">
               Prompt of the Day
             </p>
             <FeaturedCard image={featuredImage} likeCount={featuredLikeCount} />
