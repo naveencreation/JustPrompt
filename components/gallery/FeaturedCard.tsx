@@ -36,8 +36,8 @@ export function FeaturedCard({ image, likeCount = 0 }: FeaturedCardProps) {
             sizes="(max-width: 640px) 100vw, 50vw"
             className="object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.02]"
             priority
-            placeholder={(image as any).blurDataUrl ? "blur" : "empty"}
-            blurDataURL={(image as any).blurDataUrl || undefined}
+            placeholder={(image as ImageType & { blurDataUrl?: string }).blurDataUrl ? "blur" : "empty"}
+            blurDataURL={(image as ImageType & { blurDataUrl?: string }).blurDataUrl || undefined}
           />
         </div>
 

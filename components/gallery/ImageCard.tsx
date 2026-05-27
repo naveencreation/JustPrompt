@@ -143,8 +143,8 @@ export function ImageCard({
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.03]"
             priority={priority}
-            placeholder={(image as any).blurDataUrl ? "blur" : "empty"}
-            blurDataURL={(image as any).blurDataUrl || undefined}
+            placeholder={(image as ImageType & { blurDataUrl?: string }).blurDataUrl ? "blur" : "empty"}
+            blurDataURL={(image as ImageType & { blurDataUrl?: string }).blurDataUrl || undefined}
           />
         </div>
 

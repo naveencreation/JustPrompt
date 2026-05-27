@@ -16,6 +16,7 @@ interface LightboxProps {
 
 export function Lightbox({ image, likeCount = 0, onClose }: LightboxProps) {
   const closeRef = useRef<HTMLButtonElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
   const modelLabel = useModelLabel(image.model);
   const [copied, setCopied] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
@@ -34,7 +35,38 @@ export function Lightbox({ image, likeCount = 0, onClose }: LightboxProps) {
   useEffect(() => {
     closeRef.current?.focus();
     const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") handleClose();
+      if (e.key === "Escape") {
+        handleClose();
+        return;
+      }
+      
+      if (e.key === "Tab") {
+        const modal = modalRef.current;
+        if (!modal) return;
+        
+        const focusableElements = Array.from(
+          modal.querySelectorAll<HTMLElement>(
+            'a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])'
+          )
+        ).filter(el => !el.hasAttribute('disabled'));
+
+        if (focusableElements.length === 0) return;
+
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+
+        if (e.shiftKey) {
+          if (document.activeElement === firstElement) {
+            e.preventDefault();
+            lastElement?.focus();
+          }
+        } else {
+          if (document.activeElement === lastElement) {
+            e.preventDefault();
+            firstElement?.focus();
+          }
+        }
+      }
     };
     document.addEventListener("keydown", handleKey);
     document.body.style.overflow = "hidden";
@@ -64,6 +96,7 @@ export function Lightbox({ image, likeCount = 0, onClose }: LightboxProps) {
       aria-label="Image preview"
     >
       <div
+        ref={modalRef}
         className={cn(
           "relative flex max-h-[90vh] w-full max-w-5xl flex-col overflow-hidden rounded-md border border-neutral-800 bg-neutral-900 shadow-2xl lg:flex-row",
           "transition-[opacity,transform] duration-200",

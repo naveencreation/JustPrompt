@@ -6,7 +6,7 @@ import { ImageCard } from "./ImageCard";
 import { SkeletonCard } from "./SkeletonCard";
 import { Lightbox } from "./Lightbox";
 import { AdSlot } from "@/components/shared/AdSlot";
-import { TIMING } from "@/lib/constants/timing";
+
 import type { Image as ImageType, Sort, Tag } from "@/lib/db/schema";
 
 interface GalleryGridProps {
@@ -38,8 +38,18 @@ export function GalleryGrid({
   const [likeCounts, setLikeCounts] = useState<Record<string, number>>(initialLikeCounts);
   const observerRef = useRef<IntersectionObserver | null>(null);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
 
   const [prevInitialItems, setPrevInitialItems] = useState(initialItems);
+
+  useEffect(() => {
+    if (activeLightbox) {
+      previousFocusRef.current = document.activeElement as HTMLElement;
+    } else if (previousFocusRef.current) {
+      previousFocusRef.current.focus();
+      previousFocusRef.current = null;
+    }
+  }, [activeLightbox]);
 
   if (initialItems !== prevInitialItems) {
     setItems(initialItems);
