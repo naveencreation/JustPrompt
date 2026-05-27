@@ -2,6 +2,7 @@ import { createAdminClient } from "@/lib/db/client";
 import { PAGE_SIZE } from "@/lib/constants/limits";
 import { encodeCursor } from "@/lib/utils/cursor";
 import type { Cursor, Image } from "@/lib/db/schema";
+import { fromRow, type ImageRow } from "@/lib/repos/imageRepo";
 import type { Search, SearchResult } from "./index";
 
 export class PostgresSearch implements Search {
@@ -31,7 +32,8 @@ export class PostgresSearch implements Search {
 
     if (error) throw new Error(`Search query failed: ${error.message}`);
 
-    const items = (data ?? []) as unknown as Image[];
+    const rows = (data ?? []) as unknown as ImageRow[];
+    const items = rows.map(fromRow);
     const last = items[items.length - 1];
     const nextCursor =
       items.length === limit && last

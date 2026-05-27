@@ -21,7 +21,7 @@ function toSnakeCase(input: CreateImageInput) {
 // PostgREST returns rows with snake_case column names. Map them to the
 // camelCase shape declared in `lib/db/schema.ts` so consumers can use
 // `image.imageUrl` etc. without runtime surprises.
-type ImageRow = {
+export type ImageRow = {
   id: string;
   slug: string;
   storage_key: string;
@@ -39,7 +39,7 @@ type ImageRow = {
   updated_at: string;
 };
 
-function fromRow(row: ImageRow): Image {
+export function fromRow(row: ImageRow): Image {
   return {
     id: row.id as Image["id"],
     slug: row.slug,
