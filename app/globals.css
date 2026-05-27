@@ -38,39 +38,6 @@ body {
   line-height: 1.1;
 }
 
-/* ─── Card flip ──────────────────────────────────────────────────────── */
-.card-scene {
-  perspective: 1000px;
-}
-
-.card-inner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  transform-style: preserve-3d;
-  transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.card-inner.flipped {
-  transform: rotateY(180deg);
-}
-
-.card-face {
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-}
-
-.card-face-front {
-  position: relative;
-  width: 100%;
-}
-
-.card-face-back {
-  position: absolute;
-  inset: 0;
-  transform: rotateY(180deg);
-}
-
 /* Tilt — desktop only, gated to pointer:fine to avoid mobile jank */
 @media (pointer: fine) {
   .card-tilt {

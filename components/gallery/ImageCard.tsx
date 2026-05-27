@@ -26,7 +26,6 @@ export function ImageCard({
   onOpen,
   animationDelay = 0,
 }: ImageCardProps) {
-  const [isFlipped, setIsFlipped] = useState(false);
   const [copied, setCopied] = useState(false);
   const [optimisticLikes, setOptimisticLikes] = useState(likeCount);
   const [hasLiked, setHasLiked] = useState(false);
@@ -58,16 +57,10 @@ export function ImageCard({
     (e: React.MouseEvent) => {
       if ((e.target as HTMLElement).closest("[data-action]")) return;
 
-      // On touch devices: first tap flips, second tap opens lightbox
-      if (window.matchMedia("(pointer: coarse)").matches) {
-        if (isFlipped) onOpen?.(image);
-        else setIsFlipped(true);
-        return;
-      }
-      // On desktop: click opens lightbox directly
+      // On mobile/touch: click directly opens lightbox, avoiding confusing double tap flip
       onOpen?.(image);
     },
-    [isFlipped, image, onOpen],
+    [image, onOpen],
   );
 
   const handleCopyPrompt = useCallback(
@@ -110,105 +103,78 @@ export function ImageCard({
       className="mb-4 break-inside-avoid animate-in"
       style={{ animationDelay: `${animationDelay}ms` }}
     >
-      <div className="card-scene">
+      <div
+        ref={cardRef}
+        tabIndex={0}
+        className="card-tilt group relative overflow-hidden rounded-md border border-neutral-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 bg-white"
+        onMouseMove={handleTilt}
+        onMouseLeave={resetTilt}
+        onClick={handleCardClick}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onOpen?.(image);
+          }
+        }}
+      >
+        {/* ── Layer 1: Image (z-10) — scales up 3% on hover ── */}
         <div
-          ref={cardRef}
-          className="card-tilt cursor-pointer"
-          onMouseMove={handleTilt}
-          onMouseLeave={() => {
-            resetTilt();
-            if (window.matchMedia("(pointer: fine)").matches) setIsFlipped(false);
-          }}
-          onMouseEnter={() => {
-            if (window.matchMedia("(pointer: fine)").matches) setIsFlipped(true);
-          }}
-          onClick={handleCardClick}
+          className="relative w-full bg-neutral-100 overflow-hidden"
+          style={{ paddingBottom: `${(image.height / image.width) * 100}%` }}
         >
-          <div
-            className={cn(
-              "card-inner rounded-md transition-[box-shadow] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
-              "hover:shadow-[0_2px_8px_rgba(0,0,0,0.04)]",
-              isFlipped && "flipped",
-            )}
-          >
-            {/* ── Front ── */}
-            <div className="card-face card-face-front overflow-hidden rounded-md border border-neutral-200 bg-white">
-              <div
-                className="relative w-full bg-neutral-100"
-                style={{ paddingBottom: `${(image.height / image.width) * 100}%` }}
-              >
-                <Image
-                  src={image.imageUrl}
-                  alt={image.prompt.slice(0, 100)}
-                  fill
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  className="object-cover"
-                  priority={priority}
-                />
-                {/* Like badge — pale-pastel pill, minimalist-ui spec */}
-                <button
-                   data-action="like"
-                   onClick={handleLike}
-                   aria-label={hasLiked ? "Liked" : "Like this prompt"}
-                   className={cn(
-                    "absolute bottom-3 right-3 flex items-center gap-1.5 rounded-full px-2.5 py-1",
-                    "text-[11px] font-medium tracking-[0.02em] backdrop-blur-sm",
-                    "transition-[background-color,color] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]",
-                    hasLiked
-                      ? "bg-[#FDEBEC] text-[#9F2F2D]"
-                      : "bg-white/90 text-neutral-800 hover:bg-[#FDEBEC] hover:text-[#9F2F2D]",
-                  )}
-                >
-                  <HeartIcon size={12} filled={hasLiked} />
-                  <span>{optimisticLikes}</span>
-                </button>
-              </div>
-            </div>
+          <Image
+            src={image.imageUrl}
+            alt={image.prompt.slice(0, 100)}
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            className="object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.03]"
+            priority={priority}
+          />
+        </div>
 
-            {/* ── Back ── editorial document-style prompt card */}
-            <div
-              className="card-face card-face-back overflow-hidden rounded-md border border-neutral-200 bg-neutral-900 text-neutral-50"
-              style={{ minHeight: `${(image.height / image.width) * 100}%` }}
+        {/* ── Layer 2: Gradient Overlay (z-20) — fades in on hover/focus-within ── */}
+        <div className="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-black/90 via-black/55 to-transparent p-4 pt-16 opacity-0 transition-opacity duration-200 ease-out group-hover:opacity-100 group-focus-within:opacity-100">
+          {/* Prompt text — 3 lines max, soft fade mask at bottom */}
+          <p className="mb-3 font-mono text-[12px] leading-[1.55] text-white line-clamp-3 [mask-image:linear-gradient(to_bottom,white_60%,transparent_100%)]">
+            {image.prompt}
+          </p>
+          {/* Footer row: model pill + copy button */}
+          <div className="flex items-center gap-2">
+            {image.model && (
+              <span className="rounded-full bg-white/15 px-2 py-0.5 text-[10px] uppercase tracking-[0.1em] text-neutral-300">
+                {modelLabel}
+              </span>
+            )}
+            <button
+              data-action="copy"
+              tabIndex={-1} /* Focus managed by group-focus-within */
+              onClick={handleCopyPrompt}
+              className="ml-auto flex items-center gap-1.5 rounded-md bg-white/15 px-3 py-1.5 text-[11px] font-medium text-white hover:bg-white/25 transition-colors duration-150"
             >
-              <div className="relative h-full min-h-[200px]">
-                <Image
-                  src={image.imageUrl}
-                  alt=""
-                  fill
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  className="object-cover opacity-10"
-                  aria-hidden="true"
-                />
-                <div className="relative z-10 flex h-full flex-col justify-between gap-3 p-5">
-                  <p className="font-mono text-[13px] leading-[1.55] line-clamp-6 text-neutral-100">
-                    {image.prompt}
-                  </p>
-                  <div className="flex items-center gap-2">
-                    {image.model && (
-                      <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] uppercase tracking-[0.1em] text-neutral-300">
-                        {modelLabel}
-                      </span>
-                    )}
-                    <button
-                      data-action="copy"
-                      onClick={handleCopyPrompt}
-                      aria-label="Copy prompt to clipboard"
-                      className={cn(
-                        "ml-auto flex items-center gap-1.5 rounded-md bg-white/10 px-3 py-1.5",
-                        "text-[11px] font-medium text-neutral-50",
-                        "transition-[background-color] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]",
-                        "hover:bg-white/20",
-                      )}
-                    >
-                      {copied ? <CheckIcon size={12} /> : <CopyIcon size={12} />}
-                      {copied ? "Copied" : "Copy prompt"}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
+              {copied ? <CheckIcon size={12} /> : <CopyIcon size={12} />}
+              {copied ? "Copied" : "Copy prompt"}
+            </button>
           </div>
         </div>
+
+        {/* ── Layer 3: Like pill (z-30) — always visible ── */}
+        <button
+          data-action="like"
+          onClick={handleLike}
+          aria-label={hasLiked ? "Liked" : "Like this prompt"}
+          className={cn(
+            "absolute top-3 right-3 z-30",
+            "flex items-center gap-1.5 rounded-full px-2.5 py-1",
+            "text-[11px] font-medium backdrop-blur-sm",
+            "transition-colors duration-200",
+            hasLiked
+              ? "bg-[#FDEBEC] text-[#9F2F2D]"
+              : "bg-black/30 text-white hover:bg-[#FDEBEC] hover:text-[#9F2F2D]",
+          )}
+        >
+          <HeartIcon size={12} filled={hasLiked} />
+          <span>{optimisticLikes}</span>
+        </button>
       </div>
     </div>
   );
