@@ -28,19 +28,19 @@ export function FeaturedCard({ image, likeCount = 0 }: FeaturedCardProps) {
     <div className="group relative overflow-hidden rounded-md border border-neutral-200 bg-white">
       <div className="flex flex-col gap-0 sm:flex-row">
         {/* Image — kept neutral, no rounded edges that fight the editorial frame */}
-        <div className="relative min-h-[220px] w-full bg-neutral-100 sm:min-h-[300px] sm:w-1/2 lg:w-[42%]">
+        <div className="relative min-h-[220px] w-full bg-neutral-100 overflow-hidden sm:min-h-[300px] sm:w-1/2 lg:w-[42%]">
           <Image
             src={image.imageUrl}
             alt={image.prompt.slice(0, 100)}
             fill
             sizes="(max-width: 640px) 100vw, 50vw"
-            className="object-cover"
+            className="object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.02]"
             priority
           />
         </div>
 
         {/* Editorial prompt panel */}
-        <div className="flex flex-1 flex-col justify-between gap-6 p-7 sm:p-9">
+        <div className="flex flex-1 flex-col justify-between gap-6 p-7 sm:p-9 transition-colors duration-300 group-hover:bg-neutral-50/60">
           <div>
             <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-400">
               Full prompt
@@ -68,7 +68,8 @@ export function FeaturedCard({ image, likeCount = 0 }: FeaturedCardProps) {
                   "flex items-center gap-1.5 rounded-md bg-neutral-900 px-4 py-2",
                   "text-[13px] font-medium text-neutral-50",
                   "transition-[background-color,transform] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]",
-                  "hover:bg-neutral-700 active:scale-[0.98]",
+                  "hover:bg-neutral-700 active:scale-[0.94]",
+                  copied && "scale-[1.04]"
                 )}
               >
                 {copied ? <CheckIcon size={13} /> : <CopyIcon size={13} />}

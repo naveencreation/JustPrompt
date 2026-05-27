@@ -13,7 +13,7 @@ export function TagFilter({ tags, activeSlug, onSelect }: TagFilterProps) {
   if (tags.length === 0) return null;
 
   const baseClasses =
-    "rounded-full px-3 py-1 text-[11px] font-medium uppercase tracking-[0.05em] transition-[background-color,color] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]";
+    "rounded-full px-3 py-1 text-[11px] font-medium uppercase tracking-[0.05em] transition-all duration-150 ease-[cubic-bezier(0.16,1,0.3,1)]";
 
   return (
     <div className="flex flex-wrap gap-1.5" role="group" aria-label="Filter by tag">
@@ -23,7 +23,7 @@ export function TagFilter({ tags, activeSlug, onSelect }: TagFilterProps) {
           baseClasses,
           activeSlug === null
             ? "bg-neutral-900 text-neutral-50"
-            : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200 hover:text-neutral-900",
+            : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200 hover:text-neutral-900 hover:scale-[1.02]",
         )}
       >
         All
@@ -36,7 +36,7 @@ export function TagFilter({ tags, activeSlug, onSelect }: TagFilterProps) {
             baseClasses,
             activeSlug === tag.slug
               ? "bg-neutral-900 text-neutral-50"
-              : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200 hover:text-neutral-900",
+              : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200 hover:text-neutral-900 hover:scale-[1.02]",
           )}
         >
           {tag.name}

@@ -57,8 +57,8 @@ export function LikeButton({ imageId, initialCount }: LikeButtonProps) {
   return (
     <button
       onClick={handleLike}
+      aria-pressed={hasLiked}
       aria-label={hasLiked ? "Liked" : "Like this prompt"}
-      disabled={hasLiked || isPending}
       className={cn(
         "flex items-center gap-1.5 rounded-full px-2.5 py-1",
         "text-[10px] font-medium uppercase tracking-[0.05em]",
@@ -70,7 +70,7 @@ export function LikeButton({ imageId, initialCount }: LikeButtonProps) {
       )}
     >
       <HeartIcon size={12} filled={hasLiked} />
-      <span>{count} likes</span>
+      <span key={count} className="count-animate">{count} likes</span>
     </button>
   );
 }

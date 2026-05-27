@@ -38,7 +38,7 @@ export function SearchBar({
         placeholder={placeholder}
         className={cn(
           "w-full rounded-md border border-neutral-200 bg-white py-2.5 pl-9 pr-9 text-sm",
-          "placeholder:text-neutral-400 focus:border-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-100",
+          "placeholder:text-neutral-400 focus:border-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-100 focus:shadow-[0_2px_12px_rgba(0,0,0,0.07)]",
           "transition-[border-color,box-shadow] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]",
         )}
         aria-label="Search prompts"

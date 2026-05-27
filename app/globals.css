@@ -38,10 +38,11 @@ body {
   line-height: 1.1;
 }
 
-/* Tilt — desktop only, gated to pointer:fine to avoid mobile jank */
 @media (pointer: fine) {
   .card-tilt {
     transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .card-tilt:hover {
     will-change: transform;
   }
 }
@@ -54,6 +55,15 @@ body {
 
 .animate-in {
   animation: fade-slide-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes count-up {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.count-animate {
+  animation: count-up 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 /* ─── Skeleton pulse ────────────────────────────────────────────────── */

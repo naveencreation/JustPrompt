@@ -106,6 +106,8 @@ export function ImageCard({
       <div
         ref={cardRef}
         tabIndex={0}
+        role="button"
+        aria-label={`View prompt: ${image.prompt.slice(0, 80)}`}
         className="card-tilt group relative overflow-hidden rounded-md border border-neutral-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 bg-white"
         onMouseMove={handleTilt}
         onMouseLeave={resetTilt}
@@ -139,9 +141,9 @@ export function ImageCard({
             {image.prompt}
           </p>
           {/* Footer row: model pill + copy button */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 opacity-0 transition-opacity duration-150 delay-75 group-hover:opacity-100 group-focus-within:opacity-100">
             {image.model && (
-              <span className="rounded-full bg-white/15 px-2 py-0.5 text-[10px] uppercase tracking-[0.1em] text-neutral-300">
+              <span className="rounded-full bg-white/15 px-2 py-0.5 text-[10px] uppercase tracking-[0.1em] text-white/80">
                 {modelLabel}
               </span>
             )}
@@ -149,7 +151,11 @@ export function ImageCard({
               data-action="copy"
               tabIndex={-1} /* Focus managed by group-focus-within */
               onClick={handleCopyPrompt}
-              className="ml-auto flex items-center gap-1.5 rounded-md bg-white/15 px-3 py-1.5 text-[11px] font-medium text-white hover:bg-white/25 transition-colors duration-150"
+              className={cn(
+                "ml-auto flex items-center gap-1.5 rounded-md bg-white/15 px-3 py-1.5 text-[11px] font-medium text-white transition-all duration-150",
+                "hover:bg-white/25 active:scale-[0.94]",
+                copied && "scale-[1.04]"
+              )}
             >
               {copied ? <CheckIcon size={12} /> : <CopyIcon size={12} />}
               {copied ? "Copied" : "Copy prompt"}
@@ -173,7 +179,7 @@ export function ImageCard({
           )}
         >
           <HeartIcon size={12} filled={hasLiked} />
-          <span>{optimisticLikes}</span>
+          <span key={optimisticLikes} className="count-animate">{optimisticLikes}</span>
         </button>
       </div>
     </div>
