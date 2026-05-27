@@ -39,6 +39,13 @@ export function ImageCard({
 
   const modelLabel = useModelLabel(image.model);
   const cardRef = useRef<HTMLDivElement>(null);
+  const rafRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, []);
 
   const handleTilt = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     const el = cardRef.current;
@@ -46,10 +53,15 @@ export function ImageCard({
     const rect = el.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width - 0.5;
     const y = (e.clientY - rect.top) / rect.height - 0.5;
-    el.style.transform = `perspective(${TILT_PERSPECTIVE_PX}px) rotateY(${x * TILT_RANGE_DEG}deg) rotateX(${-y * TILT_RANGE_DEG}deg)`;
+    
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(() => {
+      el.style.transform = `perspective(${TILT_PERSPECTIVE_PX}px) rotateY(${x * TILT_RANGE_DEG}deg) rotateX(${-y * TILT_RANGE_DEG}deg)`;
+    });
   }, []);
 
   const resetTilt = useCallback(() => {
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
     if (cardRef.current) cardRef.current.style.transform = "";
   }, []);
 
@@ -131,6 +143,8 @@ export function ImageCard({
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.03]"
             priority={priority}
+            placeholder={(image as any).blurDataUrl ? "blur" : "empty"}
+            blurDataURL={(image as any).blurDataUrl || undefined}
           />
         </div>
 

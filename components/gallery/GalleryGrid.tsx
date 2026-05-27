@@ -140,10 +140,7 @@ export function GalleryGrid({
               likeCount={likeCounts[image.id] ?? 0}
               priority={index < PRIORITY_IMAGE_COUNT}
               onOpen={setActiveLightbox}
-              animationDelay={Math.min(
-                index * TIMING.GALLERY_STAGGER_MS,
-                TIMING.GALLERY_MAX_STAGGER_MS,
-              )}
+              animationDelay={(index % 12) * 50}
             />
           </Fragment>
         ))}

@@ -103,6 +103,8 @@ export default async function ImagePage({ params }: PageProps) {
                 sizes="(max-width: 1024px) 100vw, 60vw"
                 className="object-contain"
                 priority
+                placeholder={(image as any).blurDataUrl ? "blur" : "empty"}
+                blurDataURL={(image as any).blurDataUrl || undefined}
               />
             </div>
 
@@ -176,6 +178,8 @@ export default async function ImagePage({ params }: PageProps) {
                         fill
                         sizes="(max-width: 640px) 50vw, 16vw"
                         className="object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
+                        placeholder={(rel as any).blurDataUrl ? "blur" : "empty"}
+                        blurDataURL={(rel as any).blurDataUrl || undefined}
                       />
                     </div>
                   </Link>

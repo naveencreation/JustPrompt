@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { SearchIcon, CloseIcon } from "@/components/icons";
 import { cn } from "@/lib/utils/cn";
 import { TIMING } from "@/lib/constants/timing";
+import { useDebounceCallback } from "@/lib/hooks/useDebounce";
 
 interface SearchBarProps {
   onSearch: (query: string) => void;
@@ -17,13 +18,15 @@ export function SearchBar({
   className,
 }: SearchBarProps) {
   const [value, setValue] = useState("");
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  
+  const debouncedSearch = useDebounceCallback(onSearch, TIMING.SEARCH_DEBOUNCE_MS);
 
-  useEffect(() => {
-    if (timerRef.current) clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => onSearch(value.trim()), TIMING.SEARCH_DEBOUNCE_MS);
-    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
-  }, [value, onSearch]);
+  // We only trigger the debounced callback, local state is instant
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setValue(val);
+    debouncedSearch(val.trim());
+  };
 
   return (
     <div className={cn("relative w-full max-w-xl", className)}>
@@ -34,7 +37,7 @@ export function SearchBar({
       <input
         type="search"
         value={value}
-        onChange={(e) => setValue(e.target.value)}
+        onChange={handleChange}
         placeholder={placeholder}
         className={cn(
           "w-full rounded-md border border-neutral-200 bg-white py-2.5 pl-9 pr-9 text-sm",
@@ -45,7 +48,7 @@ export function SearchBar({
       />
       {value && (
         <button
-          onClick={() => setValue("")}
+          onClick={() => { setValue(""); debouncedSearch(""); }}
           aria-label="Clear search"
           className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-700"
         >
