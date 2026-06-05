@@ -78,4 +78,11 @@ export const likeService = {
   async totalLikes(): Promise<number> {
     return likeRepo.totalLikes();
   },
+
+  async setLikeCount(imageId: ImageIdType, count: number): Promise<void> {
+    await cache.del(`like:${imageId}`);
+    await cache.del(`like:dirty:${imageId}`);
+    await likeRepo.upsertCount(imageId, count);
+    logger.info("like.set", { imageId, count });
+  },
 };
