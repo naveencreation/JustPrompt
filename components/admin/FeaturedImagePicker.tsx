@@ -39,8 +39,8 @@ export function FeaturedImagePicker({ currentFeaturedId, onSelect }: FeaturedIma
     try {
       const res = await fetch(`/api/search?q=${encodeURIComponent(q)}&limit=5`);
       if (res.ok) {
-        const data = await res.json() as { items: ImageType[] };
-        setResults(data.items);
+        const payload = await res.json() as { items: ImageType[] };
+        setResults(payload.items);
       }
     } finally {
       setIsSearching(false);

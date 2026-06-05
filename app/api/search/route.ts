@@ -20,12 +20,12 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: query.error.flatten() }, { status: HTTP.BAD_REQUEST });
     }
 
-    const result = await searchService.query(query.data.q, {
+    const searchResponse = await searchService.query(query.data.q, {
       cursor: query.data.cursor,
       limit: query.data.limit,
     });
 
-    return NextResponse.json(result, {
+    return NextResponse.json(searchResponse, {
       headers: { "Cache-Control": PUBLIC_CACHE },
     });
   } catch (err) {

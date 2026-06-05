@@ -14,16 +14,16 @@ export async function POST(request: NextRequest, { params }: Params) {
       request.headers.get("x-real-ip") ??
       "unknown";
 
-    const result = await likeService.like(ImageId.parse(id), ip);
+    const likeStatus = await likeService.like(ImageId.parse(id), ip);
 
-    if (!result.ok) {
+    if (!likeStatus.ok) {
       return NextResponse.json(
-        { error: { code: "rate_limited", message: "Too many likes" }, count: result.count },
+        { error: { code: "rate_limited", message: "Too many likes" }, count: likeStatus.count },
         { status: HTTP.TOO_MANY_REQUESTS },
       );
     }
 
-    return NextResponse.json({ count: result.count });
+    return NextResponse.json({ count: likeStatus.count });
   } catch (err) {
     errors.capture(err, { route: "POST /api/like/[id]" });
     return NextResponse.json({ error: { code: "internal_error" } }, { status: HTTP.INTERNAL_SERVER_ERROR });

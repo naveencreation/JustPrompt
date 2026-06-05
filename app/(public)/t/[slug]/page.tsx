@@ -24,8 +24,8 @@ export default async function TagPage({ params }: PageProps) {
   const tag = await tagService.findBySlug(slug);
   if (!tag) notFound();
 
-  const result = await imageService.listGallery({ tagSlug: slug });
-  const initialLikeCounts = await likeService.getBatch(result.items.map((img) => img.id));
+  const tagGallery = await imageService.listGallery({ tagSlug: slug });
+  const initialLikeCounts = await likeService.getBatch(tagGallery.items.map((img) => img.id));
 
   return (
     <div className="flex min-h-full flex-col">
@@ -44,8 +44,8 @@ export default async function TagPage({ params }: PageProps) {
         </header>
 
         <GalleryGrid
-          initialItems={result.items}
-          initialNextCursor={result.nextCursor}
+          initialItems={tagGallery.items}
+          initialNextCursor={tagGallery.nextCursor}
           initialLikeCounts={initialLikeCounts}
           tagSlug={slug}
         />

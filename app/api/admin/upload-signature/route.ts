@@ -18,8 +18,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: body.error.flatten() }, { status: HTTP.BAD_REQUEST });
     }
 
-    const result = await storage.signedUploadUrl(body.data.filename);
-    return NextResponse.json(result, { status: HTTP.CREATED });
+    const uploadSignature = await storage.signedUploadUrl(body.data.filename);
+    return NextResponse.json(uploadSignature, { status: HTTP.CREATED });
   } catch (err) {
     if (err instanceof AuthError) {
       return NextResponse.json({ error: { code: "unauthorized" } }, { status: err.status });

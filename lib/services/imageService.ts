@@ -38,10 +38,10 @@ export const imageService = {
     const cached = await cache.get<{ items: Image[]; nextCursor: string | null }>(cacheKey);
     if (cached) return cached;
 
-    const result = await imageRepo.listPublished({ before, sort, tagSlug, limit });
-    await cache.set(cacheKey, result, CACHE_TTL.GALLERY);
+    const imagePage = await imageRepo.listPublished({ before, sort, tagSlug, limit });
+    await cache.set(cacheKey, imagePage, CACHE_TTL.GALLERY);
 
-    return result;
+    return imagePage;
   },
 
   async getBySlug(slug: string): Promise<Image | null> {
@@ -59,7 +59,7 @@ export const imageService = {
     return imageRepo.findById(id);
   },
 
-  async listAll(opts: { limit?: number; offset?: number; status?: "published" | "draft"; tagSlug?: string } = {}): Promise<Image[]> {
+  async listAll(opts: { limit?: number; status?: "published" | "draft"; tagSlug?: string } = {}): Promise<Image[]> {
     return imageRepo.listAll(opts);
   },
 

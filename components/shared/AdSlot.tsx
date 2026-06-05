@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils/cn";
+import { config } from "@/lib/config";
 
 declare global {
   interface Window {
@@ -23,7 +24,7 @@ export function AdSlot({
   className,
 }: AdSlotProps) {
   const initialized = useRef(false);
-  const client = process.env.NEXT_PUBLIC_ADSENSE_CLIENT;
+  const client = config.adsenseClient;
 
   useEffect(() => {
     if (!client || !slotId) return;

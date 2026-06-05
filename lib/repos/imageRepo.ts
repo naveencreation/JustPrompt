@@ -149,8 +149,8 @@ export const imageRepo = {
     return { items, nextCursor };
   },
 
-  async listAll(opts: { limit?: number; offset?: number; status?: "published" | "draft"; tagSlug?: string } = {}): Promise<Image[]> {
-    const { limit = 50, offset = 0, status, tagSlug } = opts;
+  async listAll(opts: { limit?: number; status?: "published" | "draft"; tagSlug?: string } = {}): Promise<Image[]> {
+    const { limit = 50, status, tagSlug } = opts;
     const supabase = createAdminClient();
     
     let q = supabase
@@ -177,7 +177,7 @@ export const imageRepo = {
       }
     }
 
-    const { data, error } = await q.range(offset, offset + limit - 1);
+    const { data, error } = await q.limit(limit);
     if (error) throw new Error(`imageRepo.listAll failed: ${error.message}`);
     return ((data ?? []) as ImageRow[]).map(fromRow);
   },

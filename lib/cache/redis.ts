@@ -45,9 +45,9 @@ export class RedisCache implements Cache {
 
   async get<T>(key: string): Promise<T | null> {
     try {
-      const result = await this.send<string | null>(["GET", key]);
-      if (result === null || result === undefined) return null;
-      return JSON.parse(result) as T;
+      const payload = await this.send<string | null>(["GET", key]);
+      if (payload === null || payload === undefined) return null;
+      return JSON.parse(payload) as T;
     } catch (err) {
       errors.capture(err, { op: "redis.get", key });
       return null;
@@ -77,8 +77,8 @@ export class RedisCache implements Cache {
 
   async incr(key: string): Promise<number> {
     try {
-      const result = await this.send<number>(["INCR", key]);
-      return Number(result);
+      const nextVal = await this.send<number>(["INCR", key]);
+      return Number(nextVal);
     } catch (err) {
       errors.capture(err, { op: "redis.incr", key });
       return 0;

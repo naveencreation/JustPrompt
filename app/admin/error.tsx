@@ -3,10 +3,9 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { clientErrors } from "@/lib/observability/clientErrors";
+import { config } from "@/lib/config";
 
-// Note: do NOT import `lib/config` here — this is a client component and
-// `config` validates server-only env vars that are undefined in the browser.
-const isDev = process.env.NODE_ENV === "development";
+const isDev = config.isDev;
 
 export default function AdminError({
   error,

@@ -51,14 +51,14 @@ function parseEnv() {
     // In the browser, server-only secrets are omitted from process.env, so strict validation fails.
     return envSchema.partial().parse(process.env);
   }
-  const result = envSchema.safeParse(process.env);
-  if (!result.success) {
-    const missing = result.error.issues.map((i) => `  • ${i.path.join(".")}: ${i.message}`);
+  const parsedEnv = envSchema.safeParse(process.env);
+  if (!parsedEnv.success) {
+    const missing = parsedEnv.error.issues.map((i) => `  • ${i.path.join(".")}: ${i.message}`);
     throw new Error(
       `Environment validation failed:\n${missing.join("\n")}\n\nCopy .env.example to .env.local and fill in the required values.`,
     );
   }
-  return result.data;
+  return parsedEnv.data;
 }
 
 const env = parseEnv();

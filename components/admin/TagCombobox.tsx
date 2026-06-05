@@ -31,9 +31,9 @@ export function TagCombobox({ value, onChange }: TagComboboxProps) {
   }, []);
 
   const addTag = (tagName: string) => {
-    const val = tagName.trim().toLowerCase();
-    if (val && !value.includes(val)) {
-      onChange([...value, val]);
+    const normalizedTagName = tagName.trim().toLowerCase();
+    if (normalizedTagName && !value.includes(normalizedTagName)) {
+      onChange([...value, normalizedTagName]);
     }
     setInputValue("");
     setIsOpen(false);

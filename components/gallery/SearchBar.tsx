@@ -23,9 +23,9 @@ export function SearchBar({
 
   // We only trigger the debounced callback, local state is instant
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value;
-    setValue(val);
-    debouncedSearch(val.trim());
+    const inputValue = e.target.value;
+    setValue(inputValue);
+    debouncedSearch(inputValue.trim());
   };
 
   return (

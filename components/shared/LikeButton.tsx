@@ -34,8 +34,8 @@ export function LikeButton({ imageId, initialCount }: LikeButtonProps) {
       try {
         const res = await fetch(`/api/like/${imageId}`, { method: "POST" });
         if (res.ok) {
-          const data = (await res.json()) as { count: number };
-          setCount(data.count);
+          const payload = (await res.json()) as { count: number };
+          setCount(payload.count);
         } else {
           // Rollback on non-OK responses (e.g. rate limited)
           setHasLiked(false);

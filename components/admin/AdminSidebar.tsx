@@ -12,6 +12,7 @@ import {
   UploadIcon,
 } from "@/components/icons";
 import { cn } from "@/lib/utils/cn";
+import { clientErrors } from "@/lib/observability/clientErrors";
 
 const NAV_ITEMS = [
   { href: "/admin/dashboard", label: "Dashboard", icon: DashboardIcon },
@@ -35,7 +36,7 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
       router.push("/admin/login");
       router.refresh();
     } catch (err) {
-      console.error("Failed to sign out", err);
+      clientErrors.capture(err, { op: "auth.signout" });
     }
   };
 

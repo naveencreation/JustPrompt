@@ -336,7 +336,7 @@ export function EntryTable({ images: initialImages }: EntryTableProps) {
                               {image.isPublished ? "Published" : "Draft"}
                             </span>
                           </td>
-                          <td className="px-4 py-3 text-[11px] text-neutral-400">
+                          <td className="px-4 py-3 text-[11px] text-neutral-600">
                             {new Date(image.createdAt).toLocaleDateString("en-US")}
                           </td>
                           <td className="px-4 py-3">

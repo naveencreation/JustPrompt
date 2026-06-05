@@ -6,6 +6,7 @@ import { ImageCard } from "./ImageCard";
 import { SkeletonCard } from "./SkeletonCard";
 import { Lightbox } from "./Lightbox";
 import { AdSlot } from "@/components/shared/AdSlot";
+import { config } from "@/lib/config";
 
 import type { Image as ImageType, Sort, Tag } from "@/lib/db/schema";
 
@@ -142,7 +143,7 @@ export function GalleryGrid({
           <Fragment key={image.id}>
             {index > 0 && index % 12 === 0 && (
               <div className="mb-4 break-inside-avoid">
-                <AdSlot slotId={process.env.NEXT_PUBLIC_ADSENSE_SLOT_GALLERY_INFEED} format="fluid" minHeight={280} />
+                <AdSlot slotId={config.adsenseSlots.galleryInfeed} format="fluid" minHeight={280} />
               </div>
             )}
             <ImageCard

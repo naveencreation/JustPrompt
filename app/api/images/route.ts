@@ -25,16 +25,16 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: query.error.flatten() }, { status: HTTP.BAD_REQUEST });
     }
 
-    const result = await imageService.listGallery({
+    const galleryPage = await imageService.listGallery({
       cursor: query.data.cursor,
       sort: query.data.sort,
       tagSlug: query.data.tag,
       limit: query.data.limit,
     });
 
-    const likeCounts = await likeService.getBatch(result.items.map((img) => img.id));
+    const likeCounts = await likeService.getBatch(galleryPage.items.map((img) => img.id));
 
-    return NextResponse.json({ ...result, likeCounts }, {
+    return NextResponse.json({ ...galleryPage, likeCounts }, {
       headers: { "Cache-Control": HTTP_CACHE.PUBLIC_READ },
     });
   } catch (err) {
