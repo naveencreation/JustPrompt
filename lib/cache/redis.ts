@@ -1,5 +1,6 @@
 import { config } from "@/lib/config";
 import type { Cache } from "./index";
+import { errors } from "@/lib/observability/errors";
 
 /**
  * Upstash Redis cache, talking to the REST API directly via fetch.
@@ -43,51 +44,69 @@ export class RedisCache implements Cache {
   }
 
   async get<T>(key: string): Promise<T | null> {
-    const result = await this.send<string | null>(["GET", key]);
-    if (result === null || result === undefined) return null;
     try {
+      const result = await this.send<string | null>(["GET", key]);
+      if (result === null || result === undefined) return null;
       return JSON.parse(result) as T;
-    } catch {
-      return result as unknown as T;
+    } catch (err) {
+      errors.capture(err, { op: "redis.get", key });
+      return null;
     }
   }
 
   async set<T>(key: string, value: T, ttlSeconds?: number): Promise<void> {
-    const payload = typeof value === "string" ? value : JSON.stringify(value);
-    const cmd: (string | number)[] = ["SET", key, payload];
-    if (ttlSeconds && ttlSeconds > 0) {
-      cmd.push("EX", ttlSeconds);
+    try {
+      const payload = typeof value === "string" ? value : JSON.stringify(value);
+      const cmd: (string | number)[] = ["SET", key, payload];
+      if (ttlSeconds && ttlSeconds > 0) {
+        cmd.push("EX", ttlSeconds);
+      }
+      await this.send(cmd);
+    } catch (err) {
+      errors.capture(err, { op: "redis.set", key });
     }
-    await this.send(cmd);
   }
 
   async del(key: string): Promise<void> {
-    await this.send(["DEL", key]);
+    try {
+      await this.send(["DEL", key]);
+    } catch (err) {
+      errors.capture(err, { op: "redis.del", key });
+    }
   }
 
   async incr(key: string): Promise<number> {
-    const result = await this.send<number>(["INCR", key]);
-    return Number(result);
+    try {
+      const result = await this.send<number>(["INCR", key]);
+      return Number(result);
+    } catch (err) {
+      errors.capture(err, { op: "redis.incr", key });
+      return 0;
+    }
   }
 
   async keys(pattern: string): Promise<string[]> {
-    // SCAN is safer than KEYS on large datasets; iterate until cursor returns 0.
-    const keys: string[] = [];
-    let cursor: string = "0";
-    let firstPass = true;
-    while (firstPass || cursor !== "0") {
-      firstPass = false;
-      const res: [string, string[]] = await this.send<[string, string[]]>([
-        "SCAN",
-        cursor,
-        "MATCH",
-        pattern,
-        "COUNT",
-        100,
-      ]);
-      cursor = String(res[0]);
-      keys.push(...res[1]);
+    try {
+      const keys: string[] = [];
+      let cursor: string = "0";
+      let firstPass = true;
+      while (firstPass || cursor !== "0") {
+        firstPass = false;
+        const res: [string, string[]] = await this.send<[string, string[]]>([
+          "SCAN",
+          cursor,
+          "MATCH",
+          pattern,
+          "COUNT",
+          100,
+        ]);
+        cursor = String(res[0]);
+        keys.push(...res[1]);
+      }
+      return keys;
+    } catch (err) {
+      errors.capture(err, { op: "redis.keys", pattern });
+      return [];
     }
-    return keys;
   }
 }
