@@ -13,17 +13,16 @@ interface ImageCardProps {
   likeCount?: number;
   priority?: boolean;
   onOpen?: (image: ImageType) => void;
+  onLike?: (id: string, delta?: number) => void;
   animationDelay?: number;
 }
-
-const TILT_RANGE_DEG = 6;
-const TILT_PERSPECTIVE_PX = 800;
 
 export function ImageCard({
   image,
   likeCount = 0,
   priority = false,
   onOpen,
+  onLike,
   animationDelay = 0,
 }: ImageCardProps) {
   const [copied, setCopied] = useState(false);
@@ -31,39 +30,15 @@ export function ImageCard({
   const [hasLiked, setHasLiked] = useState(false);
 
   useEffect(() => {
+    setOptimisticLikes(likeCount);
     if (localStorage.getItem(`liked:${image.id}`) === "1") {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setHasLiked(true);
+    } else {
+      setHasLiked(false);
     }
-  }, [image.id]);
+  }, [image.id, likeCount]);
 
   const modelLabel = useModelLabel(image.model);
-  const cardRef = useRef<HTMLDivElement>(null);
-  const rafRef = useRef<number | null>(null);
-
-  useEffect(() => {
-    return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    };
-  }, []);
-
-  const handleTilt = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    const el = cardRef.current;
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width - 0.5;
-    const y = (e.clientY - rect.top) / rect.height - 0.5;
-    
-    if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    rafRef.current = requestAnimationFrame(() => {
-      el.style.transform = `perspective(${TILT_PERSPECTIVE_PX}px) rotateY(${x * TILT_RANGE_DEG}deg) rotateX(${-y * TILT_RANGE_DEG}deg)`;
-    });
-  }, []);
-
-  const resetTilt = useCallback(() => {
-    if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    if (cardRef.current) cardRef.current.style.transform = "";
-  }, []);
 
   const handleCardClick = useCallback(
     (e: React.MouseEvent) => {
@@ -93,6 +68,7 @@ export function ImageCard({
       setHasLiked(true);
       setOptimisticLikes((n) => n + 1);
       localStorage.setItem(`liked:${image.id}`, "1");
+      onLike?.(image.id, 1);
 
       try {
         const res = await fetch(`/api/like/${image.id}`, { method: "POST" });
@@ -100,14 +76,16 @@ export function ImageCard({
           setHasLiked(false);
           setOptimisticLikes((n) => n - 1);
           localStorage.removeItem(`liked:${image.id}`);
+          onLike?.(image.id, -1);
         }
       } catch {
         setHasLiked(false);
         setOptimisticLikes((n) => n - 1);
         localStorage.removeItem(`liked:${image.id}`);
+        onLike?.(image.id, -1);
       }
     },
-    [hasLiked, image.id],
+    [hasLiked, image.id, onLike],
   );
 
   return (
@@ -116,13 +94,10 @@ export function ImageCard({
       style={{ animationDelay: `${animationDelay}ms` }}
     >
       <div
-        ref={cardRef}
         tabIndex={0}
         role="button"
         aria-label={`View prompt: ${image.prompt.slice(0, 80)}`}
         className="card-tilt group relative overflow-hidden rounded-md border border-neutral-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 bg-white"
-        onMouseMove={handleTilt}
-        onMouseLeave={resetTilt}
         onClick={handleCardClick}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {

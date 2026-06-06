@@ -12,15 +12,55 @@ interface LightboxProps {
   image: ImageType;
   likeCount?: number;
   onClose: () => void;
+  onLike?: (id: string, delta?: number) => void;
 }
 
-export function Lightbox({ image, likeCount = 0, onClose }: LightboxProps) {
+export function Lightbox({ image, likeCount = 0, onClose, onLike }: LightboxProps) {
   const closeRef = useRef<HTMLButtonElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   const modelLabel = useModelLabel(image.model);
   const [copied, setCopied] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [optimisticLikes, setOptimisticLikes] = useState(likeCount);
+  const [hasLiked, setHasLiked] = useState(false);
+
+  useEffect(() => {
+    setOptimisticLikes(likeCount);
+    if (localStorage.getItem(`liked:${image.id}`) === "1") {
+      setHasLiked(true);
+    } else {
+      setHasLiked(false);
+    }
+  }, [image.id, likeCount]);
+
+  const handleLike = useCallback(
+    async (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (hasLiked) return;
+
+      setHasLiked(true);
+      setOptimisticLikes((n) => n + 1);
+      localStorage.setItem(`liked:${image.id}`, "1");
+      onLike?.(image.id, 1);
+
+      try {
+        const res = await fetch(`/api/like/${image.id}`, { method: "POST" });
+        if (!res.ok) {
+          setHasLiked(false);
+          setOptimisticLikes((n) => n - 1);
+          localStorage.removeItem(`liked:${image.id}`);
+          onLike?.(image.id, -1);
+        }
+      } catch {
+        setHasLiked(false);
+        setOptimisticLikes((n) => n - 1);
+        localStorage.removeItem(`liked:${image.id}`);
+        onLike?.(image.id, -1);
+      }
+    },
+    [hasLiked, image.id, onLike],
+  );
 
   useEffect(() => {
     const t = setTimeout(() => setIsOpen(true), 0);
@@ -149,10 +189,20 @@ export function Lightbox({ image, likeCount = 0, onClose }: LightboxProps) {
                 {modelLabel}
               </span>
             )}
-            <span className="flex items-center gap-1 rounded-full bg-white/10 px-2.5 py-1 text-neutral-300">
-              <HeartIcon size={10} />
-              {likeCount}
-            </span>
+            <button
+              onClick={handleLike}
+              className={cn(
+                "flex items-center gap-1 rounded-full px-2.5 py-1 text-neutral-300 transition-[background-color,color,transform] duration-200 active:scale-95",
+                hasLiked
+                  ? "bg-[#FDEBEC] text-[#9F2F2D]"
+                  : "bg-white/10 text-neutral-300 hover:bg-[#FDEBEC] hover:text-[#9F2F2D]"
+              )}
+              aria-pressed={hasLiked}
+              aria-label={hasLiked ? "Liked" : "Like this prompt"}
+            >
+              <HeartIcon size={10} filled={hasLiked} />
+              <span>{optimisticLikes}</span>
+            </button>
           </div>
 
           <div className="flex gap-2">

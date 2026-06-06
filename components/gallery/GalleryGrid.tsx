@@ -41,6 +41,13 @@ export function GalleryGrid({
   const sentinelRef = useRef<HTMLDivElement | null>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
 
+  const handleLikeUpdate = useCallback((id: string, delta: number = 1) => {
+    setLikeCounts((prev) => ({
+      ...prev,
+      [id]: (prev[id] ?? 0) + delta,
+    }));
+  }, []);
+
   const [prevInitialItems, setPrevInitialItems] = useState(initialItems);
 
   useEffect(() => {
@@ -151,6 +158,7 @@ export function GalleryGrid({
               likeCount={likeCounts[image.id] ?? 0}
               priority={index < PRIORITY_IMAGE_COUNT}
               onOpen={setActiveLightbox}
+              onLike={handleLikeUpdate}
               animationDelay={(index % 12) * 50}
             />
           </Fragment>
@@ -171,6 +179,7 @@ export function GalleryGrid({
           image={activeLightbox}
           likeCount={likeCounts[activeLightbox.id] ?? 0}
           onClose={() => setActiveLightbox(null)}
+          onLike={handleLikeUpdate}
         />
       )}
     </>
