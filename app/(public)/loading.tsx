@@ -1,27 +1,20 @@
-import { Navbar } from "@/components/shared/Navbar";
 import { SkeletonGrid } from "@/components/gallery/SkeletonCard";
 
 export default function GalleryLoading() {
   return (
-    <div className="flex min-h-full flex-col">
-      <Navbar />
-      <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6">
+    <div className="flex min-h-full flex-col w-full">
+      <main className="w-full flex-1 px-4 py-8 md:px-8 md:py-12">
         {/* Prompt of the Day skeleton */}
-        <div className="mb-10">
+        <div className="mb-12">
           <div className="skeleton h-3 w-32 mb-3 rounded" />
-          <div className="skeleton h-64 w-full rounded-2xl" />
+          <div className="skeleton h-[400px] w-full rounded-2xl" />
         </div>
-        {/* Controls skeleton */}
-        <div className="mb-6 flex gap-3">
-          <div className="skeleton h-10 flex-1 max-w-xl rounded-xl" />
-          <div className="skeleton h-10 w-48 rounded-xl" />
+        
+        {/* AdSlot skeleton */}
+        <div className="mb-12 w-full flex justify-center">
+          <div className="skeleton h-[90px] w-full max-w-[728px] rounded-lg" />
         </div>
-        {/* Tag pills skeleton */}
-        <div className="mb-6 flex gap-2">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="skeleton h-7 w-20 rounded-full" />
-          ))}
-        </div>
+
         <SkeletonGrid />
       </main>
     </div>
