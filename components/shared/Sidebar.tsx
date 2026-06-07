@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { PinterestIcon, TrendingUpIcon } from "@/components/icons";
+import { PinterestIcon, TrendingUpIcon, CompassIcon, HomeIcon } from "@/components/icons";
 import { cn } from "@/lib/utils/cn";
 
 export function Sidebar() {
@@ -11,23 +11,7 @@ export function Sidebar() {
 
   const isHome = pathname === "/" && !searchParams.has("sort");
   const isTop = pathname === "/" && searchParams.get("sort") === "likes";
-
-  const HomeIcon = () => (
-    <svg
-      width={20}
-      height={20}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.5}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="shrink-0"
-    >
-      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-      <polyline points="9 22 9 12 15 12 15 22" />
-    </svg>
-  );
+  const isExplore = pathname === "/explore";
 
   return (
     <aside className="fixed left-0 top-0 bottom-0 z-40 hidden w-20 flex-col items-center border-r border-neutral-200 bg-white py-6 md:flex">
@@ -53,6 +37,20 @@ export function Sidebar() {
           )}
         >
           <HomeIcon />
+        </Link>
+
+        {/* Explore */}
+        <Link
+          href="/explore"
+          title="Explore"
+          className={cn(
+            "flex h-12 w-12 items-center justify-center rounded-full transition-all duration-200",
+            isExplore
+              ? "bg-neutral-900 text-white"
+              : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900"
+          )}
+        >
+          <CompassIcon size={20} />
         </Link>
 
         {/* Popular */}

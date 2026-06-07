@@ -8,6 +8,7 @@ export function NavLinks() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const isTop = searchParams.get("sort") === "likes";
+  const isExplore = pathname === "/explore";
   const isGallery = pathname === "/" && !isTop;
 
   return (
@@ -22,6 +23,17 @@ export function NavLinks() {
         )}
       >
         Gallery
+      </Link>
+      <Link
+        href="/explore"
+        className={cn(
+          "rounded-md px-3 py-1.5 transition-[background-color,color] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]",
+          isExplore
+            ? "font-medium text-neutral-900"
+            : "text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900"
+        )}
+      >
+        Explore
       </Link>
       <Link
         href="/?sort=likes"
