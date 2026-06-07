@@ -5,7 +5,7 @@ export const CACHE_TTL = {
   TAGS: 300,
   SETTINGS: 60,
   TRENDING: 300,
-  LIKE_DELTA: 120,
+  LIKE_DELTA: 86400,
   MODELS: 3_600,
   RELATED: 300,
 } as const;

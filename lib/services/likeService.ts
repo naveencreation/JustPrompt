@@ -76,7 +76,15 @@ export const likeService = {
   },
 
   async totalLikes(): Promise<number> {
-    return likeRepo.totalLikes();
+    const persisted = await likeRepo.totalLikes();
+    const dirtyKeys = await cache.keys("like:dirty:*");
+    let cachedDeltaTotal = 0;
+    for (const dirtyKey of dirtyKeys) {
+      const imageIdStr = dirtyKey.replace("like:dirty:", "");
+      const delta = (await cache.get<number>(`like:${imageIdStr}`)) ?? 0;
+      cachedDeltaTotal += delta;
+    }
+    return persisted + cachedDeltaTotal;
   },
 
   async setLikeCount(imageId: ImageIdType, count: number): Promise<void> {

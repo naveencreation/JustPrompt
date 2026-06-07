@@ -8,14 +8,12 @@ import {
   UploadIcon,
   ListIcon,
   CopyIcon,
-  PercentIcon,
   EyeIcon,
   TrendingUpIcon,
   AlertCircleIcon,
 } from "@/components/icons";
 import { StatCard } from "@/components/admin/dashboard/StatCard";
 import { GradientBar } from "@/components/admin/dashboard/GradientBar";
-import { ProgressRing } from "@/components/admin/dashboard/ProgressRing";
 import { ChartCard } from "@/components/admin/dashboard/ChartCard";
 
 export const dynamic = "force-dynamic";
@@ -77,6 +75,12 @@ export default async function DashboardPage() {
               accent="emerald"
             />
             <StatCard
+              label="Total views"
+              value={totalViews}
+              icon={<EyeIcon size={18} />}
+              accent="amber"
+            />
+            <StatCard
               label="Total likes"
               value={totalLikes}
               icon={<HeartIcon size={18} />}
@@ -87,50 +91,20 @@ export default async function DashboardPage() {
               value={totalCopies}
               icon={<CopyIcon size={18} />}
               accent="blue"
-            />
-            <StatCard
-              label="Copy rate"
-              value={`${copyRate}%`}
-              icon={<PercentIcon size={18} />}
-              accent="amber"
-              sub={`${totalViews.toLocaleString()} views`}
+              sub={`${copyRate}% copy rate`}
             />
           </div>
         </section>
 
         {/* ── Section B: Performance Analytics ───────────────────────────────── */}
         <section className="mb-10 grid gap-6 lg:grid-cols-3">
-          {/* Engagement Summary Card */}
           <ChartCard
-            title="Engagement Summary"
-            icon={<EyeIcon size={16} />}
-            accent="blue"
+            title="Most Loved"
+            icon={<HeartIcon size={16} />}
+            accent="rose"
             className="lg:col-span-1"
           >
-            <div className="space-y-5">
-              <div className="rounded-lg bg-neutral-100 p-4">
-                <p className="text-xs uppercase tracking-widest text-neutral-600">Detail Views</p>
-                <p className="mt-2 font-serif text-3xl font-bold text-neutral-900">
-                  {totalViews.toLocaleString()}
-                </p>
-              </div>
-              <div className="rounded-lg bg-gradient-to-br from-neutral-50 to-neutral-50/30 p-4">
-                <p className="text-xs uppercase tracking-widest text-neutral-600">Conversion</p>
-                <p className="mt-2 font-serif text-2xl font-bold text-neutral-900">
-                  {copyRate}%
-                </p>
-              </div>
-            </div>
-          </ChartCard>
-
-          {/* Most Liked Content */}
-          {mostLiked && (
-            <ChartCard
-              title="Most Loved"
-              icon={<HeartIcon size={16} />}
-              accent="rose"
-              className="lg:col-span-1"
-            >
+            {mostLiked ? (
               <div className="space-y-4">
                 <div className="relative h-32 w-full overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100">
                   <Image
@@ -152,22 +126,15 @@ export default async function DashboardPage() {
                   </Link>
                 </div>
               </div>
-            </ChartCard>
-          )}
-
-          {/* Copy Rate Ring */}
-          <ChartCard
-            title="Copy Conversion"
-            icon={<PercentIcon size={16} />}
-            accent="amber"
-            className="lg:col-span-1"
-          >
-            <div className="flex flex-col items-center justify-center py-4">
-              <ProgressRing percentage={Math.min(copyRate, 100)} color="amber" size={110} />
-              <p className="mt-3 text-center text-xs font-medium uppercase tracking-wider text-neutral-600">
-                Of viewers copy the prompt
-              </p>
-            </div>
+            ) : (
+              <div className="flex h-32 flex-col items-center justify-center text-center">
+                <HeartIcon size={24} className="mb-2 text-neutral-300 animate-pulse" />
+                <p className="text-xs font-medium text-neutral-500">No loved images yet</p>
+                <p className="mt-1 text-[10px] leading-relaxed text-neutral-400">
+                  Likes registered in the gallery will feature the top image here.
+                </p>
+              </div>
+            )}
           </ChartCard>
         </section>
 

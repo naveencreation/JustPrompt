@@ -52,7 +52,7 @@ export const adminService = {
       failedSearches,
     ] = await Promise.all([
       imageRepo.count(),
-      likeRepo.totalLikes(),
+      likeService.totalLikes(),
       metricService.totalCopies(),
       metricService.totalViews(),
       imageRepo.listAll({ limit: 5 }),
