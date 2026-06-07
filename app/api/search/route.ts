@@ -3,8 +3,7 @@ import { z } from "zod";
 import { searchService } from "@/lib/services/searchService";
 import { errors } from "@/lib/observability/errors";
 import { HTTP } from "@/lib/constants/http";
-
-const PUBLIC_CACHE = "public, s-maxage=30, stale-while-revalidate=120";
+import { HTTP_CACHE } from "@/lib/constants/cache";
 
 const SearchQuerySchema = z.object({
   q: z.string().min(1).max(200),
@@ -26,7 +25,7 @@ export async function GET(request: NextRequest) {
     });
 
     return NextResponse.json(searchResponse, {
-      headers: { "Cache-Control": PUBLIC_CACHE },
+      headers: { "Cache-Control": HTTP_CACHE.PUBLIC_READ },
     });
   } catch (err) {
     errors.capture(err, { route: "GET /api/search" });

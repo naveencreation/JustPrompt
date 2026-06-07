@@ -1,6 +1,7 @@
 import { search } from "@/lib/search/factory";
 import { decodeCursor } from "@/lib/utils/cursor";
 import { searchLogRepo } from "@/lib/repos/searchLogRepo";
+import { errors } from "@/lib/observability/errors";
 import type { Image } from "@/lib/db/schema";
 
 export interface SearchOptions {
@@ -21,7 +22,9 @@ export const searchService = {
 
     // Fire-and-forget: log the search query + results count for dashboard analytics.
     // Intentionally not awaited — search latency must not be affected by logging.
-    searchLogRepo.logSearch(q, searchResponse.items.length).catch(() => {});
+    searchLogRepo.logSearch(q, searchResponse.items.length).catch((err) => {
+      errors.capture(err, { op: "search.log_failed", query: q });
+    });
 
     return searchResponse;
   },

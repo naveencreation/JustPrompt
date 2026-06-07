@@ -25,7 +25,7 @@ export function FeaturedCard({ image, likeCount = 0 }: FeaturedCardProps) {
   }, [image.prompt]);
 
   return (
-    <div className="group relative overflow-hidden rounded-md border border-neutral-200 bg-white">
+    <div className="group relative overflow-hidden rounded-2xl border border-neutral-200/70 bg-white">
       <div className="flex flex-col gap-0 sm:flex-row">
         {/* Image — kept neutral, no rounded edges that fight the editorial frame */}
         <div className="relative min-h-[220px] w-full bg-neutral-100 overflow-hidden sm:min-h-[300px] sm:w-1/2 lg:w-[42%]">

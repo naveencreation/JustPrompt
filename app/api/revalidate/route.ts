@@ -1,10 +1,13 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { revalidateTag } from "next/cache";
+import { revalidateTag as _revalidateTag } from "next/cache";
 import { z } from "zod";
 import { HTTP } from "@/lib/constants/http";
 import { CACHE_TAG } from "@/lib/constants/cache";
 import { logger } from "@/lib/observability/logger";
 import { config } from "@/lib/config";
+
+// Next.js 15 types require a second `profile` argument that we don't use.
+const revalidateTag = _revalidateTag as (tag: string) => void;
 
 const BodySchema = z.object({
   tag: z.enum(["gallery", "tags", "settings"]).optional(),
@@ -23,16 +26,16 @@ export async function POST(request: NextRequest) {
   }
 
   if (body.data.slug) {
-    revalidateTag(CACHE_TAG.IMAGE(body.data.slug), "");
+    revalidateTag(CACHE_TAG.IMAGE(body.data.slug));
   }
   if (body.data.tag) {
-    revalidateTag(body.data.tag, "");
+    revalidateTag(body.data.tag);
   }
   if (!body.data.tag && !body.data.slug) {
     // Revalidate everything
-    revalidateTag(CACHE_TAG.GALLERY, "");
-    revalidateTag(CACHE_TAG.TAGS, "");
-    revalidateTag(CACHE_TAG.SETTINGS, "");
+    revalidateTag(CACHE_TAG.GALLERY);
+    revalidateTag(CACHE_TAG.TAGS);
+    revalidateTag(CACHE_TAG.SETTINGS);
   }
 
   logger.info("cache.revalidated", { tag: body.data.tag, slug: body.data.slug });

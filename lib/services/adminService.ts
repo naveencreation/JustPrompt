@@ -1,14 +1,17 @@
-import { revalidateTag } from "next/cache";
-import { createAdminClient } from "@/lib/db/client";
+import { revalidateTag as _revalidateTag } from "next/cache";
 import { imageRepo } from "@/lib/repos/imageRepo";
 import { likeRepo } from "@/lib/repos/likeRepo";
 import { metricRepo } from "@/lib/repos/metricRepo";
 import { searchLogRepo } from "@/lib/repos/searchLogRepo";
+import { settingsRepo } from "@/lib/repos/settingsRepo";
 import { likeService } from "./likeService";
 import { metricService } from "./metricService";
 import { logger } from "@/lib/observability/logger";
 import { CACHE_TAG } from "@/lib/constants/cache";
 import type { Image, ImageId, Settings } from "@/lib/db/schema";
+
+// Next.js 15 types require a second `profile` argument that we don't use.
+const revalidateTag = _revalidateTag as (tag: string) => void;
 
 // ─── Dashboard Stats Types ──────────────────────────────────────────────────
 
@@ -50,6 +53,7 @@ export const adminService = {
       copiedRows,
       topSearches,
       failedSearches,
+      mostLikedImageId,
     ] = await Promise.all([
       imageRepo.count(),
       likeService.totalLikes(),
@@ -59,26 +63,16 @@ export const adminService = {
       metricRepo.topCopied(10),
       searchLogRepo.getTopQueries(5),
       searchLogRepo.getZeroResultQueries(5),
+      settingsRepo.getMostLikedImageId(),
     ]);
 
     // Copy rate: what % of page views result in a copy?
     const copyRate =
       totalViews > 0 ? Math.round((totalCopies / totalViews) * 100) : 0;
 
-    // Most liked image
-    const supabase = createAdminClient();
-    const { data: likesData } = await supabase
-      .from("like_counts")
-      .select("image_id, count")
-      .order("count", { ascending: false })
-      .limit(1);
-
-    let mostLiked: Image | null = null;
-    if (likesData && likesData.length > 0) {
-      mostLiked = await imageRepo.findById(
-        (likesData[0] as { image_id: ImageId }).image_id,
-      );
-    }
+    const mostLiked = mostLikedImageId
+      ? await imageRepo.findById(mostLikedImageId)
+      : null;
 
     // Hydrate top-copied rows with full image data + their like counts
     const topCopied: TopCopiedEntry[] = [];
@@ -104,31 +98,19 @@ export const adminService = {
   },
 
   async getSettings(): Promise<Settings | null> {
-    const supabase = createAdminClient();
-    const { data } = await supabase.from("settings").select("*").eq("id", 1).single();
-    return data as Settings | null;
+    return settingsRepo.getSettings();
   },
 
   async setFeaturedImage(imageId: ImageId | null): Promise<void> {
-    const supabase = createAdminClient();
-    await supabase
-      .from("settings")
-      .update({ featured_image_id: imageId })
-      .eq("id", 1);
-
-    revalidateTag(CACHE_TAG.GALLERY, {});
-    revalidateTag(CACHE_TAG.SETTINGS, {});
+    await settingsRepo.setFeaturedImage(imageId);
+    revalidateTag(CACHE_TAG.GALLERY);
+    revalidateTag(CACHE_TAG.SETTINGS);
     logger.info("settings.featured_image_set", { imageId });
   },
 
   async toggleMaintenanceMode(enabled: boolean): Promise<void> {
-    const supabase = createAdminClient();
-    await supabase
-      .from("settings")
-      .update({ maintenance_mode: enabled })
-      .eq("id", 1);
-
-    revalidateTag(CACHE_TAG.SETTINGS, {});
+    await settingsRepo.setMaintenanceMode(enabled);
+    revalidateTag(CACHE_TAG.SETTINGS);
     logger.info("settings.maintenance_mode_toggled", { enabled });
   },
 

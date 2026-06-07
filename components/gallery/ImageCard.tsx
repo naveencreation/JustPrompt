@@ -90,14 +90,14 @@ export function ImageCard({
 
   return (
     <div
-      className="mb-4 break-inside-avoid animate-in"
+      className="mb-6 md:mb-8 break-inside-avoid animate-in"
       style={{ animationDelay: `${animationDelay}ms` }}
     >
       <div
         tabIndex={0}
         role="button"
         aria-label={`View prompt: ${image.prompt.slice(0, 80)}`}
-        className="card-tilt group relative overflow-hidden rounded-md border border-neutral-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 bg-white"
+        className="card-tilt group relative overflow-hidden rounded-2xl border border-neutral-200/70 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 bg-white"
         onClick={handleCardClick}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
@@ -161,7 +161,7 @@ export function ImageCard({
             "absolute top-3 right-3 z-30",
             "flex items-center gap-1.5 rounded-full px-2.5 py-1",
             "text-[11px] font-medium backdrop-blur-sm",
-            "transition-colors duration-200",
+            "transition-all duration-200 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100",
             hasLiked
               ? "bg-[#FDEBEC] text-[#9F2F2D]"
               : "bg-black/30 text-white hover:bg-[#FDEBEC] hover:text-[#9F2F2D]",

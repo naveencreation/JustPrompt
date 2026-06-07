@@ -5,11 +5,9 @@ import { searchService } from "@/lib/services/searchService";
 import { adminService } from "@/lib/services/adminService";
 import { tagService } from "@/lib/services/tagService";
 import { likeService } from "@/lib/services/likeService";
-import { Navbar } from "@/components/shared/Navbar";
 import { GalleryGrid } from "@/components/gallery/GalleryGrid";
 import { SkeletonGrid } from "@/components/gallery/SkeletonCard";
 import { FeaturedCard } from "@/components/gallery/FeaturedCard";
-import { GalleryControls } from "@/components/gallery/GalleryControls";
 import { AdSlot } from "@/components/shared/AdSlot";
 import { config } from "@/lib/config";
 import type { Sort } from "@/lib/db/schema";
@@ -50,22 +48,8 @@ export default async function GalleryPage({ searchParams }: PageProps) {
     : 0;
 
   return (
-    <div className="flex min-h-full flex-col">
-      <Navbar />
-      <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-12 sm:px-6 sm:py-16">
-        {/* Editorial intro — once per session, sets tone */}
-        <header className="mb-12 sm:mb-16">
-          <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-neutral-500">
-            AI Prompt Gallery
-          </p>
-          <h1 className="font-serif text-4xl tracking-tight text-neutral-900 sm:text-5xl sm:tracking-[-0.01em]">
-            Prompts, made&nbsp;visible.
-          </h1>
-          <p className="mt-3 max-w-xl text-sm leading-relaxed text-neutral-500">
-            A curated archive of AI-generated images paired with the exact prompts that produced
-            them. Browse, search, copy.
-          </p>
-        </header>
+    <div className="flex min-h-full flex-col w-full">
+      <main className="w-full flex-1 px-4 py-8 md:px-8 md:py-12">
 
         {featuredImage && (
           <section className="mb-12" aria-label="Prompt of the Day">
@@ -77,14 +61,6 @@ export default async function GalleryPage({ searchParams }: PageProps) {
         )}
 
         <AdSlot slotId={config.adsenseSlots.galleryBanner} minHeight={90} className="mb-12" />
-
-        <section className="mb-8" aria-label="Gallery filters">
-          <GalleryControls
-            tags={popularTags}
-            activeTag={tag ?? null}
-            activeSort={sort}
-          />
-        </section>
 
         <Suspense fallback={<SkeletonGrid />}>
           <GalleryGrid

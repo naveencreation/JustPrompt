@@ -2,7 +2,6 @@
 
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { SearchBar } from "./SearchBar";
 import { TagFilter } from "./TagFilter";
 import { cn } from "@/lib/utils/cn";
 import type { Tag } from "@/lib/db/schema";
@@ -33,16 +32,6 @@ export function GalleryControls({ tags, activeTag, activeSort }: GalleryControls
     [router, pathname, searchParams],
   );
 
-  const [, setSearchQuery] = useState("");
-
-  const handleSearch = useCallback(
-    (query: string) => {
-      setSearchQuery(query);
-      pushParam("q", query || null);
-    },
-    [pushParam],
-  );
-
   const tabsContainerRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
@@ -60,10 +49,8 @@ export function GalleryControls({ tags, activeTag, activeSort }: GalleryControls
   }, [activeSort]);
 
   return (
-    <div className="flex flex-col gap-5">
-      <div className="flex flex-wrap items-center gap-3">
-        <SearchBar onSearch={handleSearch} className="flex-1 sm:max-w-xs md:max-w-sm" />
-
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center justify-between gap-3">
         {/* Sort segmented control — accordion-style underlines, not boxes */}
         <div ref={tabsContainerRef} role="tablist" aria-label="Sort gallery" className="relative flex items-center gap-1 rounded-md border border-neutral-200 bg-white p-1">
           <div

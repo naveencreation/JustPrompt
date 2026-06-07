@@ -145,7 +145,7 @@ export function GalleryGrid({
 
   return (
     <>
-      <div className={`columns-1 gap-4 sm:columns-2 lg:columns-3 xl:columns-4 transition-[filter] duration-200 ${activeLightbox ? "pointer-events-none brightness-75" : ""}`}>
+      <div className={`columns-1 gap-6 sm:columns-2 md:columns-2 lg:columns-3 xl:columns-3 2xl:columns-4 sm:gap-8 md:gap-10 transition-[filter] duration-200 ${activeLightbox ? "pointer-events-none brightness-75" : ""}`}>
         {items.map((image, index) => (
           <Fragment key={image.id}>
             {index > 0 && index % 12 === 0 && (
