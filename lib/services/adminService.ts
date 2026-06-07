@@ -57,8 +57,8 @@ export const adminService = {
       metricService.totalViews(),
       imageRepo.listAll({ limit: 5 }),
       metricRepo.topCopied(10),
-      searchLogRepo.getTopQueries(10),
-      searchLogRepo.getZeroResultQueries(10),
+      searchLogRepo.getTopQueries(5),
+      searchLogRepo.getZeroResultQueries(5),
     ]);
 
     // Copy rate: what % of page views result in a copy?

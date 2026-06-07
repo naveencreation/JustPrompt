@@ -26,9 +26,9 @@ export const metricService = {
       await cache.set(`copy:dirty:${imageId}`, "1", CACHE_TTL.LIKE_DELTA);
     }
 
+    // ✅ Always write to DB (remove the cache check)
+    await metricRepo.incrementCopyBy(imageId, 1);
     if (config.cache === "memory") {
-      // Tier 0: flush immediately — in-memory cache can't survive restarts
-      await metricRepo.incrementCopyBy(imageId, 1);
       await cache.del(`copy:${imageId}`);
     }
 
