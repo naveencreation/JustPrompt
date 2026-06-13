@@ -62,7 +62,7 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
         >
           <Link href="/" className="flex items-center gap-2 outline-none">
             <span className="sr-only">Just Prompt</span>
-            <JustPromptLogo size={30} strokeWidth={2} className="text-neutral-950" />
+            <JustPromptLogo size={24} strokeWidth={2} className="text-neutral-950" />
             <span aria-hidden="true" className="font-sans text-base font-bold tracking-tight text-neutral-900">
               Just Prompt
             </span>

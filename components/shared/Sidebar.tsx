@@ -20,7 +20,7 @@ export function Sidebar() {
         href="/"
         className="mb-8 flex items-center justify-center text-neutral-950 hover:scale-105 transition-transform"
       >
-        <JustPromptLogo size={44} strokeWidth={2} />
+        <JustPromptLogo size={32} strokeWidth={2} />
       </Link>
 
       {/* Navigation links — public-only */}

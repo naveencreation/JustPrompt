@@ -56,7 +56,7 @@ function TopBarContent() {
     <div className="flex-1 flex items-center w-full gap-4">
       {/* Mobile-only logo */}
       <Link href="/" className="md:hidden flex items-center justify-center text-neutral-950">
-        <JustPromptLogo size={36} strokeWidth={2} />
+        <JustPromptLogo size={28} strokeWidth={2} />
       </Link>
 
       {/* Brand Name on Desktop */}
