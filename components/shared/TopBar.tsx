@@ -67,7 +67,7 @@ function TopBarContent() {
       </Link>
 
       {/* Pill Search Input */}
-      <div className="relative flex-1 flex items-center group max-w-2xl">
+      <div className="relative flex-1 flex items-center group">
         <SearchIcon
           size={16}
           className="pointer-events-none absolute left-4 text-neutral-500 transition-colors group-focus-within:text-neutral-800"

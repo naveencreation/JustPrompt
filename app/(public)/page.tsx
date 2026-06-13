@@ -31,17 +31,20 @@ export default async function GalleryPage({ searchParams }: PageProps) {
   const sort: Sort =
     sortParam === "likes" || sortParam === "random" ? sortParam : "new";
 
+  // Run gallery + likes + featured image all in parallel — no sequential waterfall.
   const [galleryResult, settings, popularTags] = await Promise.all([
     q ? searchService.query(q) : imageService.listGallery({ sort, tagSlug: tag }),
     adminService.getSettings(),
     tagService.listPopular(),
   ]);
 
-  const initialLikeCounts = await likeService.getBatch(galleryResult.items.map((img) => img.id));
-
-  const featuredImage = settings?.featuredImageId
-    ? await imageService.getById(settings.featuredImageId)
-    : null;
+  // Likes and featured image are independent — fetch them simultaneously.
+  const [initialLikeCounts, featuredImage] = await Promise.all([
+    likeService.getBatch(galleryResult.items.map((img) => img.id)),
+    settings?.featuredImageId
+      ? imageService.getById(settings.featuredImageId)
+      : Promise.resolve(null),
+  ]);
 
   const featuredLikeCount = featuredImage
     ? await likeService.getCount(featuredImage.id)

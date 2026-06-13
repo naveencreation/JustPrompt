@@ -65,25 +65,28 @@ export const likeService = {
   },
 
   async getBatch(imageIds: ImageIdType[]): Promise<Record<string, number>> {
+    if (imageIds.length === 0) return {};
     const persisted = await likeRepo.getBatch(imageIds);
-    // Merge any in-flight cache deltas (Tier 1 Redis path)
+    // Fetch all cache deltas in parallel — not one at a time.
+    const deltas = await Promise.all(
+      imageIds.map((id) => cache.get<number>(`like:${id}`))
+    );
     const result: Record<string, number> = {};
-    for (const id of imageIds) {
-      const delta = (await cache.get<number>(`like:${id}`)) ?? 0;
-      result[id] = (persisted[id] ?? 0) + delta;
-    }
+    imageIds.forEach((id, i) => {
+      result[id] = (persisted[id] ?? 0) + (deltas[i] ?? 0);
+    });
     return result;
   },
 
   async totalLikes(): Promise<number> {
     const persisted = await likeRepo.totalLikes();
     const dirtyKeys = await cache.keys("like:dirty:*");
-    let cachedDeltaTotal = 0;
-    for (const dirtyKey of dirtyKeys) {
-      const imageIdStr = dirtyKey.replace("like:dirty:", "");
-      const delta = (await cache.get<number>(`like:${imageIdStr}`)) ?? 0;
-      cachedDeltaTotal += delta;
-    }
+    if (dirtyKeys.length === 0) return persisted;
+    // Fetch all deltas in parallel — not one at a time.
+    const deltas = await Promise.all(
+      dirtyKeys.map((k) => cache.get<number>(`like:${k.replace("like:dirty:", "")}`))
+    );
+    const cachedDeltaTotal = deltas.reduce<number>((sum, d) => sum + (d ?? 0), 0);
     return persisted + cachedDeltaTotal;
   },
 
