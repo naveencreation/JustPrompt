@@ -109,10 +109,12 @@ function TopBarContent() {
 
 export function TopBar() {
   return (
-    <header className="sticky top-0 z-30 h-16 w-full flex items-center px-4 md:px-8 bg-white/95 border-b border-neutral-100 backdrop-blur">
-      <Suspense fallback={<div className="flex-1 h-10 bg-neutral-100 rounded-full animate-pulse" />}>
-        <TopBarContent />
-      </Suspense>
+    <header className="sticky top-0 z-30 h-16 w-full flex items-center bg-white/95 border-b border-neutral-100 backdrop-blur pl-0 md:pl-20">
+      <div className="flex-1 flex items-center h-full px-4 md:px-8 w-full">
+        <Suspense fallback={<div className="flex-1 h-10 bg-neutral-100 rounded-full animate-pulse" />}>
+          <TopBarContent />
+        </Suspense>
+      </div>
     </header>
   );
 }
