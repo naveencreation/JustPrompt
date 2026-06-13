@@ -6,6 +6,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   DashboardIcon,
+  JustPromptLogo,
   ListIcon,
   LogoutIcon,
   SettingsIcon,
@@ -60,9 +61,10 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
           )}
         >
           <Link href="/" className="flex items-center gap-2 outline-none">
-            <span className="sr-only">Prompt Gallery</span>
-            <span aria-hidden="true" className="font-serif text-lg tracking-tight text-neutral-900">
-              Prompt Gallery
+            <span className="sr-only">Just Prompt</span>
+            <JustPromptLogo size={30} strokeWidth={2} className="text-neutral-950" />
+            <span aria-hidden="true" className="font-sans text-base font-bold tracking-tight text-neutral-900">
+              Just Prompt
             </span>
           </Link>
           <p className="mt-1 text-[10px] uppercase tracking-[0.15em] text-neutral-400">

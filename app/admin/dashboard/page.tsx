@@ -15,6 +15,9 @@ import {
 import { StatCard } from "@/components/admin/dashboard/StatCard";
 import { GradientBar } from "@/components/admin/dashboard/GradientBar";
 import { ChartCard } from "@/components/admin/dashboard/ChartCard";
+import { MetricBadge } from "@/components/admin/dashboard/MetricBadge";
+import { DashboardBarChart } from "@/components/admin/dashboard/DashboardBarChart";
+import { config } from "@/lib/config";
 
 export const dynamic = "force-dynamic";
 
@@ -97,12 +100,12 @@ export default async function DashboardPage() {
         </section>
 
         {/* ── Section B: Performance Analytics ───────────────────────────────── */}
-        <section className="mb-10 grid gap-6 lg:grid-cols-3">
+        <section className="mb-10 grid gap-6 lg:grid-cols-2">
+          {/* Column 1: Most Loved */}
           <ChartCard
             title="Most Loved"
             icon={<HeartIcon size={16} />}
             accent="rose"
-            className="lg:col-span-1"
           >
             {mostLiked ? (
               <div className="space-y-4">
@@ -135,6 +138,67 @@ export default async function DashboardPage() {
                 </p>
               </div>
             )}
+          </ChartCard>
+
+          {/* Column 2: Quick Actions */}
+          <ChartCard
+            title="Quick Actions"
+            icon={<UploadIcon size={16} />}
+            accent="emerald"
+          >
+            <div className="flex flex-col justify-between space-y-4">
+              <div className="flex flex-col gap-2.5">
+                <Link
+                  href="/admin/upload"
+                  className="group/btn flex items-center justify-between rounded-lg border border-neutral-200 bg-white p-3 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-neutral-300 hover:shadow-md"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-neutral-900 text-white shadow transition-all duration-300 group-hover/btn:bg-neutral-800">
+                      <UploadIcon size={18} />
+                    </div>
+                    <div className="text-left">
+                      <p className="text-xs font-semibold text-neutral-800">Upload New</p>
+                      <p className="text-[10px] text-neutral-500">Add prompts & images</p>
+                    </div>
+                  </div>
+                  <span className="text-neutral-400 group-hover/btn:text-neutral-600 transition-transform duration-300 group-hover/btn:translate-x-1">→</span>
+                </Link>
+
+                <Link
+                  href="/admin/manage"
+                  className="group/btn flex items-center justify-between rounded-lg border border-neutral-200 bg-white p-3 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-neutral-300 hover:shadow-md"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-neutral-200 bg-neutral-50 text-neutral-600">
+                      <ListIcon size={18} />
+                    </div>
+                    <div className="text-left">
+                      <p className="text-xs font-semibold text-neutral-800">Manage Entries</p>
+                      <p className="text-[10px] text-neutral-500">Edit, publish & organize</p>
+                    </div>
+                  </div>
+                  <span className="text-neutral-400 group-hover/btn:text-neutral-600 transition-transform duration-300 group-hover/btn:translate-x-1">→</span>
+                </Link>
+              </div>
+
+              <div className="rounded-lg border border-neutral-100 bg-neutral-50/70 p-3">
+                <div className="mb-2 flex items-center justify-between text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <span>Backend Adapters</span>
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  <span className="rounded bg-neutral-200/50 px-1.5 py-0.5 text-[9px] font-medium text-neutral-700 uppercase tracking-wider">
+                    Storage: {config.storage}
+                  </span>
+                  <span className="rounded bg-neutral-200/50 px-1.5 py-0.5 text-[9px] font-medium text-neutral-700 uppercase tracking-wider">
+                    Cache: {config.cache}
+                  </span>
+                  <span className="rounded bg-neutral-200/50 px-1.5 py-0.5 text-[9px] font-medium text-neutral-700 uppercase tracking-wider">
+                    Search: {config.search}
+                  </span>
+                </div>
+              </div>
+            </div>
           </ChartCard>
         </section>
 
@@ -178,11 +242,6 @@ export default async function DashboardPage() {
                         </div>
                       </div>
                     </div>
-                    <GradientBar
-                      value={copyCount}
-                      max={maxCopyCount}
-                      color="blue"
-                    />
                     <Link
                       href={`/p/${image.slug}`}
                       className="mt-2 inline-block text-[10px] font-semibold uppercase tracking-wider text-neutral-700 opacity-0 transition-opacity group-hover:opacity-100"
@@ -247,25 +306,10 @@ export default async function DashboardPage() {
                 No searches logged yet. Search logging starts when users begin searching.
               </p>
             ) : (
-              <ul className="space-y-3">
-                {topSearches.map(({ query, count }) => (
-                  <li key={query} className="rounded-lg bg-neutral-50/50 p-3">
-                    <div className="mb-2 flex items-center justify-between gap-2">
-                      <span className="truncate font-mono text-xs font-medium text-neutral-700">
-                        {query}
-                      </span>
-                      <span className="shrink-0 rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-semibold text-neutral-700">
-                        {count}
-                      </span>
-                    </div>
-                    <GradientBar
-                      value={count}
-                      max={maxSearchCount}
-                      color="emerald"
-                    />
-                  </li>
-                ))}
-              </ul>
+              <DashboardBarChart
+                data={topSearches.map((s) => ({ label: s.query, value: s.count }))}
+                colorTheme="emerald"
+              />
             )}
           </ChartCard>
 
@@ -288,46 +332,14 @@ export default async function DashboardPage() {
                 No zero-result searches yet — great sign!
               </p>
             ) : (
-              <ul className="space-y-3">
-                {failedSearches.map(({ query, count }) => (
-                  <li key={query} className="rounded-lg bg-neutral-100/40 p-3">
-                    <div className="mb-2 flex items-center justify-between gap-2">
-                      <span className="truncate font-mono text-xs font-medium text-neutral-700">
-                        {query}
-                      </span>
-                      <span className="shrink-0 rounded-full bg-neutral-200 px-2.5 py-1 text-xs font-semibold text-neutral-700">
-                        {count}×
-                      </span>
-                    </div>
-                    <GradientBar
-                      value={count}
-                      max={maxFailedCount}
-                      color="amber"
-                    />
-                  </li>
-                ))}
-              </ul>
+              <DashboardBarChart
+                data={failedSearches.map((s) => ({ label: s.query, value: s.count }))}
+                colorTheme="amber"
+              />
             )}
           </ChartCard>
         </section>
 
-        {/* ── Quick Actions ─────────────────────────────────────────────── */}
-        <section className="flex gap-3 pt-6">
-          <Link
-            href="/admin/upload"
-            className="group flex items-center gap-2 rounded-lg bg-neutral-900 px-6 py-3 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:shadow-xl hover:bg-neutral-800 active:scale-95"
-          >
-            <UploadIcon size={16} />
-            Upload new
-          </Link>
-          <Link
-            href="/admin/manage"
-            className="flex items-center gap-2 rounded-lg border-2 border-neutral-200 bg-white px-6 py-3 text-sm font-semibold text-neutral-700 transition-all duration-300 hover:border-neutral-300 hover:shadow-md"
-          >
-            <ListIcon size={16} />
-            Manage entries
-          </Link>
-        </section>
       </div>
     </div>
   );

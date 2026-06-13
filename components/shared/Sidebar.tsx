@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { PinterestIcon, TrendingUpIcon, CompassIcon, HomeIcon } from "@/components/icons";
+import { JustPromptLogo, TrendingUpIcon, CompassIcon, HomeIcon } from "@/components/icons";
 import { cn } from "@/lib/utils/cn";
 
 export function Sidebar() {
@@ -18,9 +18,9 @@ export function Sidebar() {
       {/* Top logo */}
       <Link
         href="/"
-        className="mb-8 flex items-center justify-center text-[#E60023] hover:scale-105 transition-transform"
+        className="mb-8 flex items-center justify-center text-neutral-950 hover:scale-105 transition-transform"
       >
-        <PinterestIcon size={32} useBrandColor />
+        <JustPromptLogo size={44} strokeWidth={2} />
       </Link>
 
       {/* Navigation links — public-only */}

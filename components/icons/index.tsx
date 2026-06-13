@@ -372,4 +372,35 @@ export function WhatsAppIcon({ size = 16, className, useBrandColor = false, ...p
     </svg>
   );
 }
+export function JustPromptLogo({ size = 32, className, strokeWidth = 1.5, ...rest }: IconProps) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={cn("shrink-0", className)}
+      aria-hidden="true"
+      {...rest}
+    >
+      {/* J Hook */}
+      <path d="M 2.75,16.75 A 3.25,3.25 0 0,0 9.25,16.75 V 11" />
+      {/* J Crescent Accent */}
+      <path d="M 6.75,5 A 1.5,1.5 0 0,0 6.75,8" />
+      {/* J Dash Accent */}
+      <path d="M 9.25,5 V 8" />
+      {/* P Stem */}
+      <path d="M 12.75,5 V 21" />
+      {/* P Outer Loop */}
+      <path d="M 12.75,5 H 15.25 A 6,6 0 0,1 15.25,17 H 12.75" />
+      {/* P Inner Loop */}
+      <path d="M 12.75,8 H 15.25 A 3,3 0 0,1 15.25,14 H 12.75" />
+    </svg>
+  );
+}
+
 export { default as ShareIcon } from "./animated/send";

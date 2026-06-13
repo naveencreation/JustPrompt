@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback, Suspense } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { SearchIcon, CloseIcon, PinterestIcon } from "@/components/icons";
+import { SearchIcon, CloseIcon, JustPromptLogo } from "@/components/icons";
 import { cn } from "@/lib/utils/cn";
 import { useDebounceCallback } from "@/lib/hooks/useDebounce";
 import { TIMING } from "@/lib/constants/timing";
@@ -55,12 +55,19 @@ function TopBarContent() {
   return (
     <div className="flex-1 flex items-center w-full gap-4">
       {/* Mobile-only logo */}
-      <Link href="/" className="md:hidden flex items-center justify-center text-[#E60023]">
-        <PinterestIcon size={28} useBrandColor />
+      <Link href="/" className="md:hidden flex items-center justify-center text-neutral-950">
+        <JustPromptLogo size={36} strokeWidth={2} />
+      </Link>
+
+      {/* Brand Name on Desktop */}
+      <Link href="/" className="hidden md:block select-none shrink-0 mr-2 hover:opacity-80 transition-opacity">
+        <span className="font-sans text-xl font-extrabold tracking-tight text-neutral-900">
+          Just Prompt
+        </span>
       </Link>
 
       {/* Pill Search Input */}
-      <div className="relative flex-1 flex items-center group">
+      <div className="relative flex-1 flex items-center group max-w-2xl">
         <SearchIcon
           size={16}
           className="pointer-events-none absolute left-4 text-neutral-500 transition-colors group-focus-within:text-neutral-800"
