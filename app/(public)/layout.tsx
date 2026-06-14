@@ -20,7 +20,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
       </Suspense>
 
       {/* Main Grid View Container */}
-      <div className="flex-grow flex flex-col pl-0 md:pl-20 pb-16 md:pb-0 min-w-0">
+      <div className="flex-grow flex flex-col pl-0 md:pl-20 pb-[calc(4rem+env(safe-area-inset-bottom,0px))] md:pb-0 min-w-0">
         {/* Full-width Top Search Bar */}
         <TopBar />
 
@@ -31,7 +31,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
       </div>
 
       {/* Floating Mobile Bottom Navigation */}
-      <Suspense fallback={<nav className="fixed bottom-0 left-0 right-0 z-40 flex h-16 items-center justify-around border-t border-neutral-200 bg-white px-4 md:hidden shadow-[0_-2px_12px_rgba(0,0,0,0.04)]" />}>
+      <Suspense fallback={<nav className="fixed bottom-0 left-0 right-0 z-40 flex h-16 items-center justify-around border-t border-neutral-200 bg-white px-4 pb-[env(safe-area-inset-bottom,0px)] md:hidden shadow-[0_-2px_12px_rgba(0,0,0,0.04)]" />}>
         <BottomNav />
       </Suspense>
     </div>

@@ -15,7 +15,7 @@ export function BottomNav() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-40 flex h-16 items-center justify-around border-t border-neutral-200 bg-white px-4 md:hidden shadow-[0_-2px_12px_rgba(0,0,0,0.04)]"
+      className="fixed bottom-0 left-0 right-0 z-40 flex h-16 items-center justify-around border-t border-neutral-200 bg-white px-4 pb-[env(safe-area-inset-bottom,0px)] md:hidden shadow-[0_-2px_12px_rgba(0,0,0,0.04)]"
       aria-label="Mobile Navigation"
     >
       {/* Home */}

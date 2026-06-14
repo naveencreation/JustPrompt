@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>JustPrompt — Smell Report</title>
+	<script src="https://cdn.tailwindcss.com"></script>
+	<style>
+		body { font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+		.mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+		.report-section { border: 1px solid #222226; background: #0a0a0b; position: relative; }
+		.corner-box { position: absolute; width: 20px; height: 20px; border: 1px solid #222226; background: #000; }
+	</style>
+</head>
+<body class="bg-black text-[#fafafa]">
+	<main class="mx-auto w-full max-w-6xl px-5 py-8 md:px-10 md:py-12">
+		<header class="report-section mb-8 p-6 md:p-8">
+			<div class="corner-box left-0 top-0 -translate-x-1/2 -translate-y-1/2"></div>
+			<div class="corner-box right-0 top-0 translate-x-1/2 -translate-y-1/2"></div>
+			<div class="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+				<div>
+					<div class="mono mb-2 text-xs tracking-widest text-[#666]">// SMELL</div>
+					<h1 class="text-4xl font-bold tracking-tight md:text-6xl">JustPrompt</h1>
+				</div>
+				<div class="mono text-left text-xs text-[#666] md:text-right">
+					<div>COMMANDCODE REPORT</div>
+					<div class="text-[#444]">2026-06-14</div>
+				</div>
+			</div>
+		</header>
+
+		<section class="report-section mb-8 p-6 md:p-8">
+			<div class="corner-box left-0 top-0 -translate-x-1/2 -translate-y-1/2"></div>
+			<div class="corner-box right-0 top-0 translate-x-1/2 -translate-y-1/2"></div>
+			<div class="grid gap-8 md:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
+				<div>
+					<div class="mono mb-2 text-xs tracking-widest text-[#666]">// OVERALL</div>
+					<div class="text-6xl font-bold tracking-tight md:text-7xl">8</div>
+					<div class="mt-1 text-lg text-[#666]">/ 10</div>
+					<div class="mt-4 inline-flex border border-[#fbbf24]/30 bg-[#fbbf24]/10 px-3 py-1 text-sm text-[#fbbf24]">FAINT</div>
+				</div>
+				<div>
+					<div class="mono mb-3 text-xs tracking-widest text-[#666]">// TL;DR</div>
+					<p class="text-sm leading-6 text-[#a0a0a0]">1 tell found. Strong identity. Clean. The warm-bone neutral palette, DM Sans / Newsreader typography, and masonry gallery composition are all intentional choices that actively refuse the AI-startup gradient reflex.</p>
+					<p class="mt-4 text-sm leading-6 text-[#fbbf24]">One faint tell: Explore page uses a uniform feature-tile grid. Not broken for tag browsing, but the single generic pattern in an otherwise authored surface.</p>
+				</div>
+			</div>
+		</section>
+
+		<section class="report-section mb-8 p-6 md:p-8">
+			<div class="mono mb-6 text-xs tracking-widest text-[#666]">// HEURISTIC SCORES</div>
+			<div class="overflow-x-auto">
+				<table class="w-full min-w-[720px] border-collapse text-sm">
+					<thead>
+						<tr class="border-b border-[#222226] text-left mono text-xs text-[#666]">
+							<th class="py-3 pr-4 font-normal">#</th>
+							<th class="py-3 pr-4 font-normal">HEURISTIC</th>
+							<th class="py-3 pr-4 font-normal">SCORE</th>
+							<th class="py-3 font-normal">KEY FINDING</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="border-b border-[#1a1a1e]">
+							<td class="py-4 pr-4 text-[#555]">1</td>
+							<td class="py-4 pr-4 text-[#fafafa]">Tech gradient</td>
+							<td class="py-4 pr-4 text-[#34d399]">1</td>
+							<td class="py-4 text-[#a0a0a0]">No blue-violet, indigo-cyan, or purple-to-teal gradients anywhere.</td>
+						</tr>
+						<tr class="border-b border-[#1a1a1e]">
+							<td class="py-4 pr-4 text-[#555]">2</td>
+							<td class="py-4 pr-4 text-[#fafafa]">Generic tech hue</td>
+							<td class="py-4 pr-4 text-[#34d399]">1</td>
+							<td class="py-4 text-[#a0a0a0]">No blue-purple identity. Accent is muted pale red on like buttons.</td>
+						</tr>
+						<tr class="border-b border-[#1a1a1e]">
+							<td class="py-4 pr-4 text-[#555]">3</td>
+							<td class="py-4 pr-4 text-[#fafafa]">Feature tile grid</td>
+							<td class="py-4 pr-4 text-[#fbbf24]">0</td>
+							<td class="py-4 text-[#a0a0a0]">Explore page uses uniform tag cards with no hierarchy. Faint — tag browsing is inherently flat.</td>
+						</tr>
+						<tr class="border-b border-[#1a1a1e]">
+							<td class="py-4 pr-4 text-[#555]">4</td>
+							<td class="py-4 pr-4 text-[#fafafa]">Accent rail</td>
+							<td class="py-4 pr-4 text-[#34d399]">1</td>
+							<td class="py-4 text-[#a0a0a0]">No colored side-stripe borders anywhere.</td>
+						</tr>
+						<tr class="border-b border-[#1a1a1e]">
+							<td class="py-4 pr-4 text-[#555]">5</td>
+							<td class="py-4 pr-4 text-[#fafafa]">Unearned blur</td>
+							<td class="py-4 pr-4 text-[#34d399]">1</td>
+							<td class="py-4 text-[#a0a0a0]">Blur confined to sticky headers. Like pill uses minimal blur as part of layered depth.</td>
+						</tr>
+						<tr class="border-b border-[#1a1a1e]">
+							<td class="py-4 pr-4 text-[#555]">6</td>
+							<td class="py-4 pr-4 text-[#fafafa]">Stat monument</td>
+							<td class="py-4 pr-4 text-[#34d399]">1</td>
+							<td class="py-4 text-[#a0a0a0]">No oversized number clusters.</td>
+						</tr>
+						<tr class="border-b border-[#1a1a1e]">
+							<td class="py-4 pr-4 text-[#555]">7</td>
+							<td class="py-4 pr-4 text-[#fafafa]">Icon topper</td>
+							<td class="py-4 pr-4 text-[#34d399]">1</td>
+							<td class="py-4 text-[#a0a0a0]">No rounded-square icons above section headings.</td>
+						</tr>
+						<tr class="border-b border-[#1a1a1e]">
+							<td class="py-4 pr-4 text-[#555]">8</td>
+							<td class="py-4 pr-4 text-[#fafafa]">Bounce everywhere</td>
+							<td class="py-4 pr-4 text-[#34d399]">1</td>
+							<td class="py-4 text-[#a0a0a0]">All motion uses custom cubic-bezier. No bounce or elastic.</td>
+						</tr>
+						<tr class="border-b border-[#1a1a1e]">
+							<td class="py-4 pr-4 text-[#555]">9</td>
+							<td class="py-4 pr-4 text-[#fafafa]">Default type</td>
+							<td class="py-4 pr-4 text-[#34d399]">1</td>
+							<td class="py-4 text-[#a0a0a0]">DM Sans, Newsreader, DM Mono — all project-specific, with bans on Inter/Roboto.</td>
+						</tr>
+						<tr>
+							<td class="py-4 pr-4 text-[#555]">10</td>
+							<td class="py-4 pr-4 text-[#fafafa]">Center stack</td>
+							<td class="py-4 pr-4 text-[#34d399]">1</td>
+							<td class="py-4 text-[#a0a0a0]">Masonry gallery, editorial detail split. Only empty states center.</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</section>
+
+		<section class="report-section mb-8 p-6 md:p-8">
+			<div class="mono mb-6 text-xs tracking-widest text-[#666]">// DOMAIN DEFAULT CHECK</div>
+			<div class="grid gap-6 md:grid-cols-2">
+				<div>
+					<div class="mb-3 text-xl font-semibold">PASS</div>
+					<ul class="space-y-3 text-sm text-[#a0a0a0]">
+						<li><span class="mono mr-2 text-[#34d399]">PASS</span>Palette refuses every domain cliché — no neon, no gradients, no terminal dark mode</li>
+						<li><span class="mono mr-2 text-[#34d399]">PASS</span>Warm bone neutrals with editorial serif would not be guessed from "AI image gallery"</li>
+						<li><span class="mono mr-2 text-[#34d399]">PASS</span>Type, motion, and interactions are all project-specific decisions</li>
+					</ul>
+				</div>
+				<div>
+					<div class="mono mb-3 text-xs tracking-widest text-[#666]">// NEXT MODES</div>
+					<div class="flex flex-wrap gap-2">
+						<span class="border border-[#333] px-3 py-1 text-sm text-[#a0a0a0]">/design voice</span>
+					</div>
+					<p class="mt-4 text-sm text-[#666]">Only if the Explore grid ever needs more art direction. No urgent fixes.</p>
+				</div>
+			</div>
+		</section>
+
+		<section class="report-section mb-8 p-6 md:p-8">
+			<div class="mono mb-6 text-xs tracking-widest text-[#666]">// WHAT'S WORKING</div>
+			<div class="grid gap-4 md:grid-cols-3">
+				<article class="border border-[#1f1f24] p-4">
+					<h2 class="mb-2 text-sm font-semibold">Palette is authored</h2>
+					<p class="text-sm leading-6 text-[#a0a0a0]">Warm bone canvas with stone undertones. Every neutral has trace chroma. Pale red accent on likes only — restrained and meaningful.</p>
+				</article>
+				<article class="border border-[#1f1f24] p-4">
+					<h2 class="mb-2 text-sm font-semibold">Type has a reason</h2>
+					<p class="text-sm leading-6 text-[#a0a0a0]">DM Sans (body), Newsreader (editorial headings, tight tracking 1.1), DM Mono (code/metadata). Three voices, all intentional.</p>
+				</article>
+				<article class="border border-[#1f1f24] p-4">
+					<h2 class="mb-2 text-sm font-semibold">Motion is present, never toy-like</h2>
+					<p class="text-sm leading-6 text-[#a0a0a0]">Custom cubic-bezier on all transitions. Card tilt gated to pointer:fine. Stagger at 50ms intervals. Like count sub-200ms.</p>
+				</article>
+				<article class="border border-[#1f1f24] p-4">
+					<h2 class="mb-2 text-sm font-semibold">Gallery composition is chosen</h2>
+					<p class="text-sm leading-6 text-[#a0a0a0]">Masonry columns 1→4 by viewport. Natural aspect ratios preserved. Lightbox with focus management.</p>
+				</article>
+				<article class="border border-[#1f1f24] p-4">
+					<h2 class="mb-2 text-sm font-semibold">Interactions are complete</h2>
+					<p class="text-sm leading-6 text-[#a0a0a0]">Copy: copied/uncopied states. Like: optimistic + localStorage + rollback. Hover overlay with staggered reveals. Tap-equivalent on touch.</p>
+				</article>
+				<article class="border border-[#1f1f24] p-4">
+					<h2 class="mb-2 text-sm font-semibold">Depth model is layered</h2>
+					<p class="text-sm leading-6 text-[#a0a0a0]">Image (z-10) → gradient overlay (z-20) → like pill (z-30). Each layer has its own animation timing and purpose.</p>
+				</article>
+			</div>
+		</section>
+
+		<section class="report-section mb-8 p-6 md:p-8">
+			<div class="mono mb-6 text-xs tracking-widest text-[#666]">// PRIORITY ISSUES</div>
+			<div class="space-y-5">
+				<article class="border border-[#2a1d22] bg-[#110b0d] p-5">
+					<div class="mono mb-2 text-xs text-[#fbbf24]">P2</div>
+					<h2 class="mb-2 text-lg font-semibold">Explore page uses uniform feature-tile grid</h2>
+					<p class="mb-4 text-sm leading-6 text-[#a0a0a0]">Every tag card in <code class="text-[#666]">app/(public)/explore/page.tsx</code> uses identical aspect-[4/3], identical gradient overlay, identical text treatment. All 50 tags get equal visual weight. Not broken — tag browsing is inherently flat — but the single generic pattern in an otherwise authored surface.</p>
+					<div class="border-l border-[#fbbf24] pl-4 text-sm leading-6 text-[#fbbf24]">FIX: Vary card sizing with CSS Grid spans for popular tags, or introduce weighted visual treatment for tags with higher image counts. /design voice if this ever feels flat.</div>
+				</article>
+			</div>
+		</section>
+
+		<footer class="mono py-8 text-center text-xs tracking-widest text-[#444]">
+			Generated with CommandCode — 2026-06-14
+		</footer>
+	</main>
+</body>
+</html>

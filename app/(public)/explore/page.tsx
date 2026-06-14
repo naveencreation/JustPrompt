@@ -21,17 +21,23 @@ export default async function ExplorePage() {
           <h1 className="text-3xl font-serif tracking-tight text-neutral-900 sm:text-4xl">
             Browse by category
           </h1>
-          <p className="mt-2 text-neutral-500">
+          <p className="mt-2 font-serif text-xl text-neutral-500 sm:text-2xl">
             Explore the most popular prompt themes and visual styles.
           </p>
         </header>
 
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:gap-6">
-          {tagsWithPreviews.map((tag) => (
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:gap-6 auto-rows-[minmax(0,1fr)]">
+          {tagsWithPreviews.map((tag, index) => {
+            const isFeatured = index < 3 && tag.count > 5;
+            return (
             <Link
               key={tag.id}
               href={`/t/${tag.slug}`}
-              className="group relative flex aspect-[4/3] w-full flex-col items-center justify-center overflow-hidden rounded-2xl bg-neutral-100 transition-transform duration-300 hover:scale-[1.02]"
+              className={`group relative flex flex-col items-center justify-center overflow-hidden rounded-2xl bg-neutral-100 transition-transform duration-300 hover:scale-[1.02] ${
+                isFeatured
+                  ? "aspect-[8/3] col-span-2 sm:col-span-2 row-span-1 md:aspect-[4/3] md:col-auto md:row-span-1"
+                  : "aspect-[4/3] w-full col-span-1"
+              }`}
             >
               {tag.previewUrl && (
                 <>
@@ -57,7 +63,8 @@ export default async function ExplorePage() {
                 </p>
               </div>
             </Link>
-          ))}
+          );
+        })}
         </div>
 
         {tagsWithPreviews.length === 0 && (

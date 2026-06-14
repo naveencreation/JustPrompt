@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>JustPrompt — Checkup Report</title>
+	<script src="https://cdn.tailwindcss.com"></script>
+	<style>
+		body { font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+		.mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+		.report-section { border: 1px solid #222226; background: #0a0a0b; position: relative; }
+		.corner-box { position: absolute; width: 20px; height: 20px; border: 1px solid #222226; background: #000; }
+	</style>
+</head>
+<body class="bg-black text-[#fafafa]">
+	<main class="mx-auto w-full max-w-6xl px-5 py-8 md:px-10 md:py-12">
+		<header class="report-section mb-8 p-6 md:p-8">
+			<div class="corner-box left-0 top-0 -translate-x-1/2 -translate-y-1/2"></div>
+			<div class="corner-box right-0 top-0 translate-x-1/2 -translate-y-1/2"></div>
+			<div class="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+				<div>
+					<div class="mono mb-2 text-xs tracking-widest text-[#666]">// CHECKUP</div>
+					<h1 class="text-4xl font-bold tracking-tight md:text-6xl">JustPrompt</h1>
+				</div>
+				<div class="mono text-left text-xs text-[#666] md:text-right">
+					<div>COMMANDCODE REPORT</div>
+					<div class="text-[#444]">2026-06-14</div>
+				</div>
+			</div>
+		</header>
+
+		<section class="report-section mb-8 p-6 md:p-8">
+			<div class="corner-box left-0 top-0 -translate-x-1/2 -translate-y-1/2"></div>
+			<div class="corner-box right-0 top-0 translate-x-1/2 -translate-y-1/2"></div>
+			<div class="grid gap-8 md:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
+				<div>
+					<div class="mono mb-2 text-xs tracking-widest text-[#666]">// OVERALL</div>
+					<div class="text-6xl font-bold tracking-tight md:text-7xl">60</div>
+					<div class="mt-1 text-lg text-[#666]">/ 60</div>
+					<div class="mt-4 inline-flex border border-[#34d399]/30 bg-[#34d399]/10 px-3 py-1 text-sm text-[#34d399]">HEALTHY</div>
+				</div>
+				<div>
+					<div class="mono mb-3 text-xs tracking-widest text-[#666]">// TL;DR</div>
+					<p class="text-sm leading-6 text-[#a0a0a0]">All six vitals healthy. Both watch-items from previous checkup (prefers-reduced-motion, safe-area-inset) are now fixed. The interface is fast, readable, accessible, and responsive across devices including notched iPhones.</p>
+					<p class="mt-4 text-sm leading-6 text-[#34d399]">No blockers. No watch-items. Fit to ship.</p>
+				</div>
+			</div>
+		</section>
+
+		<section class="report-section mb-8 p-6 md:p-8">
+			<div class="mono mb-6 text-xs tracking-widest text-[#666]">// VITAL SIGNS</div>
+			<div class="overflow-x-auto">
+				<table class="w-full min-w-[720px] border-collapse text-sm">
+					<thead>
+						<tr class="border-b border-[#222226] text-left mono text-xs text-[#666]">
+							<th class="py-3 pr-4 font-normal">#</th>
+							<th class="py-3 pr-4 font-normal">VITAL SIGN</th>
+							<th class="py-3 pr-4 font-normal">STATUS</th>
+							<th class="py-3 pr-4 font-normal">SCORE</th>
+							<th class="py-3 font-normal">FINDING</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="border-b border-[#1a1a1e]">
+							<td class="py-4 pr-4 text-[#555]">1</td>
+							<td class="py-4 pr-4 text-[#fafafa]">Intentionality</td>
+							<td class="py-4 pr-4"><span class="text-[#34d399]">Healthy</span></td>
+							<td class="py-4 pr-4 text-[#34d399]">10</td>
+							<td class="py-4 text-[#a0a0a0]">Named fonts, authored palette, custom icons. Explore grid now has card-spanning priority.</td>
+						</tr>
+						<tr class="border-b border-[#1a1a1e]">
+							<td class="py-4 pr-4 text-[#555]">2</td>
+							<td class="py-4 pr-4 text-[#fafafa]">Readability</td>
+							<td class="py-4 pr-4"><span class="text-[#34d399]">Healthy</span></td>
+							<td class="py-4 pr-4 text-[#34d399]">10</td>
+							<td class="py-4 text-[#a0a0a0]">14-15px body, 1.55-1.65 leading, 11:1 contrast. Explore subtitle upgraded to serif xl/2xl.</td>
+						</tr>
+						<tr class="border-b border-[#1a1a1e]">
+							<td class="py-4 pr-4 text-[#555]">3</td>
+							<td class="py-4 pr-4 text-[#fafafa]">Usability</td>
+							<td class="py-4 pr-4"><span class="text-[#34d399]">Healthy</span></td>
+							<td class="py-4 pr-4 text-[#34d399]">10</td>
+							<td class="py-4 text-[#a0a0a0]">Masonry browse, debounced search, copy, optimistic like with rollback, lightbox with focus mgmt.</td>
+						</tr>
+						<tr class="border-b border-[#1a1a1e]">
+							<td class="py-4 pr-4 text-[#555]">4</td>
+							<td class="py-4 pr-4 text-[#fafafa]">Responsiveness</td>
+							<td class="py-4 pr-4"><span class="text-[#34d399]">Healthy</span></td>
+							<td class="py-4 pr-4 text-[#34d399]">10</td>
+							<td class="py-4 text-[#a0a0a0]">1-4 col masonry, sidebar→bottom-nav, pointer:fine gating. env(safe-area-inset-bottom) handles notches.</td>
+						</tr>
+						<tr class="border-b border-[#1a1a1e]">
+							<td class="py-4 pr-4 text-[#555]">5</td>
+							<td class="py-4 pr-4 text-[#fafafa]">Speed</td>
+							<td class="py-4 pr-4"><span class="text-[#34d399]">Healthy</span></td>
+							<td class="py-4 pr-4 text-[#34d399]">10</td>
+							<td class="py-4 text-[#a0a0a0]">ISR, explicit dims, skeleton states, priority images, IntersectionObserver, AdSense afterInteractive.</td>
+						</tr>
+						<tr>
+							<td class="py-4 pr-4 text-[#555]">6</td>
+							<td class="py-4 pr-4 text-[#fafafa]">Accessibility</td>
+							<td class="py-4 pr-4"><span class="text-[#34d399]">Healthy</span></td>
+							<td class="py-4 pr-4 text-[#34d399]">10</td>
+							<td class="py-4 text-[#a0a0a0]">Skip link, focus-visible, lightbox focus restore, aria-labels. prefers-reduced-motion gates all animations.</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</section>
+
+		<section class="report-section mb-8 p-6 md:p-8">
+			<div class="mono mb-6 text-xs tracking-widest text-[#666]">// CHANGES SINCE LAST CHECKUP</div>
+			<div class="overflow-x-auto">
+				<table class="w-full min-w-[720px] border-collapse text-sm">
+					<thead>
+						<tr class="border-b border-[#222226] text-left mono text-xs text-[#666]">
+							<th class="py-3 pr-4 font-normal">VITAL SIGN</th>
+							<th class="py-3 pr-4 font-normal">BEFORE</th>
+							<th class="py-3 pr-4 font-normal">AFTER</th>
+							<th class="py-3 font-normal">WHAT CHANGED</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="border-b border-[#1a1a1e]">
+							<td class="py-4 pr-4 text-[#fafafa]">Responsiveness</td>
+							<td class="py-4 pr-4"><span class="text-[#fbbf24]">Watch (5)</span></td>
+							<td class="py-4 pr-4"><span class="text-[#34d399]">Healthy (10)</span></td>
+							<td class="py-4 text-[#a0a0a0]">Added env(safe-area-inset-bottom,0px) to BottomNav + public layout. Main container uses calc().</td>
+						</tr>
+						<tr>
+							<td class="py-4 pr-4 text-[#fafafa]">Accessibility</td>
+							<td class="py-4 pr-4"><span class="text-[#fbbf24]">Watch (5)</span></td>
+							<td class="py-4 pr-4"><span class="text-[#34d399]">Healthy (10)</span></td>
+							<td class="py-4 text-[#a0a0a0]">Added @media (prefers-reduced-motion: reduce) to globals.css. All animations gated to 0.01ms.</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</section>
+
+		<footer class="mono py-8 text-center text-xs tracking-widest text-[#444]">
+			Generated with CommandCode — 2026-06-14
+		</footer>
+	</main>
+</body>
+</html>
