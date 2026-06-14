@@ -33,7 +33,7 @@ export class RedisCache implements Cache {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(command),
-      cache: "no-store",
+      // No cache override — let the page's revalidate / dynamic config control it
     });
     if (!res.ok) {
       throw new Error(`Upstash Redis error ${res.status}: ${await res.text()}`);
