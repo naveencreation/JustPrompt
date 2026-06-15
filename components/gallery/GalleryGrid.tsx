@@ -20,7 +20,7 @@ interface GalleryGridProps {
   popularTags?: Tag[];
 }
 
-const PRIORITY_IMAGE_COUNT = 8;
+const PRIORITY_IMAGE_COUNT = 12;
 const SKELETON_RATIOS = [1.1, 0.85, 1.3, 0.95];
 
 export function GalleryGrid({
