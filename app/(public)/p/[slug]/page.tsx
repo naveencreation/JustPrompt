@@ -5,7 +5,6 @@ import Link from "next/link";
 import { imageService } from "@/lib/services/imageService";
 import { likeService } from "@/lib/services/likeService";
 import { tagService } from "@/lib/services/tagService";
-import { Navbar } from "@/components/shared/Navbar";
 import { CopyButton } from "@/components/shared/CopyButton";
 import { ViewTracker } from "@/components/shared/ViewTracker";
 import { LikeButton } from "@/components/shared/LikeButton";
@@ -85,7 +84,6 @@ export default async function ImagePage({ params }: PageProps) {
       <ViewTracker imageId={image.id} />
 
       <div className="flex min-h-full flex-col">
-        <Navbar />
         <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-12 sm:px-6 sm:py-16">
           <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-neutral-500">
             Prompt

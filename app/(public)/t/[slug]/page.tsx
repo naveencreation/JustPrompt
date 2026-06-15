@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { imageService } from "@/lib/services/imageService";
 import { tagService } from "@/lib/services/tagService";
 import { likeService } from "@/lib/services/likeService";
-import { Navbar } from "@/components/shared/Navbar";
 import { GalleryGrid } from "@/components/gallery/GalleryGrid";
 
 // Keep in sync with REVALIDATE.TAG_PAGE in lib/constants/cache.ts.
@@ -29,7 +28,6 @@ export default async function TagPage({ params }: PageProps) {
 
   return (
     <div className="flex min-h-full flex-col">
-      <Navbar />
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6">
         <header className="mb-8">
           <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-400">
