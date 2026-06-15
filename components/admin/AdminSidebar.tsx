@@ -50,26 +50,30 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
     >
       <div
         className={cn(
-          "relative flex shrink-0 items-center border-b border-neutral-100 pt-6 pb-5",
+          "group relative flex shrink-0 items-center border-b border-neutral-100 pt-6 pb-5",
           isCollapsed ? "justify-center px-3" : "px-6 justify-between"
         )}
       >
-        <div 
+        <div
           className={cn(
-            "flex flex-col transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
-            isCollapsed && "absolute left-2 opacity-0 -translate-x-4 pointer-events-none"
+            "flex flex-col transition-opacity duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]",
+            isCollapsed && "items-center opacity-100 group-hover:opacity-0 group-focus-within:opacity-0"
           )}
         >
           <Link href="/" className="flex items-center gap-2 outline-none">
             <span className="sr-only">Just Prompt</span>
             <JustPromptLogo size={24} strokeWidth={2} className="text-neutral-950" />
-            <span aria-hidden="true" className="font-sans text-base font-bold tracking-tight text-neutral-900">
-              Just Prompt
-            </span>
+            {!isCollapsed && (
+              <span aria-hidden="true" className="font-sans text-base font-bold tracking-tight text-neutral-900">
+                Just Prompt
+              </span>
+            )}
           </Link>
-          <p className="mt-1 text-[10px] uppercase tracking-[0.15em] text-neutral-400">
-            Admin
-          </p>
+          {!isCollapsed && (
+            <p className="mt-1 text-[10px] uppercase tracking-[0.15em] text-neutral-400">
+              Admin
+            </p>
+          )}
         </div>
 
         <button
@@ -79,8 +83,10 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
           aria-controls="admin-sidebar-nav"
           aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           className={cn(
-            "flex h-8 w-8 items-center justify-center rounded-md text-neutral-400 transition-colors hover:bg-neutral-100 hover:text-neutral-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-300",
-            !isCollapsed && "-mr-1"
+            "flex h-8 w-8 items-center justify-center rounded-md text-neutral-400 transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-neutral-100 hover:text-neutral-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-300",
+            isCollapsed
+              ? "absolute inset-0 m-auto opacity-0 translate-x-2 bg-white pointer-events-none group-hover:opacity-100 group-hover:translate-x-0 group-hover:pointer-events-auto group-focus-within:opacity-100 group-focus-within:translate-x-0 group-focus-within:pointer-events-auto focus-visible:opacity-100 focus-visible:translate-x-0 focus-visible:pointer-events-auto"
+              : "-mr-1"
           )}
         >
           {isCollapsed ? <ChevronRightIcon size={18} /> : <ChevronLeftIcon size={18} />}
