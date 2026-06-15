@@ -49,9 +49,15 @@ export class MemoryCache implements Cache {
   }
 
   async incr(key: string): Promise<number> {
-    const current = await this.get<number>(key);
-    const next = (current ?? 0) + 1;
-    await this.set(key, next);
+    const entry = this.store.get(key) as Entry<number> | undefined;
+    if (entry && !this.isExpired(entry)) {
+      const next = (entry.value ?? 0) + 1;
+      entry.value = next;
+      return next;
+    }
+    if (entry) this.store.delete(key);
+    const next = 1;
+    this.store.set(key, { value: next, expiresAt: null });
     return next;
   }
 

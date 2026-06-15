@@ -10,6 +10,10 @@ import type { RateLimit } from "./index";
  *   3. If count < limit, add the current timestamp and allow.
  *
  * No SDK dependency — same direct-REST pattern as RedisCache.
+ *
+ * Graceful degradation: if Redis is unreachable, `check()` returns `true`
+ * (allows the request) rather than crashing. Rate-limiting resumes automatically
+ * when Redis recovers.
  */
 export class RedisRateLimit implements RateLimit {
   private readonly url: string;
@@ -48,23 +52,27 @@ export class RedisRateLimit implements RateLimit {
   }
 
   async check(key: string, limit: number, windowSec: number): Promise<boolean> {
-    const now = Date.now();
-    const windowMs = windowSec * 1000;
-    const minScore = now - windowMs;
-    const member = `${now}-${Math.random().toString(36).slice(2, 8)}`;
+    try {
+      const now = Date.now();
+      const windowMs = windowSec * 1000;
+      const minScore = now - windowMs;
+      const member = `${now}-${Math.random().toString(36).slice(2, 8)}`;
 
-    const [, countRaw] = await this.pipeline([
-      ["ZREMRANGEBYSCORE", key, 0, minScore],
-      ["ZCARD", key],
-    ]);
+      const [, countRaw] = await this.pipeline([
+        ["ZREMRANGEBYSCORE", key, 0, minScore],
+        ["ZCARD", key],
+      ]);
 
-    const count = Number(countRaw ?? 0);
-    if (count >= limit) return false;
+      const count = Number(countRaw ?? 0);
+      if (count >= limit) return false;
 
-    await this.pipeline([
-      ["ZADD", key, now, member],
-      ["EXPIRE", key, windowSec],
-    ]);
-    return true;
+      await this.pipeline([
+        ["ZADD", key, now, member],
+        ["EXPIRE", key, windowSec],
+      ]);
+      return true;
+    } catch {
+      return true;
+    }
   }
 }

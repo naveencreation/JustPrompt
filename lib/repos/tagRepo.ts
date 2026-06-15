@@ -1,5 +1,6 @@
 import { createAdminClient } from "@/lib/db/client";
 import { slugify } from "@/lib/utils/slug";
+import { errors } from "@/lib/observability/errors";
 import type { ImageId, Tag } from "@/lib/db/schema";
 
 export const tagRepo = {
@@ -21,7 +22,18 @@ export const tagRepo = {
       .select()
       .single();
 
-    if (error || !data) throw new Error(`tagRepo.findOrCreate failed: ${error?.message}`);
+    if (error) {
+      if (error.code === "23505") {
+        const { data: concurrent } = await supabase
+          .from("tags")
+          .select("*")
+          .eq("slug", slug)
+          .maybeSingle();
+        if (concurrent) return concurrent as unknown as Tag;
+      }
+      throw new Error(`tagRepo.findOrCreate failed: ${error.message}`);
+    }
+
     return data as unknown as Tag;
   },
 

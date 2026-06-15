@@ -81,8 +81,7 @@ export const metricRepo = {
     // Fallback if RPC not available
     if (error) {
       const current = await this.getViewCount(imageId);
-      const supabase2 = createAdminClient();
-      await supabase2
+      await supabase
         .from("view_counts")
         .upsert({ image_id: imageId, count: current + delta }, { onConflict: "image_id" });
     }

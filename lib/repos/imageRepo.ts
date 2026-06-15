@@ -215,11 +215,17 @@ export const imageRepo = {
 
   async updateOrder(updates: { id: ImageId; displayOrder: number }[]): Promise<void> {
     const supabase = createAdminClient();
-    await Promise.all(
+    const results = await Promise.allSettled(
       updates.map((u) =>
         supabase.from("images").update({ display_order: u.displayOrder }).eq("id", u.id)
       )
     );
+
+    const failures = results.filter((r) => r.status === "rejected");
+    if (failures.length > 0) {
+      const first = failures[0] as PromiseRejectedResult;
+      throw new Error(`imageRepo.updateOrder partially failed: ${failures.length}/${updates.length} updates failed — ${first.reason}`);
+    }
   },
 
   async delete(id: ImageId): Promise<void> {
