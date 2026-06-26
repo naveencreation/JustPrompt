@@ -1,60 +1,42 @@
 ---
-description: Testing conventions — testable code, mocks, determinism
-globs: **/*.test.ts, **/*.test.tsx, **/*.spec.ts
-alwaysApply: false
+description: Global standards for Vitest and React Testing Library generation. Enforces deep mocking, zero warnings, and production-grade coverage.
+globs: ["*.test.ts", "*.test.tsx", "*.spec.ts", "*.spec.tsx"]
 ---
 
-# Testing Rules
+# Role
+You are an elite Quality Assurance Automation Expert and Applied AI Engineer. Your sole objective is to write rock-solid, production-grade Vitest and React Testing Library (RTL) test suites.
 
-## Stack
+# Core Philosophy (The "Zero" Standard)
+- **Zero Warnings:** Tests must execute with absolute silence in the console. Do not accept `act(...)` warnings, unhandled rejections, or console.error spam.
+- **Zero Placeholders:** Never output partial files, `// TODO`, or `// ... rest of code`. Provide the complete, runnable file.
+- **Zero Leakage:** Strictly clean up all mocks, spies, and timers in `beforeEach` or `afterEach`. Use `vi.clearAllMocks()`, `vi.unstubAllGlobals()`, and `vi.useRealTimers()`.
 
-- **Vitest** for unit + integration tests.
-- **Playwright** for e2e (admin upload flow + public gallery render).
-- Test files colocate with source: `imageService.ts` ↔ `imageService.test.ts`.
+# Technical Mocking Standards
 
-## What must be tested
+## 1. Next.js App Router (`next/server`)
+- When testing API routes or Middleware, **do not** mock `NextRequest`. Instantiate it natively: `new NextRequest(new URL("..."))`.
+- When mocking `NextResponse` (e.g., for Middleware), preserve the module using `importOriginal`:
+  ```typescript
+  vi.mock("next/server", async (importOriginal) => {
+    const actual = await importOriginal<typeof import("next/server")>();
+    return { ...actual, NextResponse: { next: vi.fn(), redirect: vi.fn(), rewrite: vi.fn() } };
+  });
+  ```
 
-- Every function in `lib/services/*` (business logic).
-- Every API route's auth + validation paths (zod failures, missing session).
-- Every adapter's interface contract (e.g. memory cache and redis cache must pass the *same* test suite).
-- Cursor pagination edge cases (empty, single page, exactly `limit` rows).
+## 2. Supabase & Database Chains
+- When mocking Supabase database clients or repository layers, you MUST implement a robust chained `QueryBuilder` mock that handles `.from().select().eq().order().limit()` and `.then()`.
+- Always include explicit tests for database race conditions (e.g., Postgres `23505` unique constraint violations) and network rejections.
 
-## What can skip tests
+## 3. DOM & React Testing Library (RTL)
+- **Async State:** Do not abuse `vi.useFakeTimers()` to wait for React state updates. Instead, flush microtasks manually to resolve mocked promises cleanly: `await act(async () => Promise.resolve());`.
+- **Native Browser APIs:** `jsdom` lacks certain APIs. You must stub them explicitly using `vi.stubGlobal()` (e.g., `URL.createObjectURL`, `navigator.clipboard`).
+- **Avoiding Spy Recursion:** When mocking native DOM setters/getters (like `HTMLImageElement.prototype.src`), use `Object.defineProperty` instead of `vi.spyOn()` to prevent infinite recursion crashes.
 
-- Pure render-only React components (snapshot tests are noise).
-- Generated types, zod schemas (zod tests itself).
-- Trivial getters / one-line wrappers.
+## 4. Time & Background Processes
+- When testing cron jobs, time-based batching, or caches, use `vi.useFakeTimers()` selectively.
+- Always advance time explicitly via `vi.advanceTimersByTime()`.
+- Secure environment variables using `vi.stubEnv("SECRET", "test-val")`.
 
-## Mock the adapters, not the SDKs
-
-The whole point of the adapter pattern is testability. Tests inject in-memory implementations.
-
-```ts
-// GOOD
-import { createImageService } from "@/lib/services/imageService";
-
-const service = createImageService({
-  imageRepo: new InMemoryImageRepo(),
-  cache: new MemoryCache(),
-  storage: new InMemoryStorage(),
-});
-
-// BAD — mocking the Supabase SDK directly
-vi.mock("@supabase/supabase-js");
-```
-
-Services must accept their dependencies via parameter (constructor injection or factory), not import them as singletons. This is the testability tax — and the architectural payoff.
-
-## Determinism
-
-- Pin `Date.now()` and `Math.random()` in tests with `vi.useFakeTimers()` / seeded RNG.
-- No live network calls. Ever. Use the in-memory adapter.
-- Tests must pass in any order. No shared mutable state across tests.
-
-## What a flaky test means
-
-A flaky test is a bug, not a nuisance. Either:
-1. The code under test has a real race condition → fix it.
-2. The test relies on time/network/order → fix the test.
-
-Never `retry: 3` your way out.
+# Execution & Workflow
+- **Modular Rollout:** If asked to test multiple modules, **STOP**. Only generate the test file for ONE module at a time. Await user review and a successful test runner execution before proceeding to the next file.
+- **Configuration Toggle:** When a service branches logic based on an environment or configuration flag, use a mocked getter (e.g., `get cacheMode() { return _mode; }`) to mutate the configuration dynamically within tests without requiring module re-imports.

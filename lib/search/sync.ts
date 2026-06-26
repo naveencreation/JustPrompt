@@ -15,7 +15,7 @@ export interface SearchIndexSync {
   remove(imageId: string): Promise<void>;
 }
 
-class NoOpSearchSync implements SearchIndexSync {
+export class NoOpSearchSync implements SearchIndexSync {
   async index(): Promise<void> {
     // Postgres FTS is updated automatically via triggers
   }
@@ -29,7 +29,7 @@ class NoOpSearchSync implements SearchIndexSync {
  * Meilisearch index synchronizer.
  * Ensures Meilisearch stays in sync with Postgres.
  */
-class MeilisearchSync implements SearchIndexSync {
+export class MeilisearchSync implements SearchIndexSync {
   private readonly host: string;
   private readonly apiKey: string;
   private readonly indexName = "images";

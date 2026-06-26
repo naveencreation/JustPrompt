@@ -129,9 +129,6 @@ export const imageRepo = {
 
     if (sort === "likes") {
       q = q.order("display_order", { ascending: true });
-    } else if (sort === "random") {
-      // Deterministic randomness per page load — handled in service layer
-      q = q.order("created_at", { ascending: false }).order("id", { ascending: false });
     } else {
       q = q.order("created_at", { ascending: false }).order("id", { ascending: false });
     }
@@ -139,7 +136,19 @@ export const imageRepo = {
     const { data, error } = await q;
     if (error) throw new Error(`imageRepo.listPublished failed: ${error.message}`);
 
-    const items = ((data ?? []) as ImageRow[]).map(fromRow);
+    let items = ((data ?? []) as ImageRow[]).map(fromRow);
+
+    // Shuffle only the first page of random results (cursor pagination is inherently deterministic)
+    if (sort === "random" && !before) {
+      for (let i = items.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const a = items[i]!;
+        const b = items[j]!;
+        items[i] = b;
+        items[j] = a;
+      }
+    }
+
     const last = items[items.length - 1];
     const nextCursor =
       items.length === limit && last

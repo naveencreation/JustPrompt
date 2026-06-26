@@ -71,8 +71,8 @@ export const tagRepo = {
     const supabase = createAdminClient();
     const { data, error } = await supabase
       .from("image_tags")
-      .select("tag_id, tags(id, name, slug)")
-      .limit(500);
+      .select("tag_id, tags(id, name, slug), images!inner(is_published)")
+      .eq("images.is_published", true);
     if (error) throw new Error(`tagRepo.popular failed: ${error.message}`);
 
     const counts = new Map<number, { tag: Tag; count: number }>();

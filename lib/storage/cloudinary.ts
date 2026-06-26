@@ -104,26 +104,7 @@ export class CloudinaryStorage implements Storage {
 
   async deleteMultiple(storageKeys: string[]): Promise<void> {
     if (storageKeys.length === 0) return;
-
-    const timestamp = Math.floor(Date.now() / 1000).toString();
-    const params: Record<string, string> = { public_ids: JSON.stringify(storageKeys), timestamp };
-    const signature = signParams(params, this.apiSecret);
-
-    const body = new URLSearchParams({
-      ...params,
-      api_key: this.apiKey,
-      signature,
-    });
-
-    const res = await fetch(
-      `https://api.cloudinary.com/v1_1/${this.cloudName}/image/delete_by_token`,
-      { method: "POST", body },
-    );
-    if (!res.ok) {
-      const detail = await res.text().catch(() => "");
-      logger.error("storage.delete_multiple_failed", { count: storageKeys.length, status: res.status, detail });
-      throw new Error(`Cloudinary batch delete failed (${res.status}): ${detail}`);
-    }
+    await Promise.all(storageKeys.map((key) => this.delete(key)));
   }
 
   publicUrl(storageKey: string): string {
