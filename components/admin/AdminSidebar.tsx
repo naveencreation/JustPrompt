@@ -64,7 +64,7 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
             <span className="sr-only">Just Prompt</span>
             <JustPromptLogo size={24} strokeWidth={2} className="text-neutral-950" />
             {!isCollapsed && (
-              <span aria-hidden="true" className="font-sans text-base font-bold tracking-tight text-neutral-900">
+              <span aria-hidden="true" className="font-[family-name:var(--font-display)] text-base font-semibold tracking-wide text-neutral-900">
                 Just Prompt
               </span>
             )}

@@ -53,15 +53,15 @@ function TopBarContent() {
   };
 
   return (
-    <div className="flex-1 flex items-center w-full gap-4">
+    <div className="flex-1 flex items-center w-full gap-2">
       {/* Mobile-only logo */}
       <Link href="/" className="md:hidden flex items-center justify-center text-neutral-950">
         <JustPromptLogo size={28} strokeWidth={2} />
       </Link>
 
       {/* Brand Name on Desktop */}
-      <Link href="/" className="hidden md:block select-none shrink-0 mr-2 hover:opacity-80 transition-opacity">
-        <span className="font-sans text-xl font-extrabold tracking-tight text-neutral-900">
+      <Link href="/" className="hidden md:block select-none shrink-0 hover:opacity-80 transition-opacity">
+        <span className="font-[family-name:var(--font-display)] text-2xl font-semibold tracking-wide text-neutral-900">
           Just Prompt
         </span>
       </Link>
@@ -109,7 +109,7 @@ function TopBarContent() {
 
 export function TopBar() {
   return (
-    <header className="sticky top-0 z-30 h-16 w-full flex items-center bg-white/95 border-b border-neutral-100 backdrop-blur pl-0 md:pl-20">
+    <header className="sticky top-0 z-30 h-16 w-full flex items-center bg-white/95 border-b border-neutral-100 backdrop-blur">
       <div className="flex-1 flex items-center h-full px-4 md:px-8 w-full">
         <Suspense fallback={<div className="flex-1 h-10 bg-neutral-100 rounded-full animate-pulse" />}>
           <TopBarContent />

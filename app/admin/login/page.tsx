@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { LoaderIcon } from "@/components/icons";
+import { LoaderIcon, EyeIcon, EyeOffIcon } from "@/components/icons";
 import { cn } from "@/lib/utils/cn";
 
 export default function AdminLoginPage() {
@@ -11,6 +11,7 @@ export default function AdminLoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -43,20 +44,28 @@ export default function AdminLoginPage() {
   );
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-neutral-50 px-4">
-      <div className="w-full max-w-sm">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden px-4">
+      {/* Background image */}
+      <div
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: "url('/admin_background.png')" }}
+      />
+      {/* Overlay for readability */}
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" />
+
+      <div className="relative z-10 w-full max-w-sm">
         <div className="mb-10 text-center">
-          <h1 className="font-serif text-3xl tracking-tight text-neutral-900">
+          <h1 className="font-serif text-3xl tracking-tight text-white">
             Admin
           </h1>
-          <p className="mt-1 text-[10px] uppercase tracking-[0.15em] text-neutral-400">
+          <p className="mt-1 text-[10px] uppercase tracking-[0.15em] text-white/60">
             Prompt Gallery
           </p>
         </div>
 
         <form
           onSubmit={handleSubmit}
-          className="flex flex-col gap-5 rounded-md border border-neutral-200 bg-white p-7"
+          className="flex flex-col gap-5 rounded-md border border-neutral-200/50 bg-white/95 p-7 shadow-xl backdrop-blur-sm"
         >
           <div>
             <label htmlFor="email" className="mb-1.5 block text-[12px] font-medium text-neutral-700">
@@ -77,15 +86,25 @@ export default function AdminLoginPage() {
             <label htmlFor="password" className="mb-1.5 block text-[12px] font-medium text-neutral-700">
               Password
             </label>
-            <input
-              id="password"
-              type="password"
-              autoComplete="current-password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-md border border-neutral-200 px-3 py-2 text-sm transition-[border-color,box-shadow] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] focus:border-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-100"
-            />
+            <div className="relative">
+              <input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                autoComplete="current-password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full rounded-md border border-neutral-200 px-3 py-2 pr-10 text-sm transition-[border-color,box-shadow] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] focus:border-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-100"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-neutral-400 transition-colors hover:text-neutral-600"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <EyeOffIcon size={16} /> : <EyeIcon size={16} />}
+              </button>
+            </div>
           </div>
 
           {error && (

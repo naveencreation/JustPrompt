@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DM_Sans, DM_Mono, Newsreader } from "next/font/google";
+import { DM_Sans, DM_Mono, Newsreader, Playfair_Display } from "next/font/google";
 import Script from "next/script";
 import { config } from "@/lib/config";
 import "./globals.css";
@@ -27,6 +27,12 @@ const dmMono = DM_Mono({
   display: "swap",
 });
 
+const playfairDisplay = Playfair_Display({
+  variable: "--font-display",
+  subsets: ["latin"],
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: {
     default: "AI Prompt Gallery",
@@ -46,7 +52,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${dmSans.variable} ${newsreader.variable} ${dmMono.variable} h-full antialiased`}
+      className={`${dmSans.variable} ${newsreader.variable} ${dmMono.variable} ${playfairDisplay.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-[#FBFBFA] text-neutral-900">
         <a
