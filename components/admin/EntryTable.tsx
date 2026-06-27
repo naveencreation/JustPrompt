@@ -15,7 +15,9 @@ import {
   LoaderIcon,
   EditIcon,
   GripVerticalIcon,
-  ArrowUpIcon
+  ArrowUpIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
 } from "@/components/icons";
 import { EditImageModal } from "./EditImageModal";
 import { ConfirmModal } from "./ConfirmModal";
@@ -25,9 +27,12 @@ import { useModels } from "@/lib/hooks/useModels";
 
 interface EntryTableProps {
   images: ImageType[];
+  page: number;
+  totalPages: number;
+  total: number;
 }
 
-export function EntryTable({ images: initialImages }: EntryTableProps) {
+export function EntryTable({ images: initialImages, page, totalPages, total }: EntryTableProps) {
   const { models } = useModels();
   const router = useRouter();
   const [images, setImages] = useState(initialImages);
@@ -395,6 +400,39 @@ export function EntryTable({ images: initialImages }: EntryTableProps) {
             </Droppable>
           </DragDropContext>
         </table>
+      </div>
+
+      {/* ── Pagination ──────────────────────────────────────────────── */}
+      <div className="mt-4 flex items-center justify-between">
+        <p className="text-sm text-neutral-500">
+          Page {page} of {totalPages}
+        </p>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => {
+              const params = new URLSearchParams(window.location.search);
+              params.set("page", String(page - 1));
+              window.location.href = `/admin/manage?${params.toString()}`;
+            }}
+            disabled={page <= 1}
+            className="flex items-center gap-1 rounded-md border border-neutral-200 bg-white px-3 py-1.5 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-50 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <ChevronLeftIcon size={14} />
+            Previous
+          </button>
+          <button
+            onClick={() => {
+              const params = new URLSearchParams(window.location.search);
+              params.set("page", String(page + 1));
+              window.location.href = `/admin/manage?${params.toString()}`;
+            }}
+            disabled={page >= totalPages}
+            className="flex items-center gap-1 rounded-md border border-neutral-200 bg-white px-3 py-1.5 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-50 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            Next
+            <ChevronRightIcon size={14} />
+          </button>
+        </div>
       </div>
 
       {editingImage && (

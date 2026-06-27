@@ -17,5 +17,5 @@ export const SITEMAP = {
 // Admin dashboard
 export const DASHBOARD = {
   RECENT_IMAGES_COUNT: 5,
-  MANAGE_PAGE_SIZE: 100,
+  MANAGE_PAGE_SIZE: 15,
 } as const;

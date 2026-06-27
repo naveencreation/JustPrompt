@@ -63,6 +63,12 @@ export const imageService = {
     return imageRepo.listAll(opts);
   },
 
+  async listAllPaginated(
+    opts: { page?: number; pageSize?: number; status?: "published" | "draft"; tagSlug?: string } = {},
+  ): Promise<{ items: Image[]; total: number }> {
+    return imageRepo.listAllPaginated(opts);
+  },
+
   async create(input: Omit<CreateImageInput, "slug"> & { slug?: string }): Promise<Image> {
     const slug = input.slug ?? generateSlug(input.prompt);
     const fullInput: CreateImageInput = { ...input, slug };

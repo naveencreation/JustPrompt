@@ -191,6 +191,63 @@ export const imageRepo = {
     return ((data ?? []) as ImageRow[]).map(fromRow);
   },
 
+  async listAllPaginated(
+    opts: { page?: number; pageSize?: number; status?: "published" | "draft"; tagSlug?: string } = {},
+  ): Promise<{ items: Image[]; total: number }> {
+    const { page = 1, pageSize = 50, status, tagSlug } = opts;
+    const supabase = createAdminClient();
+
+    let countQ = supabase
+      .from("images")
+      .select("*", { count: "exact", head: true });
+
+    let dataQ = supabase
+      .from("images")
+      .select("*")
+      .order("display_order", { ascending: true })
+      .order("created_at", { ascending: false });
+
+    if (status === "published") {
+      countQ = countQ.eq("is_published", true);
+      dataQ = dataQ.eq("is_published", true);
+    }
+    if (status === "draft") {
+      countQ = countQ.eq("is_published", false);
+      dataQ = dataQ.eq("is_published", false);
+    }
+
+    if (tagSlug) {
+      const { data: tagData } = await supabase.from("tags").select("id").eq("slug", tagSlug).single();
+      if (tagData) {
+        const { data: imageTagData } = await supabase
+          .from("image_tags")
+          .select("image_id")
+          .eq("tag_id", (tagData as { id: number }).id);
+        const ids = (imageTagData ?? []).map((r: { image_id: string }) => r.image_id);
+        if (ids.length === 0) return { items: [], total: 0 };
+        countQ = countQ.in("id", ids);
+        dataQ = dataQ.in("id", ids);
+      } else {
+        return { items: [], total: 0 };
+      }
+    }
+
+    const start = (page - 1) * pageSize;
+    const end = start + pageSize - 1;
+
+    const [countResult, dataResult] = await Promise.all([
+      countQ,
+      dataQ.range(start, end),
+    ]);
+
+    if (dataResult.error) throw new Error(`imageRepo.listAllPaginated failed: ${dataResult.error.message}`);
+
+    return {
+      items: ((dataResult.data ?? []) as ImageRow[]).map(fromRow),
+      total: countResult.count ?? 0,
+    };
+  },
+
   async create(input: CreateImageInput): Promise<Image> {
     const supabase = createAdminClient();
     const { data, error } = await supabase

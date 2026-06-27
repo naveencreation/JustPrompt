@@ -8,21 +8,25 @@ import { DASHBOARD } from "@/lib/constants/limits";
 export const dynamic = "force-dynamic";
 
 interface PageProps {
-  searchParams: Promise<{ status?: string; tag?: string }>;
+  searchParams: Promise<{ status?: string; tag?: string; page?: string }>;
 }
 
 export default async function ManagePage({ searchParams }: PageProps) {
-  const { status, tag } = await searchParams;
+  const { status, tag, page: pageStr } = await searchParams;
   const parsedStatus = status === "published" || status === "draft" ? status : undefined;
+  const page = Math.max(1, Number(pageStr) || 1);
 
-  const [images, tags] = await Promise.all([
-    imageService.listAll({ 
-      limit: DASHBOARD.MANAGE_PAGE_SIZE,
+  const [result, tags] = await Promise.all([
+    imageService.listAllPaginated({ 
+      page,
+      pageSize: DASHBOARD.MANAGE_PAGE_SIZE,
       status: parsedStatus,
       tagSlug: tag
     }),
     tagService.listPopular()
   ]);
+
+  const totalPages = Math.ceil(result.total / DASHBOARD.MANAGE_PAGE_SIZE);
 
   return (
     <div className="p-6 max-w-6xl mx-auto w-full">
@@ -31,14 +35,20 @@ export default async function ManagePage({ searchParams }: PageProps) {
           <ListIcon size={20} className="text-neutral-500" />
           <h1 className="font-serif text-2xl tracking-tight text-neutral-900">Manage entries</h1>
         </div>
-        <p className="text-sm text-neutral-500">{images.length} entries</p>
+        <p className="text-sm text-neutral-500">{result.total} entries</p>
       </div>
       
       <div className="mb-6">
         <ManageFilters tags={tags} activeStatus={parsedStatus} activeTag={tag} />
       </div>
 
-      <EntryTable images={images} />
+      <EntryTable
+        key={`${page}-${parsedStatus ?? ""}-${tag ?? ""}`}
+        images={result.items}
+        page={page}
+        totalPages={totalPages}
+        total={result.total}
+      />
     </div>
   );
 }
