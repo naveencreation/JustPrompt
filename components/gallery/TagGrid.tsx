@@ -36,6 +36,7 @@ export function TagGrid({ tags }: { tags: TagWithPreview[] }) {
                     src={tag.previewUrl}
                     alt={`${tag.name} category preview`}
                     fill
+                    loading={index < INITIAL_SHOWN ? "eager" : "lazy"}
                     className="object-cover transition-transform duration-700 group-hover:scale-110"
                     sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
                   />

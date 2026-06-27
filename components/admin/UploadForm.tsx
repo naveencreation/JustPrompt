@@ -37,6 +37,10 @@ export function UploadForm() {
   const [isUploading, setIsUploading] = useState(false);
 
   const handleFileSelect = useCallback((selected: File) => {
+    if (selected.size > 10 * 1024 * 1024) {
+      toast.error("File too large. Maximum size is 10 MB.");
+      return;
+    }
     setFile(selected);
     const url = URL.createObjectURL(selected);
     setPreviewUrl(url);
@@ -94,7 +98,10 @@ export function UploadForm() {
             headers: { "Content-Type": file.type },
           });
         }
-        if (!uploadRes.ok) throw new Error(`Upload to storage failed (${uploadRes.status})`);
+        if (!uploadRes.ok) {
+          const body = await uploadRes.text().catch(() => "");
+          throw new Error(`Upload to storage failed (${uploadRes.status}): ${body.slice(0, 500)}`);
+        }
 
         const createRes = await fetch("/api/images", {
           method: "POST",
@@ -175,7 +182,7 @@ export function UploadForm() {
           <>
             <UploadIcon size={28} className="text-neutral-300" />
             <p className="text-sm text-neutral-500">Drop an image or click to browse</p>
-            <p className="text-[10px] uppercase tracking-[0.15em] text-neutral-400">PNG · JPG · WebP</p>
+            <p className="text-[10px] uppercase tracking-[0.15em] text-neutral-400">PNG · JPG · WebP · Max 10 MB</p>
           </>
         )}
       </div>
