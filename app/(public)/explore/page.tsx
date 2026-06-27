@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import Image from "next/image";
 import { tagService } from "@/lib/services/tagService";
+import { TagGrid } from "@/components/gallery/TagGrid";
 
 export const revalidate = 60; // Cache this page for 60 seconds
 
@@ -11,7 +10,6 @@ export const metadata: Metadata = {
 };
 
 export default async function ExplorePage() {
-  // Fetch up to 50 popular tags, each with a preview image URL
   const tagsWithPreviews = await tagService.listPopularWithPreviews(50);
 
   return (
@@ -26,52 +24,7 @@ export default async function ExplorePage() {
           </p>
         </header>
 
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:gap-6 auto-rows-[minmax(0,1fr)]">
-          {tagsWithPreviews.map((tag, index) => {
-            const isFeatured = index < 3 && tag.count > 5;
-            return (
-            <Link
-              key={tag.id}
-              href={`/t/${tag.slug}`}
-              className={`group relative flex flex-col items-center justify-center overflow-hidden rounded-2xl bg-neutral-100 transition-transform duration-300 hover:scale-[1.02] ${
-                isFeatured
-                  ? "aspect-[8/3] col-span-2 sm:col-span-2 row-span-1 md:aspect-[4/3] md:col-auto md:row-span-1"
-                  : "aspect-[4/3] w-full col-span-1"
-              }`}
-            >
-              {tag.previewUrl && (
-                <>
-                  <Image
-                    src={tag.previewUrl}
-                    alt={`${tag.name} category preview`}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-110"
-                    sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
-                  />
-                  {/* Subtle dark gradient to ensure text readability */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-black/10 transition-opacity duration-300 group-hover:opacity-90" />
-                </>
-              )}
-
-              {/* Text Overlay */}
-              <div className="relative z-10 flex flex-col items-center justify-center p-4 text-center">
-                <h2 className="text-lg font-bold text-white tracking-tight drop-shadow-md sm:text-xl">
-                  {tag.name}
-                </h2>
-                <p className="mt-1 text-xs font-medium text-white/80 drop-shadow">
-                  {tag.count} {tag.count === 1 ? "prompt" : "prompts"}
-                </p>
-              </div>
-            </Link>
-          );
-        })}
-        </div>
-
-        {tagsWithPreviews.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-24 text-center">
-            <p className="text-neutral-500">No categories found.</p>
-          </div>
-        )}
+        <TagGrid tags={tagsWithPreviews} />
       </main>
     </div>
   );
