@@ -28,17 +28,44 @@ export const tagService = {
     if (cached) return cached;
 
     const tags = await tagRepo.popular(limit);
-    
-    // Fetch one published image per tag to serve as a background preview
-    const tagsWithPreviews: TagWithPreview[] = await Promise.all(
-      tags.map(async (tag) => {
-        const { items } = await imageRepo.listPublished({ tagSlug: tag.slug, limit: 1 });
-        return {
-          ...tag,
-          previewUrl: items[0]?.imageUrl ?? null,
-        };
-      })
+    const PREVIEW_DEPTH = 10;
+
+    // Fetch multiple images per tag so we can show distinct previews
+    // across categories instead of the same image repeating.
+    const tagImagePages = await Promise.all(
+      tags.map((tag) =>
+        imageRepo.listPublished({ tagSlug: tag.slug, limit: PREVIEW_DEPTH })
+      )
     );
+
+    // Walk tags in popularity order, assigning the first image whose
+    // ID hasn't been claimed by a higher-ranked tag. If a tag has no
+    // unique images left in its buffer, fall back to its top image
+    // (a rare duplicate is better than a blank card).
+    const usedImageIds = new Set<string>();
+    const tagsWithPreviews: TagWithPreview[] = [];
+
+    for (let i = 0; i < tags.length; i++) {
+      const tag = tags[i]!;
+      const images = tagImagePages[i]?.items ?? [];
+      let previewUrl: string | null = null;
+
+      for (const img of images) {
+        if (!usedImageIds.has(img.id)) {
+          usedImageIds.add(img.id);
+          previewUrl = img.imageUrl;
+          break;
+        }
+      }
+
+      // Fallback: let lower-ranked tags still show their top image
+      // rather than leaving the card blank.
+      if (!previewUrl && images.length > 0) {
+        previewUrl = images[0]!.imageUrl;
+      }
+
+      tagsWithPreviews.push({ ...tag, previewUrl });
+    }
 
     await cache.set(cacheKey, tagsWithPreviews, CACHE_TTL.TAGS);
     return tagsWithPreviews;
