@@ -84,4 +84,9 @@ export const tagService = {
     if (tag) await cache.set(cacheKey, tag, CACHE_TTL.TAGS);
     return tag;
   },
+
+  async suggest(q: string): Promise<Array<Tag & { count: number }>> {
+    if (!q.trim() || q.trim().length < 1) return [];
+    return tagRepo.searchByName(q.trim(), 8);
+  },
 };

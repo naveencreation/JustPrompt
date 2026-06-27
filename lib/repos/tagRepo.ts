@@ -57,6 +57,25 @@ export const tagRepo = {
     return (data ?? null) as Tag | null;
   },
 
+  async searchByName(prefix: string, limit = 8): Promise<Array<Tag & { count: number }>> {
+    const supabase = createAdminClient();
+    const { data, error } = await supabase
+      .from("tags")
+      .select("id, name, slug, image_count:image_tags(count)")
+      .ilike("name", `${prefix}%`)
+      .limit(limit);
+
+    if (error) throw new Error(`tagRepo.searchByName failed: ${error.message}`);
+    return ((data ?? []) as Array<{ id: number; name: string; slug: string; image_count: unknown[] }>)
+      .map((row) => ({
+        id: row.id,
+        name: row.name,
+        slug: row.slug,
+        count: Array.isArray(row.image_count) ? row.image_count.length : 0,
+      }))
+      .sort((a, b) => b.count - a.count) as unknown as Array<Tag & { count: number }>;
+  },
+
   async listByImage(imageId: ImageId): Promise<Tag[]> {
     const supabase = createAdminClient();
     const { data, error } = await supabase

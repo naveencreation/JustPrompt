@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState, useCallback, Suspense } from "react";
+import { useEffect, useState, useCallback, useRef, Suspense } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { SearchIcon, CloseIcon, JustPromptLogo } from "@/components/icons";
 import { cn } from "@/lib/utils/cn";
 import { useDebounceCallback } from "@/lib/hooks/useDebounce";
 import { TIMING } from "@/lib/constants/timing";
 import Link from "next/link";
+import { SearchSuggestions } from "./SearchSuggestions";
 
 function TopBarContent() {
   const router = useRouter();
@@ -14,6 +15,8 @@ function TopBarContent() {
   const searchParams = useSearchParams();
 
   const [value, setValue] = useState("");
+  const [isFocused, setIsFocused] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Keep input value in sync with URL queries
   useEffect(() => {
@@ -52,6 +55,13 @@ function TopBarContent() {
     handleSearchUpdate("");
   };
 
+  const handleSuggestionSelect = (tagName: string) => {
+    setValue(tagName);
+    setIsFocused(false);
+    inputRef.current?.blur();
+    handleSearchUpdate(tagName);
+  };
+
   return (
     <div className="flex-1 flex items-center w-full gap-2">
       {/* Mobile-only logo */}
@@ -73,9 +83,12 @@ function TopBarContent() {
           className="pointer-events-none absolute left-4 text-neutral-500 transition-colors group-focus-within:text-neutral-800"
         />
         <input
-          type="search"
+          ref={inputRef}
+          type="text"
           value={value}
           onChange={handleChange}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setTimeout(() => setIsFocused(false), 150)}
           placeholder="Search tags or models..."
           className={cn(
             "w-full rounded-full border-none bg-neutral-100 py-3 pl-11 pr-11 text-[14px]",
@@ -94,6 +107,12 @@ function TopBarContent() {
             <CloseIcon size={14} />
           </button>
         )}
+        <SearchSuggestions
+          query={value}
+          isFocused={isFocused}
+          onSelect={handleSuggestionSelect}
+          onClose={() => { setIsFocused(false); inputRef.current?.blur(); }}
+        />
       </div>
 
       {/* Secondary User Profile indicator for mobile */}
